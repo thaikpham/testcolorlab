@@ -1,8 +1,12 @@
 const recipesData = [
     {
         "id": "scl-001",
-        "name": { "vi": "Mojave Sun", "en": "Mojave Sun" },
-        "description": { "vi": "Một phong cách hoài niệm, ngập tràn ánh nắng, bao phủ các khung cảnh trong ánh sáng ấm áp của giờ vàng. Hoàn hảo cho du lịch và đời sống, nó tái tạo màu vàng đậm và xanh dương sâu, gợi lên cảm giác về một chuyến đi mùa hè bất tận.", "en": "A nostalgic, sun-drenched style that bathes scenes in the warm glow of golden hour. Perfect for travel and lifestyle, it recreates rich yellows and deep blues, evoking the feeling of an endless summer road trip." },
+        "name": { "vi": "SCL-001: Mojave Sun", "en": "SCL-001: Mojave Sun" }, // Updated name format
+        "formattedName": "SCL-001-Mojave Sun", // Formatted name
+        "description": {
+            "en": "A nostalgic, sun-drenched style that bathes scenes in the warm glow of golden hour.\nPerfect for travel and lifestyle, it recreates rich yellows and deep blues, evoking the feeling of an endless summer road trip.",
+            "vi": "Một phong cách hoài niệm, ngập tràn ánh nắng, bao phủ các khung cảnh trong ánh sáng ấm áp của giờ vàng. Hoàn hảo cho du lịch và đời sống, nó tái tạo màu vàng đậm và xanh dương sâu, gợi lên cảm giác về một chuyến đi mùa hè bất tận."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -16,8 +20,12 @@ const recipesData = [
     },
     {
         "id": "scl-002",
-        "name": { "vi": "Kyoto Jade", "en": "Kyoto Jade" },
-        "description": { "vi": "Một bảng màu thanh tĩnh và tinh tế được định hình bởi các tông màu xanh ngọc bích đậm và màu da dịu. Lý tưởng cho chân dung trầm tư, nhiếp ảnh đường phố và phong cảnh, tạo ra một không khí yên bình, tựa như tranh vẽ.", "en": "A serene and subtle palette defined by rich jade tones and gentle skin colors. Ideal for contemplative portraits, street photography, and landscapes, creating a peaceful, painterly atmosphere." },
+        "name": { "vi": "SCL-002: Kyoto Jade", "en": "SCL-002: Kyoto Jade" }, // Updated name format
+        "formattedName": "SCL-002-Kyoto Jade", // Formatted name
+        "description": {
+            "en": "A serene and subtle palette defined by rich jade tones and gentle skin colors.\nIdeal for contemplative portraits, street photography, and landscapes, creating a peaceful, painterly atmosphere.",
+            "vi": "Một bảng màu thanh tĩnh và tinh tế được định hình bởi các tông màu xanh ngọc bích đậm và màu da dịu. Lý tưởng cho chân dung trầm tư, nhiếp ảnh đường phố và phong cảnh, tạo ra một không khí yên bình, tựa như tranh vẽ."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -31,8 +39,12 @@ const recipesData = [
     },
     {
         "id": "scl-003",
-        "name": { "vi": "Caspian Blue", "en": "Caspian Blue" },
-        "description": { "vi": "Một cấu hình điện ảnh, tông lạnh với sắc xanh dương đặc trưng và vùng tối sâu, đậm. Nó mang lại chất lượng tâm trạng, đầy không khí cho hình ảnh, hoàn hảo cho cảnh đêm đô thị, chân dung kịch tính và kể chuyện.", "en": "A cool-toned, cinematic profile with distinctive deep blues and rich, crushed blacks. It lends a moody, atmospheric quality to images, perfect for urban nightscapes, dramatic portraits, and storytelling." },
+        "name": { "vi": "SCL-003: Caspian Blue", "en": "SCL-003: Caspian Blue" }, // Updated name format
+        "formattedName": "SCL-003-Caspian Blue", // Formatted name
+        "description": {
+            "en": "A cool-toned, cinematic profile with distinctive deep blues and rich, crushed blacks.\nIt lends a moody, atmospheric quality to images, perfect for urban nightscapes, dramatic portraits, and storytelling.",
+            "vi": "Một cấu hình điện ảnh, tông lạnh với sắc xanh dương đặc trưng và vùng tối sâu, đậm. Nó mang lại chất lượng tâm trạng, đầy không khí cho hình ảnh, hoàn hảo cho cảnh đêm đô thị, chân dung kịch tính và kể chuyện."
+        },
         "type": "color",
         "contrast": "high",
         "saturation": "normal",
@@ -46,8 +58,12 @@ const recipesData = [
     },
     {
         "id": "scl-004",
-        "name": { "vi": "Tuscan Ochre", "en": "Tuscan Ochre" },
-        "description": { "vi": "Một phong cách rực rỡ, độ bão hòa cao với các tông màu đỏ đất và vàng đất ấm áp. Nó mang lại một cường độ táo bạo, cháy nắng cho hình ảnh, gợi nhớ đến nhiếp ảnh du lịch châu Âu cổ điển.", "en": "A vibrant, high-saturation style with warm, earthy reds and yellows. It brings a bold, sun-baked intensity to images, reminiscent of classic European travel photography." },
+        "name": { "vi": "SCL-004: Tuscan Ochre", "en": "SCL-004: Tuscan Ochre" }, // Updated name format
+        "formattedName": "SCL-004-Tuscan Ochre", // Formatted name
+        "description": {
+            "en": "A vibrant, high-saturation style with warm, earthy reds and yellows.\nIt brings a bold, sun-baked intensity to images, reminiscent of classic European travel photography.",
+            "vi": "Một phong cách rực rỡ, độ bão hòa cao với các tông màu đỏ đất và vàng đất ấm áp. Nó mang lại một cường độ táo bạo, cháy nắng cho hình ảnh, gợi nhớ đến nhiếp ảnh du lịch châu Âu cổ điển."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "high",
@@ -61,8 +77,12 @@ const recipesData = [
     },
     {
         "id": "scl-005",
-        "name": { "vi": "Somerset Meadow", "en": "Somerset Meadow" },
-        "description": { "vi": "Một bảng màu nhẹ nhàng, tựa màu pastel với độ tương phản mềm và độ bão hòa thấp. Nó tái tạo tông màu da một cách đẹp đẽ và mang lại cho phong cảnh một chất lượng mơ màng, thanh tao, hoàn hảo cho chân dung lãng mạn và nghệ thuật.", "en": "A soft, pastel-like palette with gentle contrast and low saturation. It renders skin tones beautifully and gives landscapes a dreamy, ethereal quality, perfect for romantic and fine-art portraits." },
+        "name": { "vi": "SCL-005: Somerset Meadow", "en": "SCL-005: Somerset Meadow" }, // Updated name format
+        "formattedName": "SCL-005-Somerset Meadow", // Formatted name
+        "description": {
+            "en": "A soft, pastel-like palette with gentle contrast and low saturation.\nIt renders skin tones beautifully and gives landscapes a dreamy, ethereal quality, perfect for romantic and fine-art portraits.",
+            "vi": "Một bảng màu nhẹ nhàng, tựa màu pastel với độ tương phản mềm và độ bão hòa thấp. Nó tái tạo tông màu da một cách đẹp đẽ và mang lại cho phong cảnh một chất lượng mơ màng, thanh tao, hoàn hảo cho chân dung lãng mạn và nghệ thuật."
+        },
         "type": "color",
         "contrast": "soft",
         "saturation": "low",
@@ -76,8 +96,12 @@ const recipesData = [
     },
     {
         "id": "scl-006",
-        "name": { "vi": "Faded Canvas", "en": "Faded Canvas" },
-        "description": { "vi": "Một phong cách được cách điệu hóa với vùng đen được nâng sáng mạnh và màu sắc dịu, tạo ra một hiệu ứng mờ, mềm mại. Nó gợi lên cảm giác hoài niệm và lý tưởng cho nhiếp ảnh thời trang, biên tập và đời sống hướng đến cảm giác cổ điển-hiện đại.", "en": "A stylized look with heavily lifted blacks and muted colors, creating a soft, hazy effect. It evokes a sense of nostalgia and is ideal for fashion, editorial, and lifestyle photography aiming for a vintage-modern feel." },
+        "name": { "vi": "SCL-006: Faded Canvas", "en": "SCL-006: Faded Canvas" }, // Updated name format
+        "formattedName": "SCL-006-Faded Canvas", // Formatted name
+        "description": {
+            "en": "A stylized look with heavily lifted blacks and muted colors, creating a soft, hazy effect.\nIt evokes a sense of nostalgia and is ideal for fashion, editorial, and lifestyle photography aiming for a vintage-modern feel.",
+            "vi": "Một phong cách được cách điệu hóa với vùng đen được nâng sáng mạnh và màu sắc dịu, tạo ra một hiệu ứng mờ, mềm mại. Nó gợi lên cảm giác hoài niệm và lý tưởng cho nhiếp ảnh thời trang, biên tập và đời sống hướng đến cảm giác cổ điển-hiện đại."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "muted",
@@ -91,8 +115,12 @@ const recipesData = [
     },
     {
         "id": "scl-007",
-        "name": { "vi": "Dynachrome '75", "en": "Dynachrome '75" },
-        "description": { "vi": "Một cấu hình tương phản cao, đầy tâm trạng với màu đen sâu và sự dịch chuyển màu sắc lạnh, đầy kịch tính. Nó nhấn mạnh kết cấu và hình khối, tạo ra một phong cách đồ họa mạnh mẽ gợi nhớ đến phim dương bản tài liệu cổ điển.", "en": "A high-contrast, moody profile with deep blacks and a dramatic, cool color shift. It emphasizes texture and form, creating a strong graphic style reminiscent of vintage documentary slide film." },
+        "name": { "vi": "SCL-007: Dynachrome '75", "en": "SCL-007: Dynachrome '75" }, // Updated name format
+        "formattedName": "SCL-007-Dynachrome '75", // Formatted name
+        "description": {
+            "en": "A high-contrast, moody profile with deep blacks and a dramatic, cool color shift.\nIt emphasizes texture and form, creating a strong graphic style reminiscent of vintage documentary slide film.",
+            "vi": "Một cấu hình tương phản cao, đầy tâm trạng với màu đen sâu và sự dịch chuyển màu sắc lạnh, đầy kịch tính. Nó nhấn mạnh kết cấu và hình khối, tạo ra một phong cách đồ họa mạnh mẽ gợi nhớ đến phim dương bản tài liệu cổ điển."
+        },
         "type": "color",
         "contrast": "high",
         "saturation": "normal",
@@ -106,8 +134,12 @@ const recipesData = [
     },
     {
         "id": "scl-008",
-        "name": { "vi": "Modern Classic", "en": "Modern Classic" },
-        "description": { "vi": "Một phong cách trong trẻo, sống động và đương đại được xây dựng trên khoa học màu sắc hiện đại. Nó mang lại màu sắc phong phú, dễ chịu với sự chuyển tông mượt mà, là một lựa chọn linh hoạt cho việc chụp ảnh hàng ngày, từ chân dung đến sản phẩm.", "en": "A clean, vibrant, and contemporary style built on modern color science. It delivers rich, pleasing colors with smooth tonal transitions, making it a versatile choice for everyday shooting, from portraits to products." },
+        "name": { "vi": "SCL-008: Modern Classic", "en": "SCL-008: Modern Classic" }, // Updated name format
+        "formattedName": "SCL-008-Modern Classic", // Formatted name
+        "description": {
+            "en": "A clean, vibrant, and contemporary style built on modern color science.\nIt delivers rich, pleasing colors with smooth tonal transitions, making it a versatile choice for everyday shooting, from portraits to products.",
+            "vi": "Một phong cách trong trẻo, sống động và đương đại được xây dựng trên khoa học màu sắc hiện đại. Nó mang lại màu sắc phong phú, dễ chịu với sự chuyển tông mượt mà, là một lựa chọn linh hoạt cho việc chụp ảnh hàng ngày, từ chân dung đến sản phẩm."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -121,8 +153,12 @@ const recipesData = [
     },
     {
         "id": "scl-009",
-        "name": { "vi": "Urban Teal", "en": "Urban Teal" },
-        "description": { "vi": "Một cấu hình màu dịu, độ bão hòa thấp với sắc xanh mòng két (cyan-teal) đặc trưng ở vùng tối và trung bình. Nó tạo ra một tâm trạng tinh tế, nhẹ nhàng và hơi u buồn, hoàn hảo cho nhiếp ảnh đường phố và khám phá đô thị.", "en": "A muted, low-saturation color profile with a distinctive cyan-teal cast in the shadows and mid-tones. It creates a subtle, gentle, and slightly melancholic mood, perfect for street photography and urban exploration." },
+        "name": { "vi": "SCL-009: Urban Teal", "en": "SCL-009: Urban Teal" }, // Updated name format
+        "formattedName": "SCL-009-Urban Teal", // Formatted name
+        "description": {
+            "en": "A muted, low-saturation color profile with a distinctive cyan-teal cast in the shadows and mid-tones.\nIt creates a subtle, gentle, and slightly melancholic mood, perfect for street photography and urban exploration.",
+            "vi": "Một cấu hình màu dịu, độ bão hòa thấp với sắc xanh mòng két (cyan-teal) đặc trưng ở vùng tối và trung bình. Nó tạo ra một tâm trạng tinh tế, nhẹ nhàng và hơi u buồn, hoàn hảo cho nhiếp ảnh đường phố và khám phá đô thị."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "low",
@@ -136,8 +172,12 @@ const recipesData = [
     },
     {
         "id": "scl-010",
-        "name": { "vi": "Cinema Verde", "en": "Cinema Verde" },
-        "description": { "vi": "Một phong cách điện ảnh với độ bão hòa rất thấp và một chút sắc xanh lá tinh tế, được thiết kế để mô phỏng phim điện ảnh. Nó cung cấp một nền phẳng, trung tính, lý tưởng cho các cảnh quay đòi hỏi cảm giác mất bão hòa, đầy không khí.", "en": "A cinematic style with very low saturation and a subtle green tint, designed to emulate motion picture film. It provides a flat, neutral base, ideal for shots requiring a desaturated, atmospheric feel." },
+        "name": { "vi": "SCL-010: Cinema Verde", "en": "SCL-010: Cinema Verde" }, // Updated name format
+        "formattedName": "SCL-010-Cinema Verde", // Formatted name
+        "description": {
+            "en": "A cinematic style with very low saturation and a subtle green tint, designed to emulate motion picture film.\nIt provides a flat, neutral base, ideal for shots requiring a desaturated, atmospheric feel.",
+            "vi": "Một phong cách điện ảnh với độ bão hòa rất thấp và một chút sắc xanh lá tinh tế, được thiết kế để mô phỏng phim điện ảnh. Nó cung cấp một nền phẳng, trung tính, lý tưởng cho các cảnh quay đòi hỏi cảm giác mất bão hòa, đầy không khí."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "very-low",
@@ -151,8 +191,12 @@ const recipesData = [
     },
     {
         "id": "scl-011",
-        "name": { "vi": "Midnight Halogen", "en": "Midnight Halogen" },
-        "description": { "vi": "Một công thức chuyên dụng cho ban đêm, biến đổi ánh đèn nhân tạo của thành phố thành các màu xanh dương và xanh mòng két rực rỡ, trong khi vẫn kiểm soát tốt vùng sáng. Nó tạo ra một thẩm mỹ tương lai, lấy cảm hứng từ cyberpunk.", "en": "A night-specific formula that transforms artificial city lights into vibrant blues and cyans, while maintaining good highlight control. It creates a futuristic, cyberpunk-inspired aesthetic." },
+        "name": { "vi": "SCL-011: Midnight Halogen", "en": "SCL-011: Midnight Halogen" }, // Updated name format
+        "formattedName": "SCL-011-Midnight Halogen", // Formatted name
+        "description": {
+            "en": "A night-specific formula that transforms artificial city lights into vibrant blues and cyans, while maintaining good highlight control.\nIt creates a futuristic, cyberpunk-inspired aesthetic.",
+            "vi": "Một công thức chuyên dụng cho ban đêm, biến đổi ánh đèn nhân tạo của thành phố thành các màu xanh dương và xanh mòng két rực rỡ, trong khi vẫn kiểm soát tốt vùng sáng. Nó tạo ra một thẩm mỹ tương lai, lấy cảm hứng từ cyberpunk."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -166,8 +210,12 @@ const recipesData = [
     },
     {
         "id": "scl-012",
-        "name": { "vi": "Amber Glow", "en": "Amber Glow" },
-        "description": { "vi": "Một cấu hình ấm áp, nhẹ nhàng và hoài niệm với sắc hổ phách mềm mại. Nó xuất sắc trong việc tạo ra cảm giác ấm áp và thân mật, hoàn hảo cho chân dung giờ vàng, ảnh gia đình và các cảnh quay mang hơi hướng cổ điển.", "en": "A warm, soft, and nostalgic profile with a gentle amber cast. It excels at creating a cozy and intimate feel, perfect for golden hour portraits, family photos, and vintage-inspired shots." },
+        "name": { "vi": "SCL-012: Amber Glow", "en": "SCL-012: Amber Glow" }, // Updated name format
+        "formattedName": "SCL-012-Amber Glow", // Formatted name
+        "description": {
+            "en": "A warm, soft, and nostalgic profile with a gentle amber cast.\nIt excels at creating a cozy and intimate feel, perfect for golden hour portraits, family photos, and vintage-inspired shots.",
+            "vi": "Một cấu hình ấm áp, nhẹ nhàng và hoài niệm với sắc hổ phách mềm mại. Nó xuất sắc trong việc tạo ra cảm giác ấm áp và thân mật, hoàn hảo cho chân dung giờ vàng, ảnh gia đình và các cảnh quay mang hơi hướng cổ điển."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -181,8 +229,12 @@ const recipesData = [
     },
     {
         "id": "scl-013",
-        "name": { "vi": "Flatiron Mist", "en": "Flatiron Mist" },
-        "description": { "vi": "Một cấu hình cực kỳ linh hoạt, có độ tương phản thấp, sử dụng gamma S-Log để tối đa hóa dải tần nhạy sáng. Nó tạo ra một hình ảnh phẳng, mềm mại với màu sắc phong phú, hoàn hảo cho điều kiện ánh sáng gắt hoặc làm nền tảng vững chắc cho việc hậu kỳ.", "en": "An incredibly versatile, low-contrast profile that utilizes an S-Log gamma to maximize dynamic range. It produces a flat, soft image with rich colors, perfect for harsh lighting conditions or as a robust base for post-production." },
+        "name": { "vi": "SCL-013: Flatiron Mist", "en": "SCL-013: Flatiron Mist" }, // Updated name format
+        "formattedName": "SCL-013-Flatiron Mist", // Formatted name
+        "description": {
+            "en": "An incredibly versatile, low-contrast profile that utilizes an S-Log gamma to maximize dynamic range.\nIt produces a flat, soft image with rich colors, perfect for harsh lighting conditions or as a robust base for post-production.",
+            "vi": "Một cấu hình cực kỳ linh hoạt, có độ tương phản thấp, sử dụng gamma S-Log để tối đa hóa dải tần nhạy sáng. Nó tạo ra một hình ảnh phẳng, mềm mại với màu sắc phong phú, hoàn hảo cho điều kiện ánh sáng gắt hoặc làm nền tảng vững chắc cho việc hậu kỳ."
+        },
         "type": "color",
         "contrast": "low",
         "saturation": "normal",
@@ -196,8 +248,12 @@ const recipesData = [
     },
     {
         "id": "scl-014",
-        "name": { "vi": "Magenta Bloom", "en": "Magenta Bloom" },
-        "description": { "vi": "Một phong cách sống động, mạnh mẽ với tông màu magenta đặc trưng, mô phỏng loại phim dương bản nổi tiếng. Lý tưởng cho phong cảnh và thiên nhiên, làm cho hoa và cảnh hoàng hôn trở nên nổi bật với màu sắc dữ dội, đầy kịch tính.", "en": "A vibrant, powerful style with a distinctive magenta cast, emulating a popular slide film. Ideal for landscapes and nature, making flowers and sunsets pop with intense, dramatic colors." },
+        "name": { "vi": "SCL-014: Magenta Bloom", "en": "SCL-014: Magenta Bloom" }, // Updated name format
+        "formattedName": "SCL-014-Magenta Bloom", // Formatted name
+        "description": {
+            "en": "A vibrant, powerful style with a distinctive magenta cast, emulating a popular slide film.\nIdeal for landscapes and nature, making flowers and sunsets pop with intense, dramatic colors.",
+            "vi": "Một phong cách sống động, mạnh mẽ với tông màu magenta đặc trưng, mô phỏng loại phim dương bản nổi tiếng. Lý tưởng cho phong cảnh và thiên nhiên, làm cho hoa và cảnh hoàng hôn trở nên nổi bật với màu sắc dữ dội, đầy kịch tính."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "vibrant",
@@ -211,8 +267,12 @@ const recipesData = [
     },
     {
         "id": "scl-015",
-        "name": { "vi": "Vintage Slide", "en": "Vintage Slide" },
-        "description": { "vi": "Một phong cách ấm áp, hơi phai màu với một chút sắc xanh lá-lục trong vùng tối. Nó gợi lên cảm giác như đang xem lại những tấm phim slide cũ của gia đình, hoàn hảo cho chân dung hoài niệm và các cảnh đời thường.", "en": "A warm, slightly faded style with a subtle green-cyan tint in the shadows. It evokes the feeling of looking through old family slide films, perfect for nostalgic portraits and everyday scenes." },
+        "name": { "vi": "SCL-015: Vintage Slide", "en": "SCL-015: Vintage Slide" }, // Updated name format
+        "formattedName": "SCL-015-Vintage Slide", // Formatted name
+        "description": {
+            "en": "A warm, slightly faded style with a subtle green-cyan tint in the shadows.\nIt evokes the feeling of looking through old family slide films, perfect for nostalgic portraits and everyday scenes.",
+            "vi": "Một phong cách ấm áp, hơi phai màu với một chút sắc xanh lá-lục trong vùng tối. Nó gợi lên cảm giác như đang xem lại những tấm phim slide cũ của gia đình, hoàn hảo cho chân dung hoài niệm và các cảnh đời thường."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "faded",
@@ -226,8 +286,12 @@ const recipesData = [
     },
     {
         "id": "scl-016",
-        "name": { "vi": "Everyday Natural", "en": "Everyday Natural" },
-        "description": { "vi": "Một cấu hình trong trẻo, cân bằng và linh hoạt với độ bão hòa vừa phải và tông màu da tự nhiên. Đây là lựa chọn hàng đầu cho nhiều tình huống, mang lại một cái nhìn chân thực với một chút cảm giác phim ảnh tinh tế.", "en": "A clean, balanced, and versatile profile with moderate saturation and natural skin tones. This is a go-to choice for a wide range of situations, providing an authentic look with a subtle filmic feel." },
+        "name": { "vi": "SCL-016: Everyday Natural", "en": "SCL-016: Everyday Natural" }, // Updated name format
+        "formattedName": "SCL-016-Everyday Natural", // Formatted name
+        "description": {
+            "en": "A clean, balanced, and versatile profile with moderate saturation and natural skin tones.\nThis is a go-to choice for a wide range of situations, providing an authentic look with a subtle filmic feel.",
+            "vi": "Một cấu hình trong trẻo, cân bằng và linh hoạt với độ bão hòa vừa phải và tông màu da tự nhiên. Đây là lựa chọn hàng đầu cho nhiều tình huống, mang lại một cái nhìn chân thực với một chút cảm giác phim ảnh tinh tế."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "moderate",
@@ -241,8 +305,12 @@ const recipesData = [
     },
     {
         "id": "scl-017",
-        "name": { "vi": "Soft Portrait", "en": "Soft Portrait" },
-        "description": { "vi": "Đặc trưng bởi độ tương phản mềm mại và tông màu magenta dịu, công thức này hoàn hảo cho những bức chân dung nịnh mắt. Nó tái tạo tông màu da với chất lượng nhẹ nhàng, mượt mà, tạo ra một vẻ ngoài tinh tế và thanh lịch.", "en": "Characterized by soft contrast and a gentle magenta cast, this formula is perfect for flattering portraits. It renders skin tones with a smooth, delicate quality, creating a refined and elegant look." },
+        "name": { "vi": "SCL-017: Soft Portrait", "en": "SCL-017: Soft Portrait" }, // Updated name format
+        "formattedName": "SCL-017-Soft Portrait", // Formatted name
+        "description": {
+            "en": "Characterized by soft contrast and a gentle magenta cast, this formula is perfect for flattering portraits.\nIt renders skin tones with a smooth, delicate quality, creating a refined and elegant look.",
+            "vi": "Đặc trưng bởi độ tương phản mềm mại và tông màu magenta dịu, công thức này hoàn hảo cho những bức chân dung nịnh mắt. Nó tái tạo tông màu da với chất lượng nhẹ nhàng, mượt mà, tạo ra một vẻ ngoài tinh tế và thanh lịch."
+        },
         "type": "color",
         "contrast": "soft",
         "saturation": "muted",
@@ -256,8 +324,12 @@ const recipesData = [
     },
     {
         "id": "scl-018",
-        "name": { "vi": "Vector Graphic", "en": "Vector Graphic" },
-        "description": { "vi": "Một phong cách táo bạo, tương phản cao với màu sắc siêu bão hòa, gần như nhân tạo và màu đen sâu. Nó tạo ra một phong cách đồ họa mạnh mẽ, lý tưởng cho các chủ thể trừu tượng, kiến trúc hiện đại và nhiếp ảnh thử nghiệm.", "en": "A bold, high-contrast style with super-saturated, almost artificial colors and deep blacks. It creates a strong graphic look, ideal for abstract subjects, modern architecture, and experimental photography." },
+        "name": { "vi": "SCL-018: Vector Graphic", "en": "SCL-018: Vector Graphic" }, // Updated name format
+        "formattedName": "SCL-018-Vector Graphic", // Formatted name
+        "description": {
+            "en": "A bold, high-contrast style with super-saturated, almost artificial colors and deep blacks.\nIt creates a strong graphic look, ideal for abstract subjects, modern architecture, and experimental photography.",
+            "vi": "Một phong cách táo bạo, tương phản cao với màu sắc siêu bão hòa, gần như nhân tạo và màu đen sâu. Nó tạo ra một phong cách đồ họa mạnh mẽ, lý tưởng cho các chủ thể trừu tượng, kiến trúc hiện đại và nhiếp ảnh thử nghiệm."
+        },
         "type": "color",
         "contrast": "high",
         "saturation": "super-saturated",
@@ -271,8 +343,12 @@ const recipesData = [
     },
     {
         "id": "scl-019",
-        "name": { "vi": "Pop Art", "en": "Pop Art" },
-        "description": { "vi": "Một sự bùng nổ của màu sắc. Công thức này đẩy độ bão hòa lên mức tối đa, tạo ra một phong cách siêu rực rỡ, năng lượng cao. Hoàn hảo để tạo ra những tuyên bố táo bạo và ghi lại khía cạnh vui vẻ, tinh nghịch của cuộc sống.", "en": "An explosion of color. This formula pushes saturation to the maximum, creating a super-vibrant, high-energy style. Perfect for making bold statements and capturing the fun, playful side of life." },
+        "name": { "vi": "SCL-019: Pop Art", "en": "SCL-019: Pop Art" }, // Updated name format
+        "formattedName": "SCL-019-Pop Art", // Formatted name
+        "description": {
+            "en": "An explosion of color. This formula pushes saturation to the maximum, creating a super-vibrant, high-energy style.\nPerfect for making bold statements and capturing the fun, playful side of life.",
+            "vi": "Một sự bùng nổ của màu sắc. Công thức này đẩy độ bão hòa lên mức tối đa, tạo ra một phong cách siêu rực rỡ, năng lượng cao. Hoàn hảo để tạo ra những tuyên bố táo bạo và ghi lại khía cạnh vui vẻ, tinh nghịch của cuộc sống."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "maximum",
@@ -286,8 +362,12 @@ const recipesData = [
     },
     {
         "id": "scl-020",
-        "name": { "vi": "Autumn Haze", "en": "Autumn Haze" },
-        "description": { "vi": "Một phiên bản hiện đại của dòng phim ấm cổ điển, sử dụng S-Cinetone cho tông màu mượt mà. Nó mang lại cảm giác ấm cúng, với màu xanh lá và vàng hơi dịu, hoàn hảo để ghi lại tinh hoa của một ngày thu mờ sương.", "en": "A modern take on classic warm film stocks, utilizing S-Cinetone for smooth tones. It delivers a cozy feel, with slightly muted greens and yellows, perfect for capturing the essence of a misty autumn day." },
+        "name": { "vi": "SCL-020: Autumn Haze", "en": "SCL-020: Autumn Haze" }, // Updated name format
+        "formattedName": "SCL-020-Autumn Haze", // Formatted name
+        "description": {
+            "en": "A modern take on classic warm film stocks, utilizing S-Cinetone for smooth tones.\nIt delivers a cozy feel, with slightly muted greens and yellows, perfect for capturing the essence of a misty autumn day.",
+            "vi": "Một phiên bản hiện đại của dòng phim ấm cổ điển, sử dụng S-Cinetone cho tông màu mượt mà. Nó mang lại cảm giác ấm cúng, với màu xanh lá và vàng hơi dịu, hoàn hảo để ghi lại tinh hoa của một ngày thu mờ sương."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "muted",
@@ -301,8 +381,12 @@ const recipesData = [
     },
     {
         "id": "scl-021",
-        "name": { "vi": "Muted Pastels", "en": "Muted Pastels" },
-        "description": { "vi": "Một phong cách nhẹ nhàng và tinh tế với độ bão hòa vừa phải và tông màu mềm mại. Nó linh hoạt cho việc chụp ảnh hàng ngày, mang lại cho hình ảnh một cảm giác yên bình và dễ chịu mà không bị màu sắc lấn át.", "en": "A soft and subtle style with moderate saturation and gentle tones. It's versatile for everyday shooting, lending images a peaceful and pleasant feel without being overwhelmed by color." },
+        "name": { "vi": "SCL-021: Muted Pastels", "en": "SCL-021: Muted Pastels" }, // Updated name format
+        "formattedName": "SCL-021-Muted Pastels", // Formatted name
+        "description": {
+            "en": "A soft and subtle style with moderate saturation and gentle tones.\nIt's versatile for everyday shooting, lending images a peaceful and pleasant feel without being overwhelmed by color.",
+            "vi": "Một phong cách nhẹ nhàng và tinh tế với độ bão hòa vừa phải và tông màu mềm mại. Nó linh hoạt cho việc chụp ảnh hàng ngày, mang lại cho hình ảnh một cảm giác yên bình và dễ chịu mà không bị màu sắc lấn át."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "moderate",
@@ -316,8 +400,12 @@ const recipesData = [
     },
     {
         "id": "scl-022",
-        "name": { "vi": "Neutral Standard", "en": "Neutral Standard" },
-        "description": { "vi": "Một cấu hình trung tính, chân thực được thiết kế cho sự chính xác. Nó cung cấp một cái nhìn trong trẻo, tiêu chuẩn với sự thay đổi màu sắc tối thiểu, làm cho nó trở thành một nền tảng tuyệt vời, đáng tin cậy cho bất kỳ loại nhiếp ảnh nào.", "en": "A neutral, true-to-life profile designed for accuracy. It provides a clean, standard look with minimal color shifts, making it a great, reliable base for any type of photography." },
+        "name": { "vi": "SCL-022: Neutral Standard", "en": "SCL-022: Neutral Standard" }, // Updated name format
+        "formattedName": "SCL-022-Neutral Standard", // Formatted name
+        "description": {
+            "en": "A neutral, true-to-life profile designed for accuracy.\nIt provides a clean, standard look with minimal color shifts, making it a great, reliable base for any type of photography.",
+            "vi": "Một cấu hình trung tính, chân thực được thiết kế cho sự chính xác. Nó cung cấp một cái nhìn trong trẻo, tiêu chuẩn với sự thay đổi màu sắc tối thiểu, làm cho nó trở thành một nền tảng tuyệt vời, đáng tin cậy cho bất kỳ loại nhiếp ảnh nào."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "low",
@@ -331,8 +419,12 @@ const recipesData = [
     },
     {
         "id": "scl-023",
-        "name": { "vi": "Alpine Cool", "en": "Alpine Cool" },
-        "description": { "vi": "Một công thức tông màu lạnh với nhiệt độ Kelvin cao, mang lại cho hình ảnh một sắc xanh trong trẻo, sắc nét. Rất phù hợp để nhấn mạnh ánh sáng lạnh trong các cảnh quan đô thị hoặc núi non, tạo ra một phong cách thẩm mỹ sạch sẽ và sắc sảo.", "en": "A cool-toned formula with a high Kelvin temperature, giving images a clean, crisp blue cast. It's well-suited for emphasizing cold light in urban or mountain landscapes, creating a clean and edgy aesthetic." },
+        "name": { "vi": "SCL-023: Alpine Cool", "en": "SCL-023: Alpine Cool" }, // Updated name format
+        "formattedName": "SCL-023-Alpine Cool", // Formatted name
+        "description": {
+            "en": "A cool-toned formula with a high Kelvin temperature, giving images a clean, crisp blue cast.\nIt's well-suited for emphasizing cold light in urban or mountain landscapes, creating a clean and edgy aesthetic.",
+            "vi": "Một công thức tông màu lạnh với nhiệt độ Kelvin cao, mang lại cho hình ảnh một sắc xanh trong trẻo, sắc nét. Rất phù hợp để nhấn mạnh ánh sáng lạnh trong các cảnh quan đô thị hoặc núi non, tạo ra một phong cách thẩm mỹ sạch sẽ và sắc sảo."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -346,8 +438,12 @@ const recipesData = [
     },
     {
         "id": "scl-024",
-        "name": { "vi": "Arctic Negative", "en": "Arctic Negative" },
-        "description": { "vi": "Đẩy cân bằng trắng đến mức lạnh nhất, công thức này tạo ra một phong cách độc đáo, cách điệu với sắc xanh lam-lục sâu. Nó hoàn hảo cho các bức ảnh thử nghiệm, tâm trạng và đầy không khí.", "en": "Pushing white balance to its coldest, this formula creates a unique, stylized look with a deep blue-green cast. It's perfect for experimental, moody, and atmospheric photography." },
+        "name": { "vi": "SCL-024: Arctic Negative", "en": "SCL-024: Arctic Negative" }, // Updated name format
+        "formattedName": "SCL-024-Arctic Negative", // Formatted name
+        "description": {
+            "en": "Pushing white balance to its coldest, this formula creates a unique, stylized look with a deep blue-green cast.\nIt's perfect for experimental, moody, and atmospheric photography.",
+            "vi": "Đẩy cân bằng trắng đến mức lạnh nhất, công thức này tạo ra một phong cách độc đáo, cách điệu với sắc xanh lam-lục sâu. Nó hoàn hảo cho các bức ảnh thử nghiệm, tâm trạng và đầy không khí."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -361,8 +457,12 @@ const recipesData = [
     },
     {
         "id": "scl-025",
-        "name": { "vi": "Saturated Cinema", "en": "Saturated Cinema" },
-        "description": { "vi": "Một phong cách điện ảnh có độ bão hòa cao và mạnh mẽ, khác với phiên bản Fuji. Nó sử dụng không gian màu rộng để tạo ra màu sắc sâu, phong phú với đường cong gamma điện ảnh, rất phù hợp cho kể chuyện bằng hình ảnh sống động.", "en": "A powerful, high-saturation cinematic style, distinct from Fuji emulations. It utilizes a wide color space to produce deep, rich colors with a filmic gamma curve, well-suited for vivid visual storytelling." },
+        "name": { "vi": "SCL-025: Saturated Cinema", "en": "SCL-025: Saturated Cinema" }, // Updated name format
+        "formattedName": "SCL-025-Saturated Cinema", // Formatted name
+        "description": {
+            "en": "A powerful, high-saturation cinematic style, distinct from Fuji emulations.\nIt utilizes a wide color space to produce deep, rich colors with a filmic gamma curve, well-suited for vivid visual storytelling.",
+            "vi": "Một phong cách điện ảnh có độ bão hòa cao và mạnh mẽ, khác với phiên bản Fuji. Nó sử dụng không gian màu rộng để tạo ra màu sắc sâu, phong phú với đường cong gamma điện ảnh, rất phù hợp cho kể chuyện bằng hình ảnh sống động."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "high",
@@ -376,8 +476,12 @@ const recipesData = [
     },
     {
         "id": "scl-026",
-        "name": { "vi": "HDR Cinema", "en": "HDR Cinema" },
-        "description": { "vi": "Tận dụng HLG (Hybrid Log-Gamma), công thức này ghi lại dải tần nhạy sáng rộng với độ bão hòa cao. Nó tạo ra một hình ảnh sống động, tác động mạnh, vừa mang cảm giác điện ảnh vừa siêu thực, lý tưởng cho các cảnh quay năng lượng cao.", "en": "Leveraging HLG (Hybrid Log-Gamma), this formula captures wide dynamic range with high saturation. It produces a vivid, impactful image that feels both cinematic and surreal, ideal for high-energy shots." },
+        "name": { "vi": "SCL-026: HDR Cinema", "en": "SCL-026: HDR Cinema" }, // Updated name format
+        "formattedName": "SCL-026-HDR Cinema", // Formatted name
+        "description": {
+            "en": "Leveraging HLG (Hybrid Log-Gamma), this formula captures wide dynamic range with high saturation.\nIt produces a vivid, impactful image that feels both cinematic and surreal, ideal for high-energy shots.",
+            "vi": "Tận dụng HLG (Hybrid Log-Gamma), công thức này ghi lại dải tần nhạy sáng rộng với độ bão hòa cao. Nó tạo ra một hình ảnh sống động, tác động mạnh, vừa mang cảm giác điện ảnh vừa siêu thực, lý tưởng cho các cảnh quay năng lượng cao."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "high",
@@ -391,8 +495,12 @@ const recipesData = [
     },
     {
         "id": "scl-027",
-        "name": { "vi": "Daylight Cinema", "en": "Daylight Cinema" },
-        "description": { "vi": "Một phong cách điện ảnh hiện đại, trong trẻo dựa trên S-Cinetone. Nó được thiết kế cho ánh sáng ban ngày, mang lại tông màu da đẹp, độ bão hòa cao và cảm giác chuyên nghiệp, bóng bẩy ngay từ máy ảnh.", "en": "A modern, clean cinematic style based on S-Cinetone. It's designed for daylight conditions, delivering beautiful skin tones, high saturation, and a professional, polished feel straight out of camera." },
+        "name": { "vi": "SCL-027: Daylight Cinema", "en": "SCL-027: Daylight Cinema" }, // Updated name format
+        "formattedName": "SCL-027-Daylight Cinema", // Formatted name
+        "description": {
+            "en": "A modern, clean cinematic style based on S-Cinetone.\nIt's designed for daylight conditions, delivering beautiful skin tones, high saturation, and a professional, polished feel straight out of camera.",
+            "vi": "Một phong cách điện ảnh hiện đại, trong trẻo dựa trên S-Cinetone. Nó được thiết kế cho ánh sáng ban ngày, mang lại tông màu da đẹp, độ bão hòa cao và cảm giác chuyên nghiệp, bóng bẩy ngay từ máy ảnh."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "high",
@@ -406,8 +514,12 @@ const recipesData = [
     },
     {
         "id": "scl-028",
-        "name": { "vi": "Phoenix Fire", "en": "Phoenix Fire" },
-        "description": { "vi": "Một phong cách thử nghiệm và mạnh mẽ với độ bão hòa cực cao và tông màu ấm rõ rệt. Nó tạo ra màu đỏ và cam rực lửa, hoàn hảo cho nhiếp ảnh táo bạo, trừu tượng và có tác động mạnh.", "en": "An experimental and powerful style with ultra-high saturation and pronounced warm tones. It creates fiery reds and oranges, perfect for bold, abstract, and high-impact photography." },
+        "name": { "vi": "SCL-028: Phoenix Fire", "en": "SCL-028: Phoenix Fire" }, // Updated name format
+        "formattedName": "SCL-028-Phoenix Fire", // Formatted name
+        "description": {
+            "en": "An experimental and powerful style with ultra-high saturation and pronounced warm tones.\nIt creates fiery reds and oranges, perfect for bold, abstract, and high-impact photography.",
+            "vi": "Một phong cách thử nghiệm và mạnh mẽ với độ bão hòa cực cao và tông màu ấm rõ rệt. Nó tạo ra màu đỏ và cam rực lửa, hoàn hảo cho nhiếp ảnh táo bạo, trừu tượng và có tác động mạnh."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "extreme",
@@ -421,8 +533,12 @@ const recipesData = [
     },
     {
         "id": "scl-029",
-        "name": { "vi": "Hollywood Cool", "en": "Hollywood Cool" },
-        "description": { "vi": "Một công thức điện ảnh cân bằng cho ánh sáng tungsten với thiên hướng xanh lam-lục mát mẻ. Dựa trên S-Cinetone, nó mang lại tông màu mượt mà và một vẻ ngoài tinh xảo, chuyên nghiệp gợi nhớ đến các bộ phim Hollywood cổ điển.", "en": "A balanced cinematic formula for tungsten lighting with a cool blue-green bias. Based on S-Cinetone, it delivers smooth tones and a sophisticated, professional look reminiscent of classic Hollywood films." },
+        "name": { "vi": "SCL-029: Hollywood Cool", "en": "SCL-029: Hollywood Cool" }, // Updated name format
+        "formattedName": "SCL-029-Hollywood Cool", // Formatted name
+        "description": {
+            "en": "A balanced cinematic formula for tungsten lighting with a cool blue-green bias.\nBased on S-Cinetone, it delivers smooth tones and a sophisticated, professional look reminiscent of classic Hollywood films.",
+            "vi": "Một công thức điện ảnh cân bằng cho ánh sáng tungsten với thiên hướng xanh lam-lục mát mẻ. Dựa trên S-Cinetone, nó mang lại tông màu mượt mà và một vẻ ngoài tinh xảo, chuyên nghiệp gợi nhớ đến các bộ phim Hollywood cổ điển."
+        },
         "type": "color",
         "contrast": "normal",
         "saturation": "normal",
@@ -436,8 +552,12 @@ const recipesData = [
     },
     {
         "id": "scl-040",
-        "name": { "vi": "Graphite Standard", "en": "Graphite Standard" },
-        "description": { "vi": "Một phong cách đơn sắc cân bằng, đa dụng với dải tông màu đầy đủ và các tông màu trung bình trong trẻo. Đây là điểm khởi đầu hoàn hảo cho nhiếp ảnh đen trắng, mang lại kết quả cổ điển, vượt thời gian cho mọi chủ thể.", "en": "A balanced, versatile monochrome style with a full tonal range and clean mid-tones. This is a perfect starting point for black and white photography, delivering classic, timeless results for any subject." },
+        "name": { "vi": "SCL-040: Graphite Standard", "en": "SCL-040: Graphite Standard" }, // Updated name format
+        "formattedName": "SCL-040-Graphite Standard", // Formatted name
+        "description": {
+            "en": "A balanced, versatile monochrome style with a full tonal range and clean mid-tones.\nThis is a perfect starting point for black and white photography, delivering classic, timeless results for any subject.",
+            "vi": "Một phong cách đơn sắc cân bằng, đa dụng với dải tông màu đầy đủ và các tông màu trung bình trong trẻo. Đây là điểm khởi đầu hoàn hảo cho nhiếp ảnh đen trắng, mang lại kết quả cổ điển, vượt thời gian cho mọi chủ thể."
+        },
         "type": "bw",
         "contrast": "normal",
         "saturation": "normal",
@@ -451,8 +571,12 @@ const recipesData = [
     },
     {
         "id": "scl-041",
-        "name": { "vi": "Obsidian Contrast", "en": "Obsidian Contrast" },
-        "description": { "vi": "Một phong cách đơn sắc kịch tính, tương phản cao với màu đen sâu như mực và màu trắng sắc nét. Lý tưởng cho các chi tiết kiến trúc, nhiếp ảnh đường phố mạnh mẽ và làm nổi bật chủ thể với sự rõ ràng ấn tượng.", "en": "A dramatic, high-contrast monochrome style with inky blacks and crisp whites. Ideal for architectural details, powerful street photography, and making subjects stand out with impressive clarity." },
+        "name": { "vi": "SCL-041: Obsidian Contrast", "en": "SCL-041: Obsidian Contrast" }, // Updated name format
+        "formattedName": "SCL-041-Obsidian Contrast", // Formatted name
+        "description": {
+            "en": "A dramatic, high-contrast monochrome style with inky blacks and crisp whites.\nIdeal for architectural details, powerful street photography, and making subjects stand out with impressive clarity.",
+            "vi": "Một phong cách đơn sắc kịch tính, tương phản cao với màu đen sâu như mực và màu trắng sắc nét. Lý tưởng cho các chi tiết kiến trúc, nhiếp ảnh đường phố mạnh mẽ và làm nổi bật chủ thể với sự rõ ràng ấn tượng."
+        },
         "type": "bw",
         "contrast": "high",
         "saturation": "normal",
@@ -466,12 +590,16 @@ const recipesData = [
     },
     {
         "id": "scl-042",
-        "name": { "vi": "Newsprint Grit", "en": "Newsprint Grit" },
-        "description": { "vi": "Một phong cách mạnh mẽ, tương phản cao mô phỏng cảm giác của phim đen trắng \"pushed\" được các nhà báo ảnh sử dụng. Nó có hạt, sắc nét và đầy cá tính, hoàn hảo để ghi lại những khoảnh khắc thô mộc, không qua chỉnh sửa.", "en": "A powerful, high-contrast style that emulates the feel of 'pushed' black and white film used by photojournalists. It's grainy, sharp, and full of character, perfect for capturing raw, unedited moments." },
+        "name": { "vi": "SCL-042: Newsprint Grit", "en": "SCL-042: Newsprint Grit" }, // Updated name format
+        "formattedName": "SCL-042-Newsprint Grit", // Formatted name
+        "description": {
+            "en": "A powerful, high-contrast style that emulates the feel of 'pushed' black and white film used by photojournalists.\nIt's grainy, sharp, and full of character, perfect for capturing raw, unedited moments.",
+            "vi": "Một phong cách mạnh mẽ, tương phản cao mô phỏng cảm giác của phim đen trắng \"pushed\" được các nhà báo ảnh sử dụng. Nó có hạt, sắc nét và đầy cá tính, hoàn hảo để ghi lại những khoảnh khắc thô mộc, không qua chỉnh sửa."
+        },
         "type": "bw",
         "contrast": "high",
         "saturation": "normal",
-        "tags": ["powerful", "high-contrast", "pushed-black-and-white-film", "photojournalist", "grainy", "sharp", "character", "raw", "unedited-moments"],
+        "tags": ["powerful", "high-contrast", "pushed-black-and-white-film", "photojournalism", "grainy", "sharp", "character", "raw", "unedited-moments"],
         "whiteBalance": "5500K, A3-G2",
         "settings": { "Black level": "+5", "Gamma": "Still", "Black Gamma": "Wide -7", "Knee": "Manual 77.5% +2", "Color Mode": "Black & White", "Saturation": "+24", "Color Phase": "0" },
         "colorDepth": { "R": "-4", "G": "-1", "B": "+6", "C": "+5", "M": "-3", "Y": "-3" },
@@ -481,8 +609,12 @@ const recipesData = [
     },
     {
         "id": "scl-043",
-        "name": { "vi": "Silver Gelatin", "en": "Silver Gelatin" },
-        "description": { "vi": "Một cấu hình tương phản phẳng, mềm mại với các tông màu trung bình phong phú và sự chuyển tiếp mượt mà. Nó mô phỏng vẻ ngoài của một bản in phòng tối cổ điển trên giấy bạc gelatin, lý tưởng cho chân dung nghệ thuật và các bố cục tinh tế.", "en": "A flat, soft-contrast profile with rich mid-tones and smooth transitions. It emulates the look of a classic darkroom print on silver gelatin paper, ideal for fine-art portraits and subtle compositions." },
+        "name": { "vi": "SCL-043: Silver Gelatin", "en": "SCL-043: Silver Gelatin" }, // Updated name format
+        "formattedName": "SCL-043-Silver Gelatin", // Formatted name
+        "description": {
+            "en": "A flat, soft-contrast profile with rich mid-tones and smooth transitions.\nIt emulates the look of a classic darkroom print on silver gelatin paper, ideal for fine-art portraits and subtle compositions.",
+            "vi": "Một cấu hình tương phản phẳng, mềm mại với các tông màu trung bình phong phú và sự chuyển tiếp mượt mà. Nó mô phỏng vẻ ngoài của một bản in phòng tối cổ điển trên giấy bạc gelatin, lý tưởng cho chân dung nghệ thuật và các bố cục tinh tế."
+        },
         "type": "bw",
         "contrast": "soft",
         "saturation": "normal",
@@ -496,8 +628,12 @@ const recipesData = [
     },
     {
         "id": "scl-044",
-        "name": { "vi": "Crystal Clear", "en": "Crystal Clear" },
-        "description": { "vi": "Một phong cách đen trắng trong trẻo, sắc nét và có tông màu lạnh. Nó có hạt mịn và độ trong cao, hoàn hảo cho các chủ thể kỹ thuật, kiến trúc và chân dung nơi chi tiết là quan trọng nhất.", "en": "A clean, crisp, and cool-toned black and white style. It features fine grain and high clarity, perfect for technical subjects, architecture, and portraits where detail is paramount." },
+        "name": { "vi": "SCL-044: Crystal Clear", "en": "SCL-044: Crystal Clear" }, // Updated name format
+        "formattedName": "SCL-044-Crystal Clear", // Formatted name
+        "description": {
+            "en": "A clean, crisp, and cool-toned black and white style.\nIt features fine grain and high clarity, perfect for technical subjects, architecture, and portraits where detail is paramount.",
+            "vi": "Một phong cách đen trắng trong trẻo, sắc nét và có tông màu lạnh. Nó có hạt mịn và độ trong cao, hoàn hảo cho các chủ thể kỹ thuật, kiến trúc và chân dung nơi chi tiết là quan trọng nhất."
+        },
         "type": "bw",
         "contrast": "normal",
         "saturation": "normal",
@@ -511,8 +647,12 @@ const recipesData = [
     },
     {
         "id": "scl-045",
-        "name": { "vi": "Classic Reportage", "en": "Classic Reportage" },
-        "description": { "vi": "Một phong cách đa dụng, có độ tương phản trung bình với cấu trúc hạt cổ điển. Đây là lựa chọn \"chủ lực\" của nhiếp ảnh đen trắng, lý tưởng cho phóng sự, nhiếp ảnh đường phố và ghi lại cuộc sống hàng ngày với cảm giác chân thực.", "en": "A versatile, medium-contrast style with a classic grain structure. This is a black and white 'workhorse' choice, ideal for photojournalism, street photography, and capturing everyday life with an authentic feel." },
+        "name": { "vi": "SCL-045: Classic Reportage", "en": "SCL-045: Classic Reportage" }, // Updated name format
+        "formattedName": "SCL-045-Classic Reportage", // Formatted name
+        "description": {
+            "en": "A versatile, medium-contrast style with a classic grain structure.\nThis is a black and white 'workhorse' choice, ideal for photojournalism, street photography, and capturing everyday life with an authentic feel.",
+            "vi": "Một phong cách đa dụng, có độ tương phản trung bình với cấu trúc hạt cổ điển. Đây là lựa chọn \"chủ lực\" của nhiếp ảnh đen trắng, lý tưởng cho phóng sự, nhiếp ảnh đường phố và ghi lại cuộc sống hàng ngày với cảm giác chân thực."
+        },
         "type": "bw",
         "contrast": "medium",
         "saturation": "normal",
@@ -526,8 +666,12 @@ const recipesData = [
     },
     {
         "id": "scl-046",
-        "name": { "vi": "Noir Film", "en": "Noir Film" },
-        "description": { "vi": "Một phong cách đen trắng có độ tương phản rất cao, đầy kịch tính với màu đen sâu, bị nén và màu trắng sáng. Nó gợi lên phong cách của phim noir cổ điển, hoàn hảo để tạo ra sự bí ẩn, kịch tính và các bố cục đồ họa.", "en": "A very high-contrast, dramatic black and white style with deep, crushed blacks and bright whites. It evokes the classic film noir aesthetic, perfect for creating mystery, drama, and graphic compositions." },
+        "name": { "vi": "SCL-046: Noir Film", "en": "SCL-046: Noir Film" }, // Updated name format
+        "formattedName": "SCL-046-Noir Film", // Formatted name
+        "description": {
+            "en": "A very high-contrast, dramatic black and white style with deep, crushed blacks and bright whites.\nIt evokes the classic film noir aesthetic, perfect for creating mystery, drama, and graphic compositions.",
+            "vi": "Một phong cách đen trắng có độ tương phản rất cao, đầy kịch tính với màu đen sâu, bị nén và màu trắng sáng. Nó gợi lên phong cách của phim noir cổ điển, hoàn hảo để tạo ra sự bí ẩn, kịch tính và các bố cục đồ họa."
+        },
         "type": "bw",
         "contrast": "very-high",
         "saturation": "normal",
@@ -541,8 +685,12 @@ const recipesData = [
     },
     {
         "id": "scl-047",
-        "name": { "vi": "Low Light Grain", "en": "Low Light Grain" },
-        "description": { "vi": "Được thiết kế để mô phỏng phim tốc độ cao, công thức này sử dụng gamma điện ảnh để xử lý độ tương phản trong khi khuyến khích hạt. Nó hoàn hảo cho các tình huống thiếu sáng, thêm kết cấu và không khí cho ảnh.", "en": "Designed to emulate high-speed film, this formula uses a cinematic gamma to handle contrast while encouraging grain. It's perfect for low-light situations, adding texture and atmosphere to shots." },
+        "name": { "vi": "SCL-047: Low Light Grain", "en": "SCL-047: Low Light Grain" }, // Updated name format
+        "formattedName": "SCL-047-Low Light Grain", // Formatted name
+        "description": {
+            "en": "Designed to emulate high-speed film, this formula uses a cinematic gamma to handle contrast while encouraging grain.\nIt's perfect for low-light situations, adding texture and atmosphere to shots.",
+            "vi": "Được thiết kế để mô phỏng phim tốc độ cao, công thức này sử dụng gamma điện ảnh để xử lý độ tương phản trong khi khuyến khích hạt. Nó hoàn hảo cho các tình huống thiếu sáng, thêm kết cấu và không khí cho ảnh."
+        },
         "type": "bw",
         "contrast": "normal",
         "saturation": "normal",
@@ -556,8 +704,12 @@ const recipesData = [
     },
     {
         "id": "scl-048",
-        "name": { "vi": "Modern B&W", "en": "Modern B&W" },
-        "description": { "vi": "Một phong cách đen trắng đương đại sử dụng gamma S-Cinetone để tạo ra sự chuyển tông mượt mà, đẹp mắt. Nó mang lại màu đen sâu mà không quá gắt, rất phù hợp cho chân dung hiện đại và nghệ thuật.", "en": "A contemporary black and white style that utilizes S-Cinetone gamma for smooth, beautiful tonal transitions. It delivers deep blacks without being overly harsh, well-suited for modern portraits and fine art." },
+        "name": { "vi": "SCL-048: Modern B&W", "en": "SCL-048: Modern B&W" }, // Updated name format
+        "formattedName": "SCL-048-Modern B&W", // Formatted name
+        "description": {
+            "en": "A contemporary black and white style that utilizes S-Cinetone gamma for smooth, beautiful tonal transitions.\nIt delivers deep blacks without being overly harsh, well-suited for modern portraits and fine art.",
+            "vi": "Một phong cách đen trắng đương đại sử dụng gamma S-Cinetone để tạo ra sự chuyển tông mượt mà, đẹp mắt. Nó mang lại màu đen sâu mà không quá gắt, rất phù hợp cho chân dung hiện đại và nghệ thuật."
+        },
         "type": "bw",
         "contrast": "normal",
         "saturation": "normal",
@@ -571,8 +723,12 @@ const recipesData = [
     },
     {
         "id": "scl-049",
-        "name": { "vi": "Ortho Portrait", "en": "Ortho Portrait" },
-        "description": { "vi": "Mô phỏng phim orthochromatic, loại phim không nhạy với ánh sáng đỏ. Điều này dẫn đến tông màu da và môi bị tối đi, tạo ra một phong cách chân dung độc đáo, cổ điển và thường đầy kịch tính.", "en": "Emulating orthochromatic film, which is insensitive to red light. This results in darkened skin and lip tones, creating a unique, vintage, and often dramatic portrait style." },
+        "name": { "vi": "SCL-049: Ortho Portrait", "en": "SCL-049: Ortho Portrait" }, // Updated name format
+        "formattedName": "SCL-049-Ortho Portrait", // Formatted name
+        "description": {
+            "en": "Emulating orthochromatic film, which is insensitive to red light.\nThis results in darkened skin and lip tones, creating a unique, vintage, and often dramatic portrait style.",
+            "vi": "Mô phỏng phim orthochromatic, loại phim không nhạy với ánh sáng đỏ. Điều này dẫn đến tông màu da và môi bị tối đi, tạo ra một phong cách chân dung độc đáo, cổ điển và thường đầy kịch tính."
+        },
         "type": "color", // This one is tricky, it's a color effect but often used for B&W-like portraits
         "contrast": "normal",
         "saturation": "normal",
