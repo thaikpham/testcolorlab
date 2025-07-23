@@ -301,7 +301,6 @@ gtag('config', 'G-QKGB56ZKQD');
 <button data-view="recipeFormulas" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navRecipeFormulas"></button>
 <button data-view="featuredPhotos" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navFeaturedPhotos"></button>
 <button data-view="explain" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navExplain"></button>
-</nav>
 </div>
 </div>
 
@@ -414,6 +413,10 @@ axisTonality: {vi: "Tương phản (← Mềm | Cứng →)", en: "Tonality (←
 axisSaturation: {vi: "Độ bão hòa (← Thấp | Cao →)", en: "Saturation (← Low | High →)"},
 axisChroma: {vi: "Độ sâu màu (← Thấp | Cao →)", en: "Chroma Depth (← Low | High →)"},
 backToListBtn: {vi: "← Quay lại danh sách", en: "← Back to list"},
+aiExplainRecipeBtn: {vi: "✨ Giải thích bằng AI", en: "✨ Explain with AI"},
+aiExplanationTitle: {vi: "Giải thích công thức bằng AI:", en: "AI Recipe Explanation:"},
+aiExplanationLoading: {vi: "AI đang phân tích công thức...", en: "AI is analyzing the recipe..."},
+
 
 // Featured Photos
 featuredTitle: {vi: "Ảnh Nổi Bật từ Cộng Đồng", en: "Featured Photos from the Community"},
@@ -564,7 +567,7 @@ async function callAIApi(prompt, isStructured = false, delay = 1200) {
         chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
         let payload = { contents: chatHistory };
-        const apiKey = ""; // Canvas will automatically provide this in runtime
+        const apiKey = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ"; // API Key của bạn
 
         if (isStructured) {
             // Define schema for structured output (e.g., quiz results or adjusted recipe)
@@ -866,7 +869,7 @@ explain: () => `
                                        <details class="pp-infographic-item"><summary class="font-bold cursor-pointer">1. <span data-translate-key="ppItemGamma"></span></summary><p class="text-sm text-gray-600 mt-2">Gamma thiết lập độ dốc (đường cong tương phản), xác định mối quan hệ giữa mức tín hiệu đầu vào (độ sáng từ đối tượng) và mức tín hiệu đầu ra (độ sáng được tái tạo bởi máy ảnh hoặc màn hình hiển thị).<br>Hình dạng của đường cong gamma ảnh hưởng đáng kể đến đặc điểm hình ảnh, đặc biệt là ở các vùng tối và độ tương phản tổng thể. Các đường cong Cine, S-Cinetone và HLG nổi bật như những ứng cử viên chính cho các giao diện điện ảnh "tức thì", mang lại sự cân bằng giữa dải động và độ tương phản dễ chịu ngay từ máy ảnh. S-Log không dành cho việc sử dụng "tức thì", đặc biệt là trên các máy ảnh 8 bit do nhiễu và tính dễ vỡ của nó.</p></details>
                                        <details class="pp-infographic-item"><summary class="font-bold cursor-pointer">2. <span data-translate-key="ppItemColorMode"></span></summary><p class="text-sm text-gray-600 mt-2">Color Mode xác định các đặc tính màu sắc, hoạt động kết hợp với Gamma để thiết lập màu sắc cơ bản của hình ảnh.<br>Gamma xác định đường cong độ sáng, trong khi Color Mode xác định sắc độ. Cùng với nhau, chúng thiết lập "giao diện" cơ bản của hình ảnh. Việc chọn đúng Color Mode là rất quan trọng để đạt được các tính thẩm mỹ cụ thể.</p></details>
                                        <details class="pp-infographic-item"><summary class="font-bold cursor-pointer">3. <span data-translate-key="ppItemBlackLevel"></span></summary><p class="text-sm text-gray-600 mt-2">Chức năng Black Level điều chỉnh điểm đen, về cơ bản kiểm soát điểm tối nhất trong hình ảnh.<br>Một màu đen bị "crush" (ép xuống) có thể thêm kịch tính và độ tương phản, trong khi màu đen được "lift" (nâng lên) – thường được gọi là "màu đen mờ" hoặc "màu đen sữa" – là một đặc điểm của nhiều loại phim cổ điển và có thể tạo ra cảm giác mềm mại, thanh tao hoặc cổ điển hơn.</p></details>
-                                       <details class="pp-infographic-item"><summary class="font-bold cursor-pointer">4. <span data-translate-key="ppItemColorDepth"></span></summary><p class="text-sm text-gray-600 mt-2">Chức năng Color Depth điều chỉnh độ sáng cho từng pha màu (Đỏ, Lục, Lam, Lục lam, Đỏ tươi, Vàng) riêng lẻ.<br>Không giống như Saturation toàn cầu hoặc Color Phase, Color Depth cho phép điều chỉnh độ sáng trên từng kênh, mang lại khả năng kiểm soát chính xác hơn. Thông số này cực kỳ mạnh mẽ để chỉnh màu tinh tế nhưng có tác động trực tiếp trong máy ảnh.</p></details>
+                                       <details class="pp-infographic-item"><summary class="font-bold cursor-pointer">4. <span data-translate-key="ppItemColorDepth"></span></summary><p class="text-sm text-gray-600 mt-2">Chức năng Color Depth điều chỉnh độ sáng cho từng pha màu (Đỏ, Lục, Lam, Lục lam, Tím, Vàng) riêng lẻ.<br>Không giống như Saturation toàn cầu hoặc Color Phase, Color Depth cho phép điều chỉnh độ sáng trên từng kênh, mang lại khả năng kiểm soát chính xác hơn. Thông số này cực kỳ mạnh mẽ để chỉnh màu tinh tế nhưng có tác động trực tiếp trong máy ảnh.</p></details>
                                    </div>
                               </div>
                           </div>
@@ -1142,6 +1145,51 @@ resultContainer.innerHTML = `<div class="mt-6 border-t border-gray-200/50 pt-6">
 button.disabled = false; button.innerHTML = button.dataset.originalText; applyTranslations();
 }
 
+async function handleAiRecipeExplanation(button) {
+    const recipeId = button.dataset.recipeId;
+    const explanationContainer = document.getElementById('aiExplanationContainer');
+    if (!explanationContainer || state.isAILoading) return;
+
+    button.disabled = true;
+    button.dataset.originalText = button.innerHTML;
+    button.innerHTML = `<div class="spinner"></div> ${t('aiExplainRecipeBtn')}`;
+    explanationContainer.innerHTML = `<div class="flex items-center justify-center p-4"><div class="spinner"></div><p class="ml-2 text-base font-semibold">${t('aiExplanationLoading')}</p></div>`;
+    explanationContainer.classList.remove('hidden');
+
+    const recipe = recipesData.find(r => r.id === recipeId);
+    if (!recipe) {
+        explanationContainer.innerHTML = `<p class="text-red-500">Error: Recipe not found.</p>`;
+        button.disabled = false;
+        button.innerHTML = button.dataset.originalText;
+        return;
+    }
+
+    const prompt = `Giải thích các đặc điểm và ý đồ nghệ thuật của công thức Sony Picture Profile sau một cách súc tích, dễ hiểu, tập trung vào cách Cân bằng trắng, Gamma, Mức độ đen, Chế độ màu, Độ bão hòa, Độ sâu màu và cài đặt Chi tiết của nó đóng góp vào giao diện và cảm nhận tổng thể. Đồng thời, gợi ý các tình huống chụp ảnh lý tưởng cho công thức này.
+    Tên công thức: ${recipe.name[state.currentLang]}
+    Mô tả: ${recipe.description[state.currentLang]}
+    Cân bằng trắng: ${recipe.whiteBalance}
+    Cài đặt chính: ${JSON.stringify(recipe.settings)}
+    Độ sâu màu: ${JSON.stringify(recipe.colorDepth || {})}
+    Cài đặt chi tiết: ${JSON.stringify(recipe.detailSettings || {})}
+    `;
+
+    const aiResponse = await callAIApi(prompt, false); // Expecting plain text/markdown
+
+    if (aiResponse) {
+        explanationContainer.innerHTML = `<div class="mt-4 p-4 rounded-xl bg-blue-50">
+            <h4 class="font-bold text-lg mb-2" data-translate-key="aiExplanationTitle"></h4>
+            <div class="prose max-w-none text-gray-700">${marked.parse(aiResponse)}</div>
+        </div>`;
+    } else {
+        explanationContainer.innerHTML = `<p class="text-red-500">Lỗi khi tạo giải thích bằng AI. Vui lòng thử lại.</p>`;
+    }
+
+    button.disabled = false;
+    button.innerHTML = button.dataset.originalText;
+    applyTranslations();
+}
+
+
 async function handleQuizSubmit() {
 const selectedTags = Object.values(state.quizAnswers);
 await renderView('home');
@@ -1323,6 +1371,10 @@ recipeContentContainer.innerHTML = `
               ${thumbnailsHTML}
               ${exportSectionHTML}
               <div id="originalRecipeContainer" class="mt-8">${createFullRecipeHTML(recipe, true)}</div>
+              <div class="mt-8 pt-8 border-t-2 border-gray-200/60">
+                  <button id="aiExplainRecipeBtn" data-recipe-id="${recipe.id}" class="btn btn-primary w-full py-3" data-translate-key="aiExplainRecipeBtn"></button>
+                  <div id="aiExplanationContainer" class="mt-4 hidden"></div>
+              </div>
               <div id="setupGuideSection" class="mt-12 pt-8 border-t-2 border-gray-200/60">
                   <details open class="group">
                       <summary class="text-xl md:text-2xl font-bold cursor-pointer list-none flex justify-between items-center group-hover:text-blue-600 transition-colors">
@@ -1330,7 +1382,7 @@ recipeContentContainer.innerHTML = `
                           <svg class="w-6 h-6 transition-transform transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                       </summary>
                       <div class="prose max-w-none mt-6 space-y-4 text-base text-gray-700">
-                          <div><h4 class="font-bold" data-translate-key="tutorialStep1Title"></h4><p data-translate-key="tutorialStep1P1"></p></div>
+                          <div><h4 class="font-bold" data-translate-key="tutorialStep1Title"></h4><p data-translate-key="tutorialStep1P1"></p><p data-translate-key="tutorialStep1P2"></p></div>
                           <div><h4 class="font-bold" data-translate-key="tutorialStep2Title"></h4><p data-translate-key="tutorialStep2P1"></p></div>
                           <div><h4 class="font-bold" data-translate-key="tutorialStep3Title"></h4><p data-translate-key="tutorialStep3P1"></p></div>
                           <div><h4 class="font-bold" data-translate-key="tutorialStep4Title"></h4><p data-translate-key="tutorialStep4P1"></p></div>
@@ -1548,6 +1600,7 @@ const recipeCompareCb = target.closest('.recipe-compare-cb');
 const compareBtn = target.closest('#compareBtn');
 const compareWithOriginalBtn = target.closest('#compareWithOriginalBtn');
 const aiTuningBtn = target.closest('#aiTuningBtn');
+const aiExplainRecipeBtn = target.closest('#aiExplainRecipeBtn'); // New button
 const backToListBtn = target.closest('#backToListBtn');
 const closeModalBtn = target.closest('#closeComparisonModalBtn');
 const downloadLutBtn = target.closest('#downloadLutBtn');
@@ -1558,6 +1611,7 @@ if (recipeCompareCb) { handleRecipeSelection(recipeCompareCb.dataset.recipeId, '
 if (compareBtn && !compareBtn.disabled) { handleAiComparison(state.comparisonList[0], state.comparisonList[1]); return; }
 if (compareWithOriginalBtn) { handleAiComparison(compareWithOriginalBtn.dataset.originalId, null, state.lastGeneratedAiRecipe); return; }
 if (aiTuningBtn) { handleAiAdjustment(aiTuningBtn); return; }
+if (aiExplainRecipeBtn) { handleAiRecipeExplanation(aiExplainRecipeBtn); return; } // New event listener
 if (backToListBtn) { state.isMobileDetailActive = false; renderLibraryDetails(); return; }
 if (closeModalBtn) { document.getElementById('comparisonModal').classList.add('hidden'); return; }
 if (lightboxTrigger) {
