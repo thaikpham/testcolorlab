@@ -544,7 +544,7 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) {
         const payload = { contents: chatHistory };
         
         // IMPORTANT: The API key is an empty string. The environment will provide it.
-        const apiKey = ""; 
+        const apiKey = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ"; 
         const model = "gemini-2.5-flash-preview-05-20";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
