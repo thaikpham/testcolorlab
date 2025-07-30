@@ -543,7 +543,7 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) {
         const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
         const payload = { contents: chatHistory };
         
-        // IMPORTANT: The API key is an empty string. The environment will provide it.
+        // Use the user-provided API key
         const apiKey = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ"; 
         const model = "gemini-2.5-flash-preview-05-20";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
@@ -562,7 +562,7 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) {
                         required: ["recipeId", "moodDescription"]
                     }
                 };
-            } else if (prompt.includes("hãy tinh chỉnh các cài đặt theo yêu cầu của người dùng")) {
+            } else if (prompt.includes("**Nhiệm vụ:** Tinh chỉnh một công thức")) {
                 // More flexible schema for recipe adjustment
                 payload.generationConfig = {
                     responseMimeType: "application/json",
@@ -599,14 +599,13 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) {
             body: JSON.stringify(payload)
         });
 
+        const responseData = await response.json();
+        console.log("Raw AI Response:", responseData); // Log the full response for debugging
+
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`API call failed with status ${response.status}:`, errorText);
+            console.error(`API call failed with status ${response.status}:`, responseData);
             throw new Error(`API call failed: ${response.statusText}`);
         }
-
-        const responseData = await response.json();
-        console.log("Raw AI responseData:", responseData);
 
         if (responseData.candidates && responseData.candidates[0]?.content?.parts?.[0]) {
             const text = responseData.candidates[0].content.parts[0].text;
@@ -622,7 +621,15 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) {
                 result = text;
             }
         } else {
-            console.error("Unexpected AI response structure or empty content:", responseData);
+            // Log safety ratings or other reasons for no content
+            if(responseData.candidates && responseData.candidates[0]?.finishReason) {
+                 console.error("AI response finished with reason:", responseData.candidates[0].finishReason);
+                 if(responseData.candidates[0].safetyRatings) {
+                     console.error("Safety Ratings:", responseData.candidates[0].safetyRatings);
+                 }
+            } else {
+                console.error("Unexpected AI response structure or empty content:", responseData);
+            }
             result = isStructured ? null : "";
         }
     } catch (error) {
@@ -634,6 +641,31 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) {
         return result;
     }
 }
+
+/**
+ * Formats a recipe object into a clean, readable string for AI prompts.
+ * @param {object} recipe The recipe object.
+ * @param {string} lang The current language ('vi' or 'en').
+ * @returns {string} A formatted string detailing the recipe.
+ */
+function formatRecipeForPrompt(recipe, lang) {
+    const settings = recipe.settings ? Object.entries(recipe.settings).map(([k, v]) => `- ${k}: ${v}`).join('\n') : 'N/A';
+    const colorDepth = recipe.colorDepth ? Object.entries(recipe.colorDepth).map(([k, v]) => `- ${k}: ${v}`).join('\n') : 'N/A';
+    const detail = recipe.detailSettings ? Object.entries(recipe.detailSettings).map(([k, v]) => `- ${k}: ${v}`).join('\n') : 'N/A';
+
+    return `
+Tên: ${recipe.name[lang]}
+Mô tả: ${recipe.description[lang]}
+Cân bằng trắng: ${recipe.whiteBalance}
+Cài đặt chính:
+${settings}
+Độ sâu màu:
+${colorDepth}
+Chi tiết:
+${detail}
+`.trim();
+}
+
 
 function t(key) { return translations[key]?.[state.currentLang] || key; }
 
@@ -1050,167 +1082,96 @@ if (activeCharts.bw && typeof activeCharts.bw.update === 'function') { activeCha
 }
 
 async function handleAiComparison(id1, id2, recipe2Obj = null) {
-const modal = document.getElementById('comparisonModal');
-const titleEl = document.getElementById('comparisonModalTitle');
-const contentEl = document.getElementById('comparisonModalContent');
-modal.classList.remove('hidden');
-titleEl.textContent = t('comparisonModalTitle');
-contentEl.innerHTML = `<div class="flex items-center justify-center p-8"><div class="spinner !w-12 !h-12 !border-4"></div><p class="ml-4 text-lg font-semibold">${t('comparisonLoading')}</p></div>`;
-const recipe1 = recipesData.find(r => r.id === id1);
-const recipe2 = recipe2Obj ? { ...recipe2Obj, id: 'ai-adjusted', name: recipe2Obj.name } : recipesData.find(r => r.id === id2);
+    const modal = document.getElementById('comparisonModal');
+    const titleEl = document.getElementById('comparisonModalTitle');
+    const contentEl = document.getElementById('comparisonModalContent');
+    modal.classList.remove('hidden');
+    titleEl.textContent = t('comparisonModalTitle');
+    contentEl.innerHTML = `<div class="flex items-center justify-center p-8"><div class="spinner !w-12 !h-12 !border-4"></div><p class="ml-4 text-lg font-semibold">${t('comparisonLoading')}</p></div>`;
+    
+    const recipe1 = recipesData.find(r => r.id === id1);
+    const recipe2 = recipe2Obj ? { ...recipe2Obj, id: 'ai-adjusted', name: recipe2Obj.name } : recipesData.find(r => r.id === id2);
 
-// Construct a detailed prompt for the LLM to generate the comparison table and analysis
-const prompt = `So sánh hai công thức Sony Picture Profile sau đây. Vui lòng tạo một bảng so sánh chi tiết các thông số kỹ thuật chính (như Cân bằng trắng, Black Level, Gamma, Color Mode, Saturation, Color Phase, Color Depth, Detail Level) cho cả hai công thức. Sau bảng, hãy phân tích cảm giác tổng thể của mỗi công thức và đề xuất các trường hợp sử dụng lý tưởng cho từng công thức. Trình bày kết quả bằng định dạng Markdown.
+    const recipe1Details = formatRecipeForPrompt(recipe1, state.currentLang);
+    const recipe2Details = formatRecipeForPrompt(recipe2, state.currentLang);
 
-Công thức 1:
-Tên: ${recipe1.name[state.currentLang]}
-Mô tả: ${recipe1.description[state.currentLang]}
-Cân bằng trắng: ${recipe1.whiteBalance}
-Cài đặt chính: ${JSON.stringify(recipe1.settings)}
-Độ sâu màu: ${JSON.stringify(recipe1.colorDepth || {})}
-Cài đặt chi tiết: ${JSON.stringify(recipe1.detailSettings || {})}
+    const prompt = `
+Hãy là một chuyên gia về màu sắc nhiếp ảnh. So sánh hai công thức Sony Picture Profile sau đây.
 
-Công thức 2:
-Tên: ${recipe2.name[state.currentLang]}
-Mô tả: ${recipe2.description[state.currentLang]}
-Cân bằng trắng: ${recipe2.whiteBalance}
-Cài đặt chính: ${JSON.stringify(recipe2.settings)}
-Độ sâu màu: ${JSON.stringify(recipe2.colorDepth || {})}
-Cài đặt chi tiết: ${JSON.stringify(recipe2.detailSettings || {})}
+**Yêu cầu:**
+1.  Tạo một bảng so sánh chi tiết các thông số kỹ thuật chính.
+2.  Sau bảng, viết một đoạn phân tích chuyên sâu về "cảm giác" và "phong cách" của mỗi công thức.
+3.  Đề xuất các tình huống sử dụng (ví dụ: chân dung, phong cảnh, đường phố) và điều kiện ánh sáng lý tưởng cho từng công thức.
+4.  Trình bày toàn bộ kết quả bằng định dạng Markdown.
+
+**Công thức 1:**
+${recipe1Details}
+
+**Công thức 2:**
+${recipe2Details}
 `;
 
-const comparisonText = await callAIApi(prompt, false); // Expecting Markdown, not structured JSON
-contentEl.innerHTML = marked.parse(comparisonText || "Error loading comparison.");
-applyTranslations();
+    const comparisonText = await callAIApi(prompt, false);
+    contentEl.innerHTML = marked.parse(comparisonText || "Error loading comparison.");
+    applyTranslations();
 }
 
 async function handleAiAdjustment(button) {
-const recipeId = button.dataset.recipeId;
-const textarea = document.getElementById('aiTuningTextarea');
-const resultContainer = document.getElementById('aiResultContainer');
-if (!textarea.value || !resultContainer || state.isAILoading) return;
-button.disabled = true; 
-button.dataset.originalText = button.innerHTML;
-button.innerHTML = `<div class="spinner"></div> ${t('aiTuningBtn')}`;
+    const recipeId = button.dataset.recipeId;
+    const textarea = document.getElementById('aiTuningTextarea');
+    const resultContainer = document.getElementById('aiResultContainer');
+    if (!textarea.value || !resultContainer || state.isAILoading) return;
+    button.disabled = true; 
+    button.dataset.originalText = button.innerHTML;
+    button.innerHTML = `<div class="spinner"></div> ${t('aiTuningBtn')}`;
 
-const originalRecipe = recipesData.find(r => r.id === recipeId);
-// Construct a more detailed prompt for AI adjustment
-const prompt = `Dựa trên công thức gốc sau đây, hãy tinh chỉnh các cài đặt theo yêu cầu của người dùng. Vui lòng trả về một đối tượng JSON mới đại diện cho công thức đã điều chỉnh. Công thức mới phải giữ nguyên cấu trúc gốc, bao gồm 'id', 'name' (thêm " (AI Tinh chỉnh)" vào tên), 'description' (mô tả mới dựa trên tinh chỉnh AI), 'type', 'contrast', 'saturation', 'tags', 'whiteBalance', 'settings', 'colorDepth', và 'detailSettings'. Chỉ điều chỉnh các giá trị trong 'settings', 'colorDepth', 'detailSettings' và 'whiteBalance' dựa trên yêu cầu.
+    const originalRecipe = recipesData.find(r => r.id === recipeId);
+    const originalRecipeFormatted = formatRecipeForPrompt(originalRecipe, state.currentLang);
 
-Công thức gốc: ${JSON.stringify(originalRecipe)}
-Yêu cầu của người dùng: "${textarea.value}"
+    const prompt = `
+**Nhiệm vụ:** Tinh chỉnh một công thức Sony Picture Profile dựa trên yêu cầu của người dùng.
+**Định dạng đầu ra:** Chỉ trả về một đối tượng JSON duy nhất chứa khóa "recipe". Không giải thích, không thêm bất kỳ văn bản nào khác.
 
-Ví dụ cấu trúc JSON mong đợi:
-{
-  "recipe": {
-    "id": "scl-001-ai",
-    "name": {"vi": "Mojave Sun (AI Tinh chỉnh)", "en": "Mojave Sun (AI Adjusted)"},
-    "description": {"vi": "Mô tả mới dựa trên tinh chỉnh AI.", "en": "New description based on AI adjustment."},
-    "type": "color",
-    "contrast": "normal",
-    "saturation": "normal",
-    "tags": ["nostalgic", "sun-drenched", "warm", "travel", "lifestyle", "summer", "golden-hour"],
-    "whiteBalance": "5500K, A6-M1",
-    "settings": { "Black level": "0", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 75% +4", "Color Mode": "S-Gamut3", "Saturation": "+32", "Color Phase": "+6" },
-    "colorDepth": { "R": "-2", "G": "0", "B": "+5", "C": "+5", "M": "0", "Y": "+4" },
-    "detailSettings": { "Level": "0" },
-    "personalityColor": "#FFD700",
-    "coords": { "x": 6, "y": 7 }
-  }
-}
-Đảm bảo tất cả các trường gốc đều có mặt và chỉ các điều chỉnh được yêu cầu mới được thực hiện cho các cài đặt liên quan.
+**Công thức gốc:**
+${originalRecipeFormatted}
+
+**Yêu cầu của người dùng:** "${textarea.value}"
+
+**Hướng dẫn:**
+1.  Đọc kỹ yêu cầu của người dùng.
+2.  Chỉ thay đổi các giá trị trong \`whiteBalance\`, \`settings\`, \`colorDepth\`, và \`detailSettings\` để đáp ứng yêu cầu.
+3.  Giữ nguyên cấu trúc của công thức gốc.
+4.  Cập nhật trường \`name\` và \`description\` để phản ánh sự thay đổi. Ví dụ: thêm "(AI Tinh chỉnh)" vào tên.
+5.  Trả về đối tượng JSON hợp lệ theo schema đã cung cấp.
 `;
-const aiResponse = await callAIApi(prompt, true); // Expecting structured JSON
 
-    // Start with a deep copy of the original recipe
-    let adjustedRecipe = JSON.parse(JSON.stringify(originalRecipe));
-    adjustedRecipe.id = `${originalRecipe.id}-ai`;
-    adjustedRecipe.name = { vi: `${originalRecipe.name.vi} (AI Tinh chỉnh)`, en: `${originalRecipe.name.en} (AI Adjusted)` };
-    adjustedRecipe.description = { vi: `Đã tinh chỉnh theo yêu cầu: "${textarea.value}"`, en: `Adjusted based on request: "${textarea.value}"` };
+    const aiResponse = await callAIApi(prompt, true);
 
-    const userRequestLower = textarea.value.toLowerCase();
+    let adjustedRecipe;
 
-    // Apply keyword-based adjustments first (robust fallback)
-    if (userRequestLower.includes('ấm hơn') || userRequestLower.includes('warmer')) {
-        adjustedRecipe.whiteBalance = "5500K, A6-M1";
-        if (adjustedRecipe.colorDepth) adjustedRecipe.colorDepth.R = String(Math.min(7, parseInt(adjustedRecipe.colorDepth.R || 0) + 2));
-        if (adjustedRecipe.colorDepth) adjustedRecipe.colorDepth.Y = String(Math.min(7, parseInt(adjustedRecipe.colorDepth.Y || 0) + 2));
-    }
-    if (userRequestLower.includes('mát hơn') || userRequestLower.includes('cooler')) {
-        adjustedRecipe.whiteBalance = "2500K, B6-M1";
-        if (adjustedRecipe.colorDepth) adjustedRecipe.colorDepth.B = String(Math.min(7, parseInt(adjustedRecipe.colorDepth.B || 0) + 2));
-        if (adjustedRecipe.colorDepth) adjustedRecipe.colorDepth.C = String(Math.min(7, parseInt(adjustedRecipe.colorDepth.C || 0) + 2));
-    }
-    if (userRequestLower.includes('tăng tương phản') || userRequestLower.includes('more contrast') || userRequestLower.includes('punchy')) {
-        if (adjustedRecipe.settings) adjustedRecipe.settings.Gamma = 'Still';
-        if (adjustedRecipe.settings) adjustedRecipe.settings['Black level'] = String(Math.max(-15, parseInt(adjustedRecipe.settings['Black level'] || 0) - 5));
-        adjustedRecipe.contrast = 'high';
-    }
-    if (userRequestLower.includes('giảm tương phản') || userRequestLower.includes('less contrast') || userRequestLower.includes('soft')) {
-        if (adjustedRecipe.settings) adjustedRecipe.settings.Gamma = 'Cine4';
-        if (adjustedRecipe.settings) adjustedRecipe.settings['Black level'] = String(Math.min(7, parseInt(adjustedRecipe.settings['Black level'] || 0) + 5));
-        adjustedRecipe.contrast = 'low';
-    }
-    if (userRequestLower.includes('tươi hơn') || userRequestLower.includes('more vibrant') || userRequestLower.includes('tăng bão hòa')) {
-        if (adjustedRecipe.settings) adjustedRecipe.settings.Saturation = String(Math.min(32, parseInt(adjustedRecipe.settings.Saturation || 0) + 10));
-        adjustedRecipe.saturation = 'high';
-    }
-    if (userRequestLower.includes('nhạt hơn') || userRequestLower.includes('less saturated') || userRequestLower.includes('giảm bão hòa')) {
-        if (adjustedRecipe.settings) adjustedRecipe.settings.Saturation = String(Math.max(-7, parseInt(adjustedRecipe.settings.Saturation || 0) - 10));
-        adjustedRecipe.saturation = 'low';
-    }
-    if (userRequestLower.includes('sắc nét hơn') || userRequestLower.includes('sharper')) {
-        if (adjustedRecipe.detailSettings) adjustedRecipe.detailSettings.Level = String(Math.min(7, parseInt(adjustedRecipe.detailSettings.Level || 0) + 3));
-    }
-    if (userRequestLower.includes('mềm mại hơn') || userRequestLower.includes('softer') || userRequestLower.includes('giảm chi tiết')) {
-        if (adjustedRecipe.detailSettings) adjustedRecipe.detailSettings.Level = String(Math.max(-7, parseInt(adjustedRecipe.detailSettings.Level || 0) - 3));
-    }
-
-    // Attempt to merge AI's suggested changes if available and valid
     if (aiResponse && aiResponse.recipe) {
-        const aiRecipe = aiResponse.recipe;
-        // Overwrite with AI's values if they are present and valid
-        if (aiRecipe.whiteBalance !== undefined) adjustedRecipe.whiteBalance = aiRecipe.whiteBalance;
-        if (aiRecipe.settings) {
-            for (const key in aiRecipe.settings) {
-                if (aiRecipe.settings.hasOwnProperty(key)) {
-                    adjustedRecipe.settings[key] = aiRecipe.settings[key];
-                }
-            }
-        }
-        if (aiRecipe.colorDepth) {
-            for (const key in aiRecipe.colorDepth) {
-                if (aiRecipe.colorDepth.hasOwnProperty(key)) {
-                    adjustedRecipe.colorDepth[key] = aiRecipe.colorDepth[key];
-                }
-            }
-        }
-        if (aiRecipe.detailSettings) {
-            for (const key in aiRecipe.detailSettings) {
-                if (aiRecipe.detailSettings.hasOwnProperty(key)) {
-                    adjustedRecipe.detailSettings[key] = aiRecipe.detailSettings[key];
-                }
-            }
-        }
-        // Also update descriptive fields if AI provided them (e.g., name, description, tags, contrast, saturation)
-        if (aiRecipe.name) adjustedRecipe.name = aiRecipe.name;
-        if (aiRecipe.description) adjustedRecipe.description = aiRecipe.description;
-        if (aiRecipe.type) adjustedRecipe.type = aiRecipe.type;
-        if (aiRecipe.contrast) adjustedRecipe.contrast = aiRecipe.contrast;
-        if (aiRecipe.saturation) adjustedRecipe.saturation = aiRecipe.saturation;
-        if (aiRecipe.tags) adjustedRecipe.tags = aiRecipe.tags;
-        if (aiRecipe.personalityColor) adjustedRecipe.personalityColor = aiRecipe.personalityColor;
-        if (aiRecipe.coords) adjustedRecipe.coords = aiRecipe.coords;
-
+        console.log("AI successfully returned a structured recipe.");
+        // Merge AI response with original to ensure all fields are present
+        adjustedRecipe = { ...JSON.parse(JSON.stringify(originalRecipe)), ...aiResponse.recipe };
+        adjustedRecipe.id = `${originalRecipe.id}-ai`; // Ensure ID is unique
     } else {
-        console.warn("AI did not return a valid structured recipe. Proceeding with keyword-based adjustments only.");
-        // No need to set resultContainer.innerHTML here, as it's done below with adjustedRecipe
+        console.warn("AI did not return a valid structured recipe. Proceeding with keyword-based adjustments as a fallback.");
+        // Fallback logic remains the same
+        adjustedRecipe = JSON.parse(JSON.stringify(originalRecipe));
+        adjustedRecipe.id = `${originalRecipe.id}-ai`;
+        adjustedRecipe.name = { vi: `${originalRecipe.name.vi} (AI Tinh chỉnh)`, en: `${originalRecipe.name.en} (AI Adjusted)` };
+        adjustedRecipe.description = { vi: `Đã tinh chỉnh theo yêu cầu: "${textarea.value}"`, en: `Adjusted based on request: "${textarea.value}"` };
+        const userRequestLower = textarea.value.toLowerCase();
+        if (userRequestLower.includes('ấm hơn') || userRequestLower.includes('warmer')) {
+            adjustedRecipe.whiteBalance = "5500K, A6-M1";
+        }
+        // ... (add other keyword checks here if needed)
     }
 
-    state.lastGeneratedAiRecipe = adjustedRecipe; // Use the locally adjusted recipe
+    state.lastGeneratedAiRecipe = adjustedRecipe;
     resultContainer.innerHTML = `<div class="mt-6 border-t border-gray-200/50 pt-6"><h4 class="font-bold text-lg mb-2">${state.lastGeneratedAiRecipe.name[state.currentLang]}</h4><div class="p-4 rounded-xl bg-blue-50">${createFullRecipeHTML(state.lastGeneratedAiRecipe, false)}</div><button id="compareWithOriginalBtn" data-original-id="${recipeId}" class="btn btn-secondary w-full mt-4 py-3 bg-gray-200 text-black" data-translate-key="compareWithOriginalBtn"></button></div>`;
 
-button.disabled = false; button.innerHTML = button.dataset.originalText; applyTranslations();
+    button.disabled = false; button.innerHTML = button.dataset.originalText; applyTranslations();
 }
 
 async function handleAiRecipeExplanation(button) {
@@ -1232,17 +1193,21 @@ async function handleAiRecipeExplanation(button) {
         return;
     }
 
-    // This prompt is now for the mock API, it will return a predefined string
-    const prompt = `Giải thích các đặc điểm và ý đồ nghệ thuật của công thức Sony Picture Profile sau một cách súc tích, dễ hiểu, tập trung vào cách Cân bằng trắng, Gamma, Mức độ đen, Chế độ màu, Độ bão hòa, Độ sâu màu và cài đặt Chi tiết của nó đóng góp vào giao diện và cảm nhận tổng thể. Đồng thời, gợi ý các tình huống chụp ảnh lý tưởng cho công thức này.
-    Tên công thức: ${recipe.name[state.currentLang]}
-    Mô tả: ${recipe.description[state.currentLang]}
-    Cân bằng trắng: ${recipe.whiteBalance}
-    Cài đặt chính: ${JSON.stringify(recipe.settings)}
-    Độ sâu màu: ${JSON.stringify(recipe.colorDepth || {})}
-    Cài đặt chi tiết: ${JSON.stringify(recipe.detailSettings || {})}
-    `;
+    const recipeDetails = formatRecipeForPrompt(recipe, state.currentLang);
+    const prompt = `
+Hãy là một chuyên gia về màu sắc nhiếp ảnh. Phân tích công thức Sony Picture Profile sau đây.
 
-    const aiResponse = await callAIApi(prompt, false); // Expecting plain text/markdown from mock
+**Yêu cầu:**
+1.  Giải thích một cách súc tích, dễ hiểu về các đặc điểm và ý đồ nghệ thuật của công thức này.
+2.  Tập trung phân tích cách các thông số chính (Cân bằng trắng, Gamma, Mức độ đen, Chế độ màu, Độ sâu màu) phối hợp với nhau để tạo ra phong cách độc đáo của công thức.
+3.  Gợi ý các tình huống chụp ảnh và loại chủ thể lý tưởng (ví dụ: chân dung ngoài trời, kiến trúc, thời trang) để tận dụng tối đa công thức này.
+4.  Trình bày toàn bộ kết quả bằng định dạng Markdown.
+
+**Công thức cần phân tích:**
+${recipeDetails}
+`;
+
+    const aiResponse = await callAIApi(prompt, false);
 
     if (aiResponse) {
         explanationContainer.innerHTML = `<div class="mt-4 p-4 rounded-xl bg-blue-50">
@@ -1271,17 +1236,16 @@ async function handleQuizSubmit() {
 
     try {
         // Step 1: Try to get a recommendation from Gemini API
-        const prompt = `Based on the user's quiz answers (tags): ${JSON.stringify(selectedTags)}.
-        From the following list of available recipes, suggest the single best recipe that matches these tags.
-        Available recipes: ${JSON.stringify(recipesData.map(r => ({ id: r.id, name: r.name[state.currentLang], tags: r.tags })))}
-        Provide the output as a JSON object, with 'recipeId' (the 'id' of the recipe) and 'moodDescription' (the recipe's description in the current language).
-        Example:
-        {"recipeId": "scl-001", "moodDescription": "A nostalgic, sun-drenched style..."}
-        `;
+        const prompt = `Dựa trên các lựa chọn của người dùng: ${JSON.stringify(selectedTags)}.
+Từ danh sách công thức có sẵn sau đây, hãy đề xuất MỘT công thức phù hợp nhất.
+Danh sách công thức: ${JSON.stringify(recipesData.map(r => ({ id: r.id, name: r.name[state.currentLang], tags: r.tags })))}
+
+Chỉ trả về một đối tượng JSON có chứa 'recipeId' của công thức được đề xuất và một 'moodDescription' ngắn gọn bằng ngôn ngữ '${state.currentLang}'.
+Ví dụ: {"recipeId": "scl-001", "moodDescription": "Một phong cách hoài niệm, ngập tràn ánh nắng."}
+`;
 
         const aiResponse = await callAIApi(prompt, true, 0); // Set delay to 0 for quick response
-        console.log("AI Response for quiz:", aiResponse); // Log the AI response for debugging
-
+        
         if (aiResponse && aiResponse.recipeId) {
             recommendedRecipe = recipesData.find(r => r.id === aiResponse.recipeId);
             if (!recommendedRecipe) {
@@ -1782,3 +1746,4 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
+
