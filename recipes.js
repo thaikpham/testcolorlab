@@ -11,12 +11,15 @@ const recipesData = [
         "contrast": "normal",
         "saturation": "normal",
         "tags": ["nostalgic", "sun-drenched", "warm", "travel", "lifestyle", "summer", "golden-hour"],
-        "whiteBalance": "8500K, B3-M1.75",
-        "settings": { "Black level": "-5", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 75% +4", "Color Mode": "S-Gamut3", "Saturation": "+32", "Color Phase": "+6" },
+        "whiteBalance": "8300K, B3-M1.5",
+        "settings": { "Black level": "-5", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 75% +4", "Color Mode": "S-Gamut3", "Saturation": "+22", "Color Phase": "+4" },
         "colorDepth": { "R": "-2", "G": "0", "B": "+5", "C": "+5", "M": "0", "Y": "+4" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#FFD700", // Yellowish
-        "coords": { "x": 6, "y": 7 } // Example coordinates for chart
+        "coords": { "x": 6, "y": 7 }, // Example coordinates for chart
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-002",
@@ -31,11 +34,14 @@ const recipesData = [
         "saturation": "normal",
         "tags": ["serene", "subtle", "portrait", "street-photography", "landscape", "peaceful", "painterly"],
         "whiteBalance": "3700K, A7-M0.5",
-        "settings": { "Black level": "0", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 80% +4", "Color Mode": "Still", "Saturation": "+11", "Color Phase": "-3" },
+        "settings": { "Black level": "0", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 80% +4", "Color Mode": "Still", "Saturation": "+10", "Color Phase": "-4" },
         "colorDepth": { "R": "-4", "G": "+7", "B": "-3", "C": "-3", "M": "-5", "Y": "-3" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#66CDAA", // Jade Green
-        "coords": { "x": -4, "y": 3 }
+        "coords": { "x": -4, "y": 3 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-003",
@@ -50,11 +56,14 @@ const recipesData = [
         "saturation": "normal",
         "tags": ["cinematic", "cool-tone", "deep-blues", "moody", "atmospheric", "urban-night", "dramatic-portrait", "storytelling"],
         "whiteBalance": "8000K, B2-M2",
-        "settings": { "Black level": "-15", "Gamma": "Cine3", "Black Gamma": "Wide +7", "Knee": "Manual 85% +4", "Color Mode": "S-Gamut3.Cine", "Saturation": "+20", "Color Phase": "+7" },
-        "colorDepth": { "R": "-5", "G": "-1", "B": "+3", "C": "+4", "M": "+5", "Y": "+2" },
+        "settings": { "Black level": "-15", "Gamma": "Cine2", "Black Gamma": "Middle +7", "Knee": "Manual 85% +4", "Color Mode": "S-Gamut3.Cine", "Saturation": "+20", "Color Phase": "+7" },
+        "colorDepth": { "R": "0", "G": "-1", "B": "+3", "C": "+4", "M": "+5", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#4682B4", // Steel Blue
-        "coords": { "x": -8, "y": 5 }
+        "coords": { "x": -8, "y": 5 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-004",
@@ -68,12 +77,15 @@ const recipesData = [
         "contrast": "normal",
         "saturation": "high",
         "tags": ["vibrant", "high-saturation", "earthy-reds", "warm-yellows", "bold", "sun-baked", "classic-european-travel"],
-        "whiteBalance": "5000K, A2-M1",
-        "settings": { "Black level": "+6", "Gamma": "Still", "Black Gamma": "Wide -7", "Knee": "Manual 75% +4", "Color Mode": "S-Gamut3.Cine", "Saturation": "+25", "Color Phase": "+2" },
+        "whiteBalance": "4700K, A2-M0.5",
+        "settings": { "Black level": "+5", "Gamma": "Still", "Black Gamma": "Wide -7", "Knee": "Manual 85% +2", "Color Mode": "S-Gamut3.Cine", "Saturation": "+23", "Color Phase": "+3" },
         "colorDepth": { "R": "-3", "G": "+7", "B": "+5", "C": "+5", "M": "+5", "Y": "+1" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#CD853F", // Peru
-        "coords": { "x": 7, "y": 8 }
+        "coords": { "x": 7, "y": 8 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-005",
@@ -87,16 +99,19 @@ const recipesData = [
         "contrast": "soft",
         "saturation": "low",
         "tags": ["pastel", "soft-contrast", "low-saturation", "dreamy", "ethereal", "romantic-portrait", "fine-art"],
-        "whiteBalance": "4200K, A7-M1",
-        "settings": { "Black level": "-10", "Gamma": "Movie", "Black Gamma": "Middle -7", "Knee": "Manual 75% +4", "Color Mode": "Still", "Saturation": "+7", "Color Phase": "+3" },
+        "whiteBalance": "4200K, A6-M2",
+        "settings": { "Black level": "-10", "Gamma": "Movie", "Black Gamma": "Middle -7", "Knee": "Auto", "Color Mode": "Movie", "Saturation": "+10", "Color Phase": "+3" },
         "colorDepth": { "R": "-3", "G": "+7", "B": "-3", "C": "-3", "M": "-5", "Y": "+4" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#B0E0E6", // Powder Blue
-        "coords": { "x": -2, "y": -5 }
+        "coords": { "x": -2, "y": -5 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-006",
-        "name": { "vi": "SCL-006: Faded Canvas", "en": "SCL-006: Faded Canvas" }, // Updated name format
+        "name": { "vi": "SCL-006: Faded Cine", "en": "SCL-006: Faded Cine" }, // Updated name format
         "formattedName": "SCL-006-Faded Canvas", // Formatted name
         "description": {
             "en": "A stylized look with heavily lifted blacks and muted colors, creating a soft, hazy effect.\nIt evokes a sense of nostalgia and is ideal for fashion, editorial, and lifestyle photography aiming for a vintage-modern feel.",
@@ -106,12 +121,15 @@ const recipesData = [
         "contrast": "normal",
         "saturation": "muted",
         "tags": ["stylized", "lifted-blacks", "soft-colors", "hazy", "nostalgic", "fashion", "editorial", "lifestyle", "vintage-modern"],
-        "whiteBalance": "3600K, A7-G1",
-        "settings": { "Black level": "+11", "Gamma": "Movie", "Black Gamma": "Narrow -7", "Knee": "Manual 85% +4", "Color Mode": "Still", "Saturation": "+11", "Color Phase": "-4" },
-        "colorDepth": { "R": "-3", "G": "+7", "B": "-3", "C": "+2", "M": "+5", "Y": "+2" },
+        "whiteBalance": "3600K, A6-M1.5",
+        "settings": { "Black level": "+15", "Gamma": "Movie", "Black Gamma": "Narrow +7", "Knee": "Auto", "Color Mode": "Still", "Saturation": "+11", "Color Phase": "-4" },
+        "colorDepth": { "R": "-3", "G": "+7", "B": "-3", "C": "+3", "M": "+5", "Y": "+2" },
         "detailSettings": { "Level": "-7" },
         "personalityColor": "#D2B48C", // Tan
-        "coords": { "x": 0, "y": -7 }
+        "coords": { "x": 0, "y": -7 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-007",
@@ -130,7 +148,10 @@ const recipesData = [
         "colorDepth": { "R": "+2", "G": "+7", "B": "-7", "C": "-6", "M": "+3", "Y": "+3" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#8B0000", // Dark Red
-        "coords": { "x": -8, "y": 2 }
+        "coords": { "x": -8, "y": 2 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-008",
@@ -149,7 +170,10 @@ const recipesData = [
         "colorDepth": { "R": "0", "G": "+7", "B": "+5", "C": "-2", "M": "+3", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#4682B4", // Steel Blue
-        "coords": { "x": 0, "y": 4 }
+        "coords": { "x": 0, "y": 4 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-009",
@@ -168,7 +192,10 @@ const recipesData = [
         "colorDepth": { "R": "-4", "G": "+7", "B": "+2", "C": "+3", "M": "-6", "Y": "-1" },
         "detailSettings": { "Level": "-7" },
         "personalityColor": "#008080", // Teal
-        "coords": { "x": -5, "y": -3 }
+        "coords": { "x": -5, "y": -3 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-010",
@@ -187,7 +214,10 @@ const recipesData = [
         "colorDepth": { "R": "-3", "G": "+7", "B": "-2", "C": "+6", "M": "+4", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#3CB371", // Medium Sea Green
-        "coords": { "x": 2, "y": -6 }
+        "coords": { "x": 2, "y": -6 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-011",
@@ -206,7 +236,10 @@ const recipesData = [
         "colorDepth": { "R": "-5", "G": "-7", "B": "-7", "C": "+3", "M": "-7", "Y": "-5" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#4169E1", // Royal Blue
-        "coords": { "x": -7, "y": 0 }
+        "coords": { "x": -7, "y": 0 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-012",
@@ -225,7 +258,10 @@ const recipesData = [
         "colorDepth": { "R": "+1", "G": "+7", "B": "+2", "C": "+2", "M": "+4", "Y": "+2" },
         "detailSettings": { "Level": "-7" },
         "personalityColor": "#FFBF00", // Amber
-        "coords": { "x": 4, "y": -2 }
+        "coords": { "x": 4, "y": -2 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-013",
@@ -244,7 +280,10 @@ const recipesData = [
         "colorDepth": { "R": "+3", "G": "+5", "B": "+5", "C": "+7", "M": "+7", "Y": "-3" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#A9A9A9", // Dark Gray
-        "coords": { "x": -5, "y": 0 }
+        "coords": { "x": -5, "y": 0 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-014",
@@ -263,7 +302,10 @@ const recipesData = [
         "colorDepth": { "R": "+2", "G": "+7", "B": "+1", "C": "+2", "M": "-7", "Y": "0" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#FF00FF", // Magenta
-        "coords": { "x": 3, "y": 6 }
+        "coords": { "x": 3, "y": 6 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-015",
@@ -282,7 +324,10 @@ const recipesData = [
         "colorDepth": { "R": "+3", "G": "+5", "B": "-4", "C": "+2", "M": "+6", "Y": "+5" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#BC8F8F", // Rosy Brown
-        "coords": { "x": 1, "y": -4 }
+        "coords": { "x": 1, "y": -4 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-016",
@@ -301,7 +346,10 @@ const recipesData = [
         "colorDepth": { "R": "-2", "G": "+7", "B": "+4", "C": "+2", "M": "-4", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#8FBC8F", // Dark Sea Green
-        "coords": { "x": 0, "y": 0 }
+        "coords": { "x": 0, "y": 0 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-017",
@@ -320,7 +368,10 @@ const recipesData = [
         "colorDepth": { "R": "0", "G": "+2", "B": "+3", "C": "+2", "M": "-7", "Y": "0" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#DB7093", // Pale Violet Red
-        "coords": { "x": -3, "y": -1 }
+        "coords": { "x": -3, "y": -1 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-018",
@@ -339,7 +390,10 @@ const recipesData = [
         "colorDepth": { "R": "+5", "G": "+7", "B": "+5", "C": "+5", "M": "+2", "Y": "+1" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#8A2BE2", // Blue Violet
-        "coords": { "x": 8, "y": 9 }
+        "coords": { "x": 8, "y": 9 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-019",
@@ -353,12 +407,15 @@ const recipesData = [
         "contrast": "normal",
         "saturation": "maximum",
         "tags": ["color-explosion", "maximum-saturation", "super-vibrant", "high-energy", "bold-statements", "playful-side"],
-        "whiteBalance": "4000K, A7-G1",
-        "settings": { "Black level": "+2", "Gamma": "Still", "Black Gamma": "Middle +7", "Knee": "Manual 75% +5", "Color Mode": "S-Gamut3", "Saturation": "+32", "Color Phase": "+4" },
+        "whiteBalance": "3700K, A5-M1",
+        "settings": { "Black level": "+2", "Gamma": "Still", "Black Gamma": "Middle +7", "Knee": "Manual 85% +3", "Color Mode": "S-Gamut3", "Saturation": "+20", "Color Phase": "-1" },
         "colorDepth": { "R": "+2", "G": "+7", "B": "+7", "C": "+7", "M": "+7", "Y": "+4" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#FF69B4", // Hot Pink
-        "coords": { "x": 9, "y": 8 }
+        "coords": { "x": 8, "y": 6 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-020",
@@ -377,7 +434,10 @@ const recipesData = [
         "colorDepth": { "R": "+3", "G": "-3", "B": "-5", "C": "-3", "M": "+3", "Y": "-2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#D2B48C", // Tan
-        "coords": { "x": 5, "y": -1 }
+        "coords": { "x": 5, "y": -1 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-021",
@@ -396,7 +456,10 @@ const recipesData = [
         "colorDepth": { "R": "-4", "G": "+7", "B": "-3", "C": "-5", "M": "+5", "Y": "+4" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#ADD8E6", // Light Blue
-        "coords": { "x": -1, "y": -3 }
+        "coords": { "x": -1, "y": -3 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-022",
@@ -415,7 +478,10 @@ const recipesData = [
         "colorDepth": { "R": "+1", "G": "+7", "B": "0", "C": "+3", "M": "+2", "Y": "+1" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#D3D3D3", // Light Gray
-        "coords": { "x": 0, "y": -1 }
+        "coords": { "x": 0, "y": -1 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-023",
@@ -434,7 +500,10 @@ const recipesData = [
         "colorDepth": { "R": "+3", "G": "+7", "B": "+3", "C": "-5", "M": "+3", "Y": "-2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#4682B4", // Steel Blue
-        "coords": { "x": -6, "y": 3 }
+        "coords": { "x": -6, "y": 3 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-024",
@@ -453,7 +522,10 @@ const recipesData = [
         "colorDepth": { "R": "+2", "G": "+7", "B": "-4", "C": "-4", "M": "-5", "Y": "+3" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#00CED1", // Dark Cyan
-        "coords": { "x": -9, "y": 1 }
+        "coords": { "x": -9, "y": 1 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-025",
@@ -472,7 +544,10 @@ const recipesData = [
         "colorDepth": { "R": "-3", "G": "-2", "B": "+3", "C": "+7", "M": "-3", "Y": "-2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#8B0000", // Dark Red
-        "coords": { "x": 7, "y": 5 }
+        "coords": { "x": 7, "y": 5 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-026",
@@ -491,7 +566,10 @@ const recipesData = [
         "colorDepth": { "R": "-4", "G": "-1", "B": "+5", "C": "+4", "M": "+5", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#FF4500", // Orange Red
-        "coords": { "x": 9, "y": 6 }
+        "coords": { "x": 9, "y": 6 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-027",
@@ -510,7 +588,10 @@ const recipesData = [
         "colorDepth": { "R": "0", "G": "+3", "B": "+2", "C": "+2", "M": "-3", "Y": "+1" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#F0E68C", // Khaki
-        "coords": { "x": 5, "y": 4 }
+        "coords": { "x": 5, "y": 4 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-028",
@@ -529,7 +610,10 @@ const recipesData = [
         "colorDepth": { "R": "+5", "G": "+7", "B": "+2", "C": "+5", "M": "+5", "Y": "+5" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#FF4500", // OrangeRed
-        "coords": { "x": 9, "y": 9 }
+        "coords": { "x": 9, "y": 9 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-029",
@@ -548,7 +632,10 @@ const recipesData = [
         "colorDepth": { "R": "+5", "G": "+7", "B": "-6", "C": "-5", "M": "+7", "Y": "-4" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#6495ED", // Cornflower Blue
-        "coords": { "x": -8, "y": 0 }
+        "coords": { "x": -8, "y": 0 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-040",
@@ -567,7 +654,10 @@ const recipesData = [
         "colorDepth": { "R": "-1", "G": "+1", "B": "-1", "C": "+3", "M": "-3", "Y": "-1" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#555555", // Dark Gray
-        "coords": { "x": 0, "y": 0 } // Placeholder for B&W chart
+        "coords": { "x": 0, "y": 0 }, // Placeholder for B&W chart
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-041",
@@ -586,7 +676,10 @@ const recipesData = [
         "colorDepth": { "R": "+2", "G": "-4", "B": "-1", "C": "+2", "M": "-1", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#333333", // Very Dark Gray
-        "coords": { "x": 8, "y": 5 }
+        "coords": { "x": 8, "y": 5 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-042",
@@ -605,7 +698,10 @@ const recipesData = [
         "colorDepth": { "R": "-4", "G": "-1", "B": "+6", "C": "+5", "M": "-3", "Y": "-3" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#777777", // Medium Gray
-        "coords": { "x": 6, "y": -2 }
+        "coords": { "x": 6, "y": -2 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-043",
@@ -624,7 +720,10 @@ const recipesData = [
         "colorDepth": { "R": "+3", "G": "+3", "B": "+3", "C": "+2", "M": "+3", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#AAAAAA", // Light Gray
-        "coords": { "x": -5, "y": -5 }
+        "coords": { "x": -5, "y": -5 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-044",
@@ -643,7 +742,10 @@ const recipesData = [
         "colorDepth": { "R": "-1", "G": "-7", "B": "+7", "C": "+7", "M": "+7", "Y": "-4" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#BBBBBB", // Lighter Gray
-        "coords": { "x": 3, "y": 7 }
+        "coords": { "x": 3, "y": 7 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-045",
@@ -662,7 +764,10 @@ const recipesData = [
         "colorDepth": { "R": "0", "G": "+3", "B": "0", "C": "+2", "M": "+3", "Y": "0" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#888888", // Gray
-        "coords": { "x": -2, "y": 2 }
+        "coords": { "x": -2, "y": 2 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-046",
@@ -681,7 +786,10 @@ const recipesData = [
         "colorDepth": { "R": "+2", "G": "+7", "B": "+1", "C": "+2", "M": "+7", "Y": "+1" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#222222", // Very Dark Gray
-        "coords": { "x": 9, "y": 9 }
+        "coords": { "x": 9, "y": 9 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-047",
@@ -700,7 +808,10 @@ const recipesData = [
         "colorDepth": { "R": "+3", "G": "+2", "B": "+7", "C": "+7", "M": "+4", "Y": "-5" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#666666", // Dark Gray
-        "coords": { "x": -4, "y": -7 }
+        "coords": { "x": -4, "y": -7 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-048",
@@ -719,7 +830,10 @@ const recipesData = [
         "colorDepth": { "R": "-3", "G": "+4", "B": "+3", "C": "+3", "M": "+3", "Y": "+2" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#444444", // Dark Gray
-        "coords": { "x": 5, "y": 4 }
+        "coords": { "x": 5, "y": 4 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     },
     {
         "id": "scl-049",
@@ -738,7 +852,10 @@ const recipesData = [
         "colorDepth": { "R": "+7", "G": "+7", "B": "-7", "C": "-7", "M": "+7", "Y": "+7" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#708090", // Slate Gray
-        "coords": { "x": -6, "y": -8 }
+        "coords": { "x": -6, "y": -8 },
+        "imageUrl1": "Thêm link ảnh demo 1 tại đây",
+        "imageUrl2": "Thêm link ảnh demo 2 tại đây",
+        "imageUrl3": "Thêm link ảnh demo 3 tại đây"
     }
 ];
 
