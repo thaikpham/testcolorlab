@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sony AI Color Lab Web-App</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6.253v11.494m-5.747-8.662l11.494 5.747m-11.494 0l11.494-5.747M4.75 12A7.25 7.25 0 0112 4.75v0A7.25 7.25 0 0119.25 12v0a7.25 7.25 0 01-7.25 7.25v0A7.25 7.25 0 014.75 12v0z' stroke='%231d1d1f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3C/path%E3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6.253v11.494m-5.747-8.662l11.494 5.747m-11.494 0l11.494-5.747M4.75 12A7.25 7.25 0 0112 4.75v0A7.25 7.25 0 0119.25 12v0a7.25 7.25 0 01-7.25 7.25v0A7.25 7.25 0 014.75 12v0z' stroke='%231d1d1f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3C/path%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- OPTIMIZATION: Defer non-critical scripts to speed up initial page load -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<!-- REMOVED: <script src="recipes.js" defer></script> as it will be imported as a module -->
 <style>
 html { scroll-behavior: smooth; }
 body {
@@ -78,6 +80,7 @@ box-shadow: 0 4px 12px rgba(0, 122, 255, 0.1);
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
 
+/* QUIZ STYLES */
 .quiz-option-card {
 background-color: white;
 border: 2px solid #e5e7eb;
@@ -268,7 +271,6 @@ gtag('config', 'G-QKGB56ZKQD');
 <button data-view="recipeFormulas" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navRecipeFormulas"></button>
 <button data-view="featuredPhotos" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navFeaturedPhotos"></button>
 <button data-view="explain" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navExplain"></button>
-</nav>
 </div>
 </div>
 
@@ -281,32 +283,6 @@ gtag('config', 'G-QKGB56ZKQD');
 <div id="comparisonModalContent" class="p-6 md:p-8 overflow-y-auto prose-comparison"></div>
 </div>
 </div>
-
-<!-- START: Prompt Confirmation Modal -->
-<div id="promptConfirmationModal" class="modal hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="modal-content glass-panel w-full max-w-2xl flex flex-col">
-        <div class="p-4 md:p-6 border-b border-black/10 flex justify-between items-center">
-            <h2 id="promptModalTitle" class="text-xl md:text-2xl font-bold" data-translate-key="promptModalTitle"></h2>
-            <button id="closePromptModalBtn" class="text-3xl leading-none p-2 rounded-full hover:bg-black/10">&times;</button>
-        </div>
-        <div class="p-6 md:p-8 overflow-y-auto space-y-6">
-            <div>
-                <h3 class="font-semibold text-gray-500" data-translate-key="promptModalOriginal"></h3>
-                <p id="originalPromptText" class="mt-2 p-3 bg-gray-100 rounded-lg text-gray-800 break-words"></p>
-            </div>
-            <div>
-                <h3 class="font-semibold text-blue-600" data-translate-key="promptModalImproved"></h3>
-                <p id="improvedPromptText" class="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 break-words"></p>
-            </div>
-        </div>
-        <div class="p-4 md:p-6 border-t border-black/10 flex justify-end items-center gap-4">
-            <button id="cancelPromptBtn" class="btn bg-gray-200 text-gray-800 py-2 px-6" data-translate-key="promptModalCancel"></button>
-            <button id="confirmPromptBtn" class="btn btn-primary py-2 px-6" data-translate-key="promptModalConfirm"></button>
-        </div>
-    </div>
-</div>
-<!-- END: Prompt Confirmation Modal -->
-
 
 <div id="lightbox" class="hidden fixed inset-0 flex items-center justify-center p-4 transition-opacity duration-300">
 <div id="lightbox-bg" class="absolute inset-0"></div>
@@ -326,167 +302,289 @@ gtag('config', 'G-QKGB56ZKQD');
 </div>
 
 <script type="module">
-// --- IMPORT RECIPES ---
+// --- FIX: Import recipesData from the module ---
 import recipesData from './recipes.js';
 
-// --- APPLICATION STATE & CONFIG ---
+// --- STATE & CONFIGURATION ---
 const state = {
-    currentLang: 'vi',
-    currentView: 'home',
-    selectedRecipeId: null,
-    comparisonList: [],
-    lastGeneratedAiRecipe: null,
-    isAILoading: false,
-    quizAnswers: {},
-    activeFilters: { type: 'all', contrast: 'all', saturation: 'all' },
-    isMobileDetailActive: false,
-    lightbox: { isOpen: false, images: [], currentIndex: 0 },
+currentLang: 'vi',
+currentView: 'home',
+selectedRecipeId: null,
+comparisonList: [],
+lastGeneratedAiRecipe: null,
+isAILoading: false,
+quizStep: 0,
+quizAnswers: {},
+activeFilters: { type: 'all', contrast: 'all', saturation: 'all' },
+isMobileDetailActive: false,
+lightbox: { isOpen: false, images: [], currentIndex: 0 },
 };
 
 const mainContentEl = document.getElementById('mainContent');
 let activeCharts = {};
-let promptConfirmationResolver = null;
 
-// --- TRANSLATIONS & QUIZ DATA (RESTORED) ---
+// --- DATA ---
+// The recipesData variable is now correctly imported from recipes.js
+
 const translations = {
-    // General
-    headerTitle: {vi: "Alpha AI Color Lab", en: "Alpha AI Color Lab"},
-    navPictureProfile: {vi: "Picture Profile", en: "Picture Profile"},
-    navRecipeFormulas: {vi:"Công thức màu", en:"Color Recipes"},
-    navFeaturedPhotos: {vi: "Ảnh nổi bật", en: "Featured Photos"},
-    navExplain: {vi:"Giải thích (PP)", en:"Guide (PP)"},
-    noteTitle: {vi:"Lưu ý quan trọng", en:"Important Note"},
-    footerText: {vi: "Phát triển bởi Sony Alpha Vietnam.", en: "Developed by Sony Alpha Vietnam."},
-    exportRecipeBtn: {vi: "Lưu & Xuất Công Thức", en: "Save & Export Recipe"},
-    downloadLutBtn: {vi: "Tải file .CUBE (LUT)", en: "Download .CUBE (LUT) File"},
-    memoryRecallBtn: {vi: "Hướng dẫn lưu vào máy", en: "Camera Save Guide"},
+// General
+headerTitle: {vi: "Alpha AI Color Lab", en: "Alpha AI Color Lab"},
+navPictureProfile: {vi: "Picture Profile", en: "Picture Profile"},
+navRecipeFormulas: {vi:"Công thức màu", en:"Color Recipes"},
+navFeaturedPhotos: {vi: "Ảnh nổi bật", en: "Featured Photos"},
+navExplain: {vi:"Giải thích (PP)", en:"Guide (PP)"},
+noteTitle: {vi:"Lưu ý quan trọng", en:"Important Note"},
+footerText: {vi: "Phát triển bởi Sony Alpha Vietnam.", en: "Developed by Sony Alpha Vietnam."},
+startExploringBtn: {vi: "Bắt đầu khám phá", en: "Start Exploring"},
+exportRecipeBtn: {vi: "Lưu & Xuất Công Thức", en: "Save & Export Recipe"},
+downloadLutBtn: {vi: "Tải file .CUBE (LUT)", en: "Download .CUBE (LUT) File"},
+memoryRecallBtn: {vi: "Hướng dẫn lưu vào máy", en: "Camera Save Guide"},
 
-    // Home / Quiz
-    landingTitle: {vi:"Tìm màu sắc của riêng bạn.", en:"Find Your Signature Color."},
-    landingSubtitle: {vi:"Trả lời vài câu hỏi để khám phá công thức màu được AI tạo ra dành riêng cho tâm trạng và phong cách của bạn.", en:"Answer a few questions to discover a unique color recipe, tailored by AI to your mood and style."},
-    startQuizBtn: {vi:"Khám phá màu của bạn", en:"Discover Your Color"},
-    loadingAnalyze: {vi: "Đang phân tích lựa chọn...", en: "Analyzing your choices..."},
+// Home / Quiz
+landingTitle: {vi:"Tìm màu sắc của riêng bạn.", en:"Find Your Signature Color."},
+landingSubtitle: {vi:"Trả lời vài câu hỏi để khám phá công thức màu được AI tạo ra dành riêng cho tâm trạng và phong cách của bạn.", en:"Answer a few questions to discover a unique color recipe, tailored by AI to your mood and style."},
+startQuizBtn: {vi:"Khám phá màu của bạn", en:"Discover Your Color"},
+quizResultTitle: {vi: "AI đề xuất 2 lựa chọn cho bạn:", en: "AI suggests 2 options for you:"}, // This will be removed in the new logic
+viewInLibraryBtn: {vi: "Xem trong thư viện", en: "View in Library"},
+loadingAnalyze: {vi: "Đang phân tích lựa chọn...", en: "Analyzing your choices..."},
 
-    // Recipe Formulas
-    searchInputPlaceholder: {vi: "🔍 Tìm công thức...", en: "🔍 Search recipes..."},
-    filterType: {vi: "Loại", en: "Type"},
-    filterTypeColor: {vi: "Màu", en: "Color"},
-    filterTypeBW: {vi: "Trắng Đen", en: "B&W"},
-    filterContrast: {vi: "Tương phản", en: "Contrast"},
-    filterSaturation: {vi: "Bão hòa", en: "Saturation"},
-    filterHigh: {vi: "Cao", en: "High"},
-    filterMedium: {vi: "Vừa", en: "Med"},
-    filterLow: {vi: "Thấp", en: "Low"},
-    compareBtn: {vi: "So sánh bằng AI", en: "Compare with AI"},
-    recipeDetailWelcomeTitle: {vi: "Thư viện màu Tương tác", en: "Interactive Color Library"},
-    recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan. Nhấp vào một điểm trên biểu đồ hoặc một công thức trong danh sách để xem chi tiết.", en: "Explore Picture Profile color recipes visually. Click a point on the chart or a recipe in the list to see details."},
-    whiteBalanceTitle: {vi: "Cân bằng trắng (WB)", en: "White Balance (WB)"},
-    recipeSettingsTitle: {vi: "Cài đặt Chính", en: "Main Settings"},
-    colorDepthTitle: {vi: "Độ sâu màu", en: "Color Depth"},
-    detailTitle: {vi: "Chi tiết", en: "Detail"},
-    aiTuningTitle: {vi: "Tinh chỉnh bằng AI", en: "AI Fine-Tuning"},
-    aiTuningPlaceholder: {vi: "Nhập yêu cầu của bạn ở đây... (ví dụ: 'làm cho màu ấm hơn và trong hơn')", en: "Enter your request here... (e.g., 'make it warmer and clearer')"},
-    aiTuningBtn: {vi: "Tạo bằng AI", en: "Generate with AI"},
-    aiResultTitle: {vi: "Công thức đã được AI tinh chỉnh:", en: "AI-Adjusted Recipe:"},
-    compareWithOriginalBtn: {vi: "So sánh với bản gốc", en: "Compare with Original"},
-    comparisonModalTitle: {vi: "So sánh Công thức", en: "Recipe Comparison"},
-    comparisonLoading: {vi: "AI đang phân tích và so sánh...", en: "AI is analyzing and comparing..."},
-    colorChartTitle: {vi: "Biểu đồ Màu", en: "Color Chart"},
-    bwChartTitle: {vi: "Biểu đồ Đơn sắc (B&W)", en: "Monochrome (B&W) Chart"},
-    axisTonality: {vi: "Tương phản (← Mềm | Cứng →)", en: "Tonality (← Soft | Hard →)"},
-    axisSaturation: {vi: "Độ bão hòa (← Thấp | Cao →)", en: "Saturation (← Low | High →)"},
-    axisChroma: {vi: "Độ sâu màu (← Thấp | Cao →)", en: "Chroma Depth (← Low | High →)"},
-    backToListBtn: {vi: "← Quay lại danh sách", en: "← Back to list"},
-    aiExplainRecipeBtn: {vi: "✨ Giải thích bằng AI", en: "✨ Explain with AI"},
-    aiExplanationTitle: {vi: "Giải thích công thức bằng AI:", en: "AI Recipe Explanation:"},
-    aiExplanationLoading: {vi: "AI đang phân tích công thức...", en: "AI is analyzing the recipe..."},
-    aiError: {vi: "Đã có lỗi xảy ra. Vui lòng thử lại.", en: "An error occurred. Please try again."},
-    promptModalTitle: {vi: "Xác nhận Yêu cầu", en: "Confirm Your Request"},
-    promptModalOriginal: {vi: "Yêu cầu gốc của bạn:", en: "Your Original Request:"},
-    promptModalImproved: {vi: "Đề xuất tối ưu từ AI:", en: "AI-Optimized Suggestion:"},
-    promptModalCancel: {vi: "Hủy", en: "Cancel"},
-    promptModalConfirm: {vi: "Xác nhận & Tạo", en: "Confirm & Generate"},
-    promptOptimizationFailed: {vi: "Không thể tối ưu hoá yêu cầu của bạn lúc này. Vui lòng thử lại.", en: "Could not optimize your request at this time. Please try again."},
+// Recipe Formulas
+sidebarTitle: {vi: "Công thức Picture Profile", en: "Picture Profile Recipes"}, // This title will be removed from display
+searchInputPlaceholder: {vi: "🔍 Tìm công thức...", en: "🔍 Search recipes..."},
+filterType: {vi: "Loại", en: "Type"},
+filterTypeColor: {vi: "Màu", en: "Color"},
+filterTypeBW: {vi: "Trắng Đen", en: "B&W"},
+filterContrast: {vi: "Tương phản", en: "Contrast"},
+filterSaturation: {vi: "Bão hòa", en: "Saturation"},
+filterHigh: {vi: "Cao", en: "High"},
+filterMedium: {vi: "Vừa", en: "Med"},
+filterLow: {vi: "Thấp", en: "Low"},
+filterSort: {vi: "Sắp xếp theo", en: "Sort by"},
+sortDefault: {vi: "Mặc định", en: "Default"},
+sortNameAZ: {vi: "Tên A-Z", en: "Name A-Z"},
+sortContrastHL: {vi: "Tương phản: Cao-Thấp", en: "Contrast: High-Low"},
+sortSaturationHL: {vi: "Bão hòa: Cao-Thấp", en: "Saturation: High-Low"},
+compareBtn: {vi: "So sánh bằng AI", en: "Compare with AI"},
+recipeDetailWelcomeTitle: {vi: "Thư viện màu Tương tác", en: "Interactive Color Library"},
+recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan. Nhấp vào một điểm trên biểu đồ hoặc một công thức trong danh sách để xem chi tiết.", en: "Explore Picture Profile color recipes visually. Click a point on the chart or a recipe in the list to see details."},
+whiteBalanceTitle: {vi: "Cân bằng trắng (WB)", en: "White Balance (WB)"},
+recipeSettingsTitle: {vi: "Cài đặt Chính", en: "Main Settings"},
+colorDepthTitle: {vi: "Độ sâu màu", en: "Color Depth"},
+detailTitle: {vi: "Chi tiết", en: "Detail"},
+aiTuningTitle: {vi: "Tinh chỉnh bằng AI", en: "AI Fine-Tuning"},
+aiTuningPlaceholder: {vi: "Nhập yêu cầu của bạn ở đây... (ví dụ: 'làm cho màu ấm hơn và trong hơn')", en: "Enter your request here... (e.g., 'make it warmer and clearer')"},
+aiTuningBtn: {vi: "Tạo bằng AI", en: "Generate with AI"},
+aiResultTitle: {vi: "Công thức đã được AI tinh chỉnh:", en: "AI-Adjusted Recipe:"},
+compareWithOriginalBtn: {vi: "So sánh với bản gốc", en: "Compare with Original"},
+aiSuggestionTitle: {vi: "Gợi ý của AI:", en: "AI Suggestion:"},
+aiSuggestionText: {vi: "Dựa trên yêu cầu của bạn, công thức này có vẻ phù hợp hơn: ", en: "Based on your request, this recipe might be a better fit: "},
+comparisonModalTitle: {vi: "So sánh Công thức", en: "Recipe Comparison"},
+comparisonLoading: {vi: "AI đang phân tích và so sánh...", en: "AI is analyzing and comparing..."},
+colorChartTitle: {vi: "Biểu đồ Màu", en: "Color Chart"},
+bwChartTitle: {vi: "Biểu đồ Đơn sắc (B&W)", en: "Monochrome (B&W) Chart"},
+axisTonality: {vi: "Tương phản (← Mềm | Cứng →)", en: "Tonality (← Soft | Hard →)"},
+axisSaturation: {vi: "Độ bão hòa (← Thấp | Cao →)", en: "Saturation (← Low | High →)"},
+axisChroma: {vi: "Độ sâu màu (← Thấp | Cao →)", en: "Chroma Depth (← Low | High →)"},
+backToListBtn: {vi: "← Quay lại danh sách", en: "← Back to list"},
+aiExplainRecipeBtn: {vi: "✨ Giải thích bằng AI", en: "✨ Explain with AI"},
+aiExplanationTitle: {vi: "Giải thích công thức bằng AI:", en: "AI Recipe Explanation:"},
+aiExplanationLoading: {vi: "AI đang phân tích công thức...", en: "AI is analyzing the recipe..."},
 
-    // Featured Photos
-    featuredTitle: {vi: "Ảnh Nổi Bật từ Cộng Đồng", en: "Featured Photos from the Community"},
-    featuredCta: {vi: "Hãy cùng làm cho thư viện màu của Alpha AI Color Lab và group cộng đồng Sony Alpha Vietnam thêm phong phú! Chia sẻ ảnh của bạn kèm mã màu (ví dụ: 'SCL-82') để cùng nhau tạo nên một không gian đầy cảm hứng.", en: "Let's enrich the Alpha AI Color Lab gallery and the Sony Alpha Vietnam community group! Share your photos with the color code (e.g., 'SCL-82') to create an inspiring space together."},
-    featuredAlbumBtn: {vi: "Xem Album & Đóng góp Ảnh", en: "View Album & Contribute Photos"},
 
-    // Explanation Tab
-    explainHeader: {vi: "Làm Chủ Màu Sắc Cùng Sony Alpha", en:"Mastering Color with Sony Alpha"},
-    explainSubtitle: {vi: "Hướng dẫn toàn diện để tạo ra màu sắc đậm chất riêng cho ảnh tĩnh", en:"A comprehensive guide to creating your unique color signature for stills"},
-    pillarsTitle: {vi: "Hai Trụ Cột Sáng Tạo Màu Sắc", en:"The Two Pillars of Color Creation"},
-    wbPillarTitle: {vi: "Trụ cột 1: White Balance - Nền Tảng Cảm Xúc", en:"Pillar 1: White Balance - The Emotional Foundation"},
-    wbKelvinTitle: { vi: "Nhiệt Độ Kelvin (K): Tạo Tông Màu Chủ Đạo", en: "Kelvin Temperature (K): Creating the Main Tone"},
-    wbKelvinDesc: { vi: 'Sử dụng thang đo Kelvin như một nét cọ lớn để "nhuộm" toàn bộ khung hình bằng tông màu ấm hoặc lạnh, định hình "mood" cho bức ảnh.', en: 'Use the Kelvin scale like a broad brush to "tint" the entire frame with warm or cool tones, shaping the photo\'s mood.'},
-    wbShiftTitle: { vi: "Lưới Tinh Chỉnh (A-B/G-M Shift): Thêm Sắc Thái Tinh Vi", en:"Fine-Tuning Grid (A-B/G-M Shift): Adding Subtle Hues"},
-    wbShiftDesc: { vi: 'Nếu Kelvin là nét cọ lớn, lưới tinh chỉnh là cọ tỉa. Đây là chìa khóa để mô phỏng các loại phim đặc trưng bằng cách thêm các sắc thái Hổ phách/Xanh hoặc Xanh lá/Tím.', en: 'If Kelvin is the broad brush, this is the fine-detail brush. It\'s key to simulating specific films by adding Amber/Blue or Green/Magenta tints.'},
-    ppPillarTitle: {vi: "Trụ cột 2: Picture Profile - Tạo Dáng Vẻ Phim Ảnh", en:"Pillar 2: Picture Profile - Crafting the Film Look"},
-    ppInfographicTitle: {vi: "Quy trình Tinh chỉnh Picture Profile", en:"Picture Profile Adjustment Workflow"},
-    ppItemBlackLevel: { vi: "Black Level (Mức độ đen)", en: "Black Level" },
-    ppItemGamma: { vi: "Gamma", en: "Gamma" },
-    ppItemBlackGamma: { vi: "Black Gamma", en: "Black Gamma" },
-    ppItemKnee: { vi: "Knee (Điểm uốn)", en: "Knee" },
-    ppItemColorMode: { vi: "Color Mode (Chế độ màu)", en: "Color Mode" },
-    ppItemSaturation: { vi: "Saturation (Bão hòa)", en: "Saturation" },
-    ppItemColorPhase: { vi: "Color Phase (Pha màu)", en: "Color Phase" },
-    ppItemColorDepth: { vi: "Color Depth (Độ sâu màu)", en: "Color Depth" },
-    ppItemDetail: { vi: "Detail (Chi tiết)", en: "Detail" },
-    recallTitle: { vi: 'Lưu Trữ & Tái Sử Dụng: Làm Chủ Memory Recall', en: 'Save & Reuse: Mastering Memory Recall' },
-    tutorialTitle: { vi: "Hướng dẫn Cài đặt Nhanh", en: "Quick Setup Guide" },
-    exposureNoteTitle: { vi: "Lưu ý về Phơi sáng", en: "Note on Exposure" },
-    
-    // Quiz Questions (Restored)
-    quizQ1: {vi: "Chủ đề bạn sắp chụp là gì?", en: "What's your subject?"},
-    quizQ1A1: {vi: "Chân dung", en: "Portrait"},
-    quizQ1A2: {vi: "Phong cảnh", en: "Landscape"},
-    quizQ1A3: {vi: "Đường phố / Đô thị", en: "Street / Urban"},
-    quizQ1A4: {vi: "Đời thường", en: "Everyday"},
-    quizQ2: {vi: "Bạn muốn tông màu chủ đạo nào?", en: "What's your desired primary tone?"},
-    quizQ2A1: {vi: "Ấm áp (Vàng, Cam)", en: "Warm (Yellow, Orange)"},
-    quizQ2A2: {vi: "Mát mẻ (Xanh dương)", en: "Cool (Blue)"},
-    quizQ2A3: {vi: "Trung tính", en: "Natural"},
-    quizQ2A4: {vi: "Hoài cổ (Film)", en: "Nostalgic (Film)"},
-    quizQ3: {vi: "Độ tương phản bạn thích?", en: "How about the contrast?"},
-    quizQ3A1: {vi: "Cao (Gắt)", en: "High (Punchy)"},
-    quizQ3A2: {vi: "Thấp (Mềm mại)", en: "Low (Soft)"},
-    quizQ3A3: {vi: "Trung bình", en: "Medium"},
-    quizQ4: {vi: "Bạn thích ảnh màu hay trắng đen?", en: "Color or Black & White?"},
-    quizQ4A1: {vi: "Ảnh màu", en: "Color"},
-    quizQ4A2: {vi: "Ảnh trắng đen", en: "Black & White"},
-    quizQ5: {vi: "Độ bão hòa màu sắc bạn muốn?", en: "What's your preferred saturation?"},
-    quizQ5A1: {vi: "Đậm", en: "High"},
-    quizQ5A2: {vi: "Trung bình", en: "Medium"},
-    quizQ5A3: {vi: "Nhạt", en: "Low"},
+// Featured Photos
+featuredTitle: {vi: "Ảnh Nổi Bật từ Cộng Đồng", en: "Featured Photos from the Community"},
+featuredCta: {vi: "Hãy cùng làm cho thư viện màu của Alpha AI Color Lab và group cộng đồng Sony Alpha Vietnam thêm phong phú! Chia sẻ ảnh của bạn kèm mã màu (ví dụ: 'SCL-82') để cùng nhau tạo nên một không gian đầy cảm hứng.", en: "Let's enrich the Alpha AI Color Lab gallery and the Sony Alpha Vietnam community group! Share your photos with the color code (e.g., 'SCL-82') to create an inspiring space together."},
+featuredAlbumBtn: {vi: "Xem Album & Đóng góp Ảnh", en: "View Album & Contribute Photos"},
+
+// Explanation Tab
+manifestoTitle: { vi: "Gửi những người bạn đồng hành sáng tạo,", en: "To our creative companions," },
+manifestoBody1: { vi: "Chúng tôi hiểu rằng, đối với mỗi người cầm máy, màu sắc không chỉ là một thông số kỹ thuật. Đó là một phần của câu chuyện, là cảm xúc, và là ngôn ngữ không lời bạn dùng để giao tiếp với thế giới.", en: "We understand that, for every photographer, color is more than just a technical parameter. It's part of the story, it's emotion, and it's the non-verbal language you use to communicate with the world." },
+manifestoBody2: { vi: "Có lẽ bạn, cũng như chúng tôi, đã từng trăn trở trên hành trình đi tìm một màu sắc \"độc nhất\" của riêng mình. Một hành trình thường bắt đầu bằng việc cố gắng tái tạo một công thức có sẵn. Nhưng chúng tôi tin rằng tiềm năng sáng tạo của bạn không nên bị giới hạn trong bất kỳ khuôn khổ nào.", en: "Perhaps you, like us, have wrestled with the journey to find a 'unique' color of your own. A journey that often begins by trying to replicate a pre-existing formula. But we believe your creative potential should not be confined to any framework." },
+manifestoBody3: { vi: "Vì vậy, tại Alpha AI Color Lab, chúng tôi theo đuổi một triết lý khác biệt:<br><strong>Không tạo ra những bản sao, mà kiến tạo nên những dấu ấn màu sắc mang đậm tính cá nhân.</strong>", en: "Therefore, at Alpha AI Color Lab, we pursue a different philosophy:<br><strong>We don't create copies; we build personalized color signatures.</strong>" },
+manifestoBody4: { vi: "Dự án này không ra đời để \"giả lập\" một màu phim cụ thể nào. Thay vào đó, chúng tôi xem công cụ Picture Profile mạnh mẽ của Sony như một bảng màu vô hạn. Các chuyên gia của chúng tôi đã dành tâm huyết nghiên cứu, không phải để \"sao chép\", mà để \"sáng tác\" — khai phá những khả năng tiềm ẩn, tạo ra các sắc thái và sự chuyển màu độc đáo mà bạn khó có thể tìm thấy ở nơi khác.", en: "This project was not born to 'emulate' any specific film stock. Instead, we see Sony's powerful Picture Profile tool as an infinite creative palette. Our experts have dedicated their efforts to research, not to 'imitate', but to 'compose'—unlocking hidden potentials to create unique shades and color transitions that you'd be hard-pressed to find elsewhere." },
+manifestoBody5: { vi: "Mỗi công thức bạn tìm thấy tại đây không phải là một bộ lọc có sẵn. Đó là một tác phẩm nguyên bản, được thiết kế đầy chủ ý để giúp bạn khẳng định ngôn ngữ hình ảnh độc đáo của riêng mình.", en: "Every recipe you find here is not a pre-made filter. It is an original work, intentionally designed to help you assert your own unique visual language." },
+manifestoBody6: { vi: "Mục tiêu cuối cùng của chúng tôi là trao cho bạn quyền năng định hình câu chuyện bằng màu sắc, truyền thêm cảm hứng cho mỗi khung hình ngay từ khoảnh khắc bấm máy.", en: "Our ultimate goal is to empower you to shape your own narrative with color, inspiring every frame from the moment you press the shutter." },
+manifestoBody7: { vi: "Hãy ngừng tìm kiếm một vẻ ngoài có sẵn. Hãy bắt đầu hành trình kiến tạo nên dấu ấn của riêng bạn.", en: "Stop searching for a ready-made look. Start the journey of creating your own signature." },
+manifestoSignature: { vi: "Trân trọng,<br><strong>Sony Alpha Vietnam.</strong>", en: "Sincerely,<br><strong>Sony Alpha Vietnam.</strong>" },
+
+explainHeader: {vi: "Làm Chủ Màu Sắc Cùng Sony Alpha", en:"Mastering Color with Sony Alpha"},
+explainSubtitle: {vi: "Hướng dẫn toàn diện để tạo ra màu sắc đậm chất riêng cho ảnh tĩnh", en:"A comprehensive guide to creating your unique color signature for stills"},
+pillarsTitle: {vi: "Hai Trụ Cột Sáng Tạo Màu Sắc", en:"The Two Pillars of Color Creation"},
+wbPillarTitle: {vi: "Trụ cột 1: White Balance - Nền Tảng Cảm Xúc", en:"Pillar 1: White Balance - The Emotional Foundation"},
+ppPillarTitle: {vi: "Trụ cột 2: Picture Profile - Tạo Dáng Vẻ Phim Ảnh", en:"Pillar 2: Picture Profile - Crafting the Film Look"},
+wbKelvinTitle: {vi: "Nhiệt Độ Kelvin (K): Tạo Tông Màu Chủ Đạo", en: "Kelvin Temperature (K): Creating the Main Tone"},
+wbKelvinDesc: {vi: 'Sử dụng thang đo Kelvin như một nét cọ lớn để "nhuộm" toàn bộ khung hình bằng tông màu ấm hoặc lạnh, định hình "mood" cho bức ảnh.', en: 'Use the Kelvin scale like a broad brush to "tint" the entire frame with warm or cool tones, shaping the photo\'s mood.'},
+wbShiftTitle: {vi: "Lưới Tinh Chỉnh (A-B/G-M Shift): Thêm Sắc Thái Tinh Vi", en:"Fine-Tuning Grid (A-B/G-M Shift): Adding Subtle Hues"},
+wbShiftDesc: {vi: 'Nếu Kelvin là nét cọ lớn, lưới tinh chỉnh là cọ tỉa. Đây là chìa khóa để mô phỏng các loại phim đặc trưng bằng cách thêm các sắc thái Hổ phách/Xanh hoặc Xanh lá/Tím.', en: 'If Kelvin is the broad brush, this is the fine-detail brush. It\'s key to simulating specific films by adding Amber/Blue or Green/Magenta tints.'},
+ppInfographicTitle: {vi: "Quy trình Tinh chỉnh Picture Profile", en:"Picture Profile Adjustment Workflow"},
+ppInfographicDesc: {vi: "Làm theo các bước sau để thiết lập Picture Profile từ đầu, cho phép bạn kiểm soát hoàn toàn giao diện cuối cùng của hình ảnh.", en:"Follow these steps to set up a Picture Profile from scratch, giving you full control over the final look of your image."},
+ppItemBlackLevel: {vi: "Black Level (Mức độ đen)", en: "Black Level"},
+ppItemBlackLevelDesc: {vi: "Thiết lập điểm đen (vùng tối nhất). Tăng (+) để nâng vùng tối (tạo look 'faded' hoài cổ), giảm (-) để vùng tối sâu hơn (tăng tương phản).", en: "Sets the black point. Increase (+) to lift shadows (for a 'faded' look), decrease (-) for deeper blacks (more more contrast)."},
+ppItemGamma: {vi: "Gamma", en: "Gamma"},
+ppItemGammaDesc: {vi: "Thiết lập đường cong tương phản (contrast curve). Đây là nền tảng cho 'look' của bạn. Still & Movie cho độ tương phản cao, trong khi các gamma Cine/S-Log cho dải nhạy sáng rộng hơn.", en: "Sets the contrast curve. This is the foundation of your look. Still & Movie are punchy, while Cine/S-Log gammas offer wider dynamic range."},
+ppItemBlackGamma: {vi: "Black Gamma", en: "Black Gamma"},
+ppItemBlackGammaDesc: {vi: "Tinh chỉnh đường cong tương phản ở vùng tối. 'Wide' ảnh hưởng vùng rộng hơn, 'Narrow' ảnh hưởng vùng hẹp hơn.", en: "Fine-tune the contrast curve in the shadow areas. 'Wide' affects a broader range, 'Narrow' affects a smaller range."},
+ppItemKnee: {vi: "Knee (Điểm uốn)", en: "Knee"},
+ppItemKneeDesc: {vi: "Kiểm soát độ nén ở vùng sáng (highlight) để tránh bị 'cháy'. Chế độ tự động (Auto) hoạt động tốt, chế độ thủ công (Manual) cho phép kiểm soát chính xác hơn.", en: "Controls highlight compression to prevent 'clipping'. Auto mode works well; Manual mode gives precise control."},
+ppItemColorMode: {vi: "Color Mode (Chế độ màu)", en: "Color Mode"},
+ppItemColorModeDesc: {vi: "Xác định cách màu sắc được tái tạo. Nên chọn chế độ phù hợp với Gamma đã chọn (ví dụ: Cine4 với Pro/Cinema, S-Log3 với S-Gamut3.Cine).", en: "Determines how colors are reproduced. Should be matched with the chosen Gamma (e.g., Cine4 with Pro/Cinema, S-Log3 with S-Gamut3.Cine)."},
+ppItemSaturation: {vi: "Saturation (Bão hòa)", en: "Saturation"},
+ppItemSaturationDesc: {vi: "Điều chỉnh độ đậm/nhạt tổng thể của tất cả các màu.", en: "Adjusts the overall intensity of all colors."},
+ppItemColorPhase: {vi: "Color Phase (Pha màu)", en: "Color Phase"},
+ppItemColorPhaseDesc: {vi: "Xoay trục màu sắc tổng thể. Hữu ích để tinh chỉnh nhẹ toàn bộ tông màu mà không ảnh hưởng đến từng màu riêng lẻ.", en: "Shifts the overall hue of all colors. Useful for subtle, global color tone adjustments without affecting individual colors."},
+ppItemColorDepth: {vi: "Color Depth (Độ sâu màu)", en: "Color Depth"},
+ppItemColorDepthDesc: {vi: "Công cụ mạnh mẽ nhất. Tăng/giảm độ sáng của từng kênh màu riêng lẻ (Đỏ, Lục, Lam, Lục lam, Tím, Vàng).", en: "The most powerful tool. Increases/decreases the brightness of individual color channels (R, G, B, C, M, Y)."},
+ppItemDetail: {vi: "Detail (Chi tiết)", en: "Detail"},
+ppItemDetailDesc: {vi: "Kiểm soát độ sắc nét. Để có 'look' phim mềm mại, hãy giảm mạnh (ví dụ: -7).", en: "Controls the sharpening. For a soft, filmic look, decrease it significantly (e.g., -7)."},
+recallTitle: { vi: 'Lưu Trữ & Tái Sử Dụng: Làm Chủ Memory Recall', en: 'Save & Reuse: Mastering Memory Recall' },
+recallDesc: { vi: 'Đừng lãng phí công sức! Lưu lại các công thức của bạn vào bộ nhớ của máy ảnh để gọi ra nhanh chóng chỉ bằng một thao tác xoay nút.', en: 'Don\'t waste your effort! Save your recipes to the camera\'s memory for quick recall with a simple turn of a dial.' },
+recallInternalTitle: { vi: 'Bộ Nhớ Trong (1, 2, 3)', en: 'Internal Memory (1, 2, 3)' },
+recallInternalDesc: { vi: 'Lưu trực tiếp vào máy. Truy cập nhanh nhất bằng cách xoay vòng xoay chế độ. Lý tưởng cho các công thức bạn sử dụng hàng ngày.', en: 'Saves directly to the camera. Quickest access via the mode dial. Ideal for your daily-use recipes.' },
+recallCardTitle: { vi: 'Thẻ Nhớ (M1, M2, M3, M4)', en: 'Memory Card (M1, 2, 3, 4)' },
+recallCardDesc: { vi: 'Lưu dưới dạng file trên thẻ nhớ. Cực kỳ hữu ích để sao lưu an toàn hoặc chuyển công thức sang một thân máy Sony khác.', en: 'Saves as a file on your memory card. Extremely useful for backups or transferring recipes to another Sony camera body.' },
+tutorialTitle: { vi: "Hướng dẫn Cài đặt Nhanh", en: "Quick Setup Guide" },
+tutorialStep1Title: { vi: "Bước 1: Tìm Picture Profile", en: "Step 1: Find Picture Profile" },
+tutorialStep1P1: { vi: "<strong>Máy ảnh đời mới:</strong> Menu → Exposure/Color (biểu tượng máy ảnh) → Color/Tone → Picture Profile.", en: "<strong>Newer Cameras:</strong> Menu → Exposure/Color (camera icon) → Color/Tone → Picture Profile." },
+tutorialStep1P2: { vi: "<strong>Máy ảnh đời cũ:</strong> Menu → Color/WB/Img. Processing (biểu tượng bảng màu) → Picture Profile.", en: "<strong>Older Cameras:</strong> Menu → Color/WB/Img. Processing (palette icon) → Picture Profile." },
+tutorialStep2Title: { vi: "Bước 2: Chọn và Reset", en: "Step 2: Select & Reset" },
+tutorialStep2P1: { vi: "Chọn một profile trống (ví dụ: PP10), đi vào trong và nhấn nút 'Xoá' để reset về mặc định.", en: "Choose an empty profile (e.g., PP10), enter it, and press the 'Delete' button to reset it to default." },
+tutorialStep3Title: { vi: "Bước 3: Nhập thông số", en: "Step 3: Enter Parameters" },
+tutorialStep3P1: { vi: "Cẩn thận nhập tất cả các thông số của công thức, từ Black Level đến Detail.", en: "Carefully enter all parameters from the recipe, from Black Level to Detail." },
+tutorialStep4Title: { vi: "Bước 4: Cài đặt White Balance", en: "Step 4: Set White Balance" },
+tutorialStep4P1: { vi: "Thoát khỏi Picture Profile, vào mục <strong>White Balance</strong> và chỉnh theo nhiệt độ K và WB Shift (Color Filter) được ghi trong công thức.", en: "Exit Picture Profile, go to <strong>White Balance</strong>, and adjust the Kelvin temperature and WB Shift (Color Filter) as specified in the recipe." },
+exposureNoteTitle: { vi: "Lưu ý về Phơi sáng", en: "Note on Exposure" },
+exposureNoteDesc: { vi: "Hầu hết các công thức được tối ưu khi chụp ở mức phơi sáng 0EV với chế độ đo sáng 'Toàn màn hình trung bình' (Entire Screen Avg.). Các công thức dựa trên S-Log có thể cần tăng phơi sáng (overexpose) để có kết quả tốt nhất.", en: "Most recipes are optimized for 0EV exposure with 'Entire Screen Avg.' metering mode. Recipes based on S-Log may require overexposure for best results." },
+
+// Quiz Questions
+quizQ1: {vi: "Chủ đề bạn sắp chụp là gì?", en: "What's your subject?"},
+quizQ1A1: {vi: "Chân dung", en: "Portrait"},
+quizQ1A2: {vi: "Phong cảnh", en: "Landscape"},
+quizQ1A3: {vi: "Đường phố / Đô thị", en: "Street / Urban"},
+quizQ1A4: {vi: "Đời thường", en: "Everyday"},
+quizQ2: {vi: "Bạn muốn tông màu chủ đạo nào?", en: "What's your desired primary tone?"},
+quizQ2A1: {vi: "Ấm áp (Vàng, Cam)", en: "Warm (Yellow, Orange)"},
+quizQ2A2: {vi: "Mát mẻ (Xanh dương)", en: "Cool (Blue)"},
+quizQ2A3: {vi: "Trung tính", en: "Natural"},
+quizQ2A4: {vi: "Hoài cổ (Film)", en: "Nostalgic (Film)"},
+quizQ3: {vi: "Độ tương phản bạn thích?", en: "How about the contrast?"},
+quizQ3A1: {vi: "Cao (Gắt)", en: "High (Punchy)"},
+quizQ3A2: {vi: "Thấp (Mềm mại)", en: "Low (Soft)"},
+quizQ3A3: {vi: "Trung bình", en: "Medium"},
+quizQ4: {vi: "Bạn thích ảnh màu hay trắng đen?", en: "Color or Black & White?"},
+quizQ4A1: {vi: "Ảnh màu", en: "Color"},
+quizQ4A2: {vi: "Ảnh trắng đen", en: "Black & White"},
+quizQ5: {vi: "Độ bão hòa màu sắc bạn muốn?", en: "What's your preferred saturation?"},
+quizQ5A1: {vi: "Đậm", en: "High"},
+quizQ5A2: {vi: "Trung bình", en: "Medium"},
+quizQ5A3: {vi: "Nhạt", en: "Low"},
 };
 
 const quizQuestions = [
-    { id: 'subject', title: 'quizQ1', options: [ { key: 'quizQ1A1', value: 'portrait', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>` }, { key: 'quizQ1A2', value: 'landscape', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.59a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>` }, { key: 'quizQ1A3', value: 'urban', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>` }, { key: 'quizQ1A4', value: 'everyday', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 9 3-3 3 3"/><path d="M13 18V2H7"/><path d="m22 15-3 3-3-3"/><path d="m11 6 10 12"/></svg>` } ] },
-    { id: 'tone', title: 'quizQ2', options: [ { key: 'quizQ2A1', value: 'warm', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` }, { key: 'quizQ2A2', value: 'cool', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7L12 22l4-7.3c1.8-1.2 3-3.3 3-5.7a7 7 0 0 0-7-7z"/><path d="M12 9a3 3 0 0 0-3 3c0 1.2.8 2.2 2 2.7l1 1.3l1-1.3c1.2-.5 2-1.5 2-2.7a3 3 0 0 0-3-3z"/></svg>` }, { key: 'quizQ2A3', value: 'natural', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-2 0-4-1-4-4 0-2 2-3 4-3s4 1 4 3c0 3-2 4-4 4z"/><path d="M12 15V2"/><path d="m5 12-3-3 3-3"/><path d="m19 12 3-3-3-3"/></svg>` }, { key: 'quizQ2A4', value: 'vintage', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h4"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M21 7.5h-4"/><path d="M21 12h-4"/><path d="M21 16.5h-4"/></svg>` } ] },
-    { id: 'contrast', title: 'quizQ3', options: [ { key: 'quizQ3A1', value: 'high', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></svg>` }, { key: 'quizQ3A2', value: 'low', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="currentColor" fill-opacity="0.2"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></svg>` }, { key: 'quizQ3A3', value: 'medium', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z" fill="currentColor" fill-opacity="0.5"/></svg>` } ] },
-    { id: 'type', title: 'quizQ4', options: [ { key: 'quizQ4A1', value: 'color', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path></svg>` }, { key: 'quizQ4A2', value: 'bw', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>` } ] },
-    { id: 'saturation', title: 'quizQ5', options: [ { key: 'quizQ5A1', value: 'high', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` }, { key: 'quizQ5A2', value: 'medium', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/></svg>` }, { key: 'quizQ5A3', value: 'low', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` } ] }
+{
+id: 'subject',
+title: 'quizQ1',
+options: [
+{ key: 'quizQ1A1', value: 'portrait', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>` },
+{ key: 'quizQ1A2', value: 'landscape', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.59a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>` },
+{ key: 'quizQ1A3', value: 'urban', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>` },
+{ key: 'quizQ1A4', value: 'everyday', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 9 3-3 3 3"/><path d="M13 18V2H7"/><path d="M22 15l-3 3-3-3"/><path d="m11 6 10 12"/></svg>` }
+]
+},
+{
+id: 'tone',
+title: 'quizQ2',
+options: [
+{ key: 'quizQ2A1', value: 'warm', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` },
+{ key: 'quizQ2A2', value: 'cool', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7L12 22l4-7.3c1.8-1.2 3-3.3 3-5.7a7 7 0 0 0-7-7z"/><path d="M12 9a3 3 0 0 0-3 3c0 1.2.8 2.2 2 2.7l1 1.3l1-1.3c1.2-.5 2-1.5 2-2.7a3 3 0 0 0-3-3z"/></svg>` },
+{ key: 'quizQ2A3', value: 'natural', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-2 0-4-1-4-4 0-2 2-3 4-3s4 1 4 3c0 3-2 4-4 4z"/><path d="M12 15V2"/><path d="m5 12-3-3 3-3"/><path d="m19 12 3-3-3-3"/></svg>` },
+{ key: 'quizQ2A4', value: 'vintage', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h4"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M21 7.5h-4"/><path d="M21 12h-4"/><path d="M21 16.5h-4"/></svg>` }
+]
+},
+{
+id: 'contrast',
+title: 'quizQ3',
+options: [
+{ key: 'quizQ3A1', value: 'high', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></svg>` },
+{ key: 'quizQ3A2', value: 'low', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="currentColor" fill-opacity="0.2"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></svg>` },
+{ key: 'quizQ3A3', value: 'medium', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z" fill="currentColor" fill-opacity="0.5"/></svg>` }
+]
+},
+{
+id: 'type',
+title: 'quizQ4',
+options: [
+{ key: 'quizQ4A1', value: 'color', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path></svg>` },
+{ key: 'quizQ4A2', value: 'bw', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>` }
+]
+},
+{
+id: 'saturation',
+title: 'quizQ5',
+options: [
+{ key: 'quizQ5A1', value: 'high', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` },
+{ key: 'quizQ5A2', value: 'medium', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/></svg>` },
+{ key: 'quizQ5A3', value: 'low', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` }
+]
+}
 ];
 
-// --- CORE AI FUNCTION (REBUILT FOR STABILITY) ---
-async function callAIApi(prompt, generationConfig = null) {
-    if (state.isAILoading) {
-        console.warn("AI call aborted: another request is already in progress.");
-        return null;
-    }
+/**
+ * Calls the Gemini API to get a response.
+ * @param {string} prompt The prompt to send to the AI.
+ * @param {boolean} isStructured Whether to expect a structured JSON response.
+ * @param {number} customDelay A delay to simulate network latency for UX.
+ * @returns {Promise<object|string|null>} The parsed JSON object, a text string, or null if an error occurs.
+ */
+async function callAIApi(prompt, isStructured = false, customDelay = 500) {
+    if (state.isAILoading) return;
     state.isAILoading = true;
-    
-    const apiKey = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ";
-    const model = "gemini-1.5-flash-latest";
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-    const payload = {
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        ...(generationConfig && { generationConfig })
-    };
+    let result = null;
 
     try {
+        // The delay is for simulating network latency, can be removed or kept for UX.
+        await new Promise(resolve => setTimeout(resolve, customDelay));
+
+        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+        const payload = { contents: chatHistory };
+        
+        // The API key will be provided by the execution environment.
+        const apiKey = ""; 
+        const model = "gemini-2.5-flash-preview-05-20";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        if (isStructured) {
+            // Define schema for structured output
+            if (prompt.includes("**Nhiệm vụ:** Tinh chỉnh một công thức")) {
+                // More flexible schema for recipe adjustment
+                payload.generationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "recipe": {
+                                type: "OBJECT",
+                                properties: {
+                                    "name": { "type": "OBJECT", "properties": { "vi": { "type": "STRING" }, "en": { "type": "STRING" } } },
+                                    "description": { "type": "OBJECT", "properties": { "vi": { "type": "STRING" }, "en": { "type": "STRING" } } },
+                                    "whiteBalance": { "type": "STRING" },
+                                    "settings": { "type": "OBJECT", "additionalProperties": { "type": "STRING" } },
+                                    "colorDepth": { "type": "OBJECT", "additionalProperties": { "type": "STRING" } },
+                                    "detailSettings": { "type": "OBJECT", "additionalProperties": { "type": "STRING" } },
+                                    "type": { "type": "STRING" },
+                                    "contrast": { "type": "STRING" },
+                                    "saturation": { "type": "STRING" },
+                                    "tags": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                    "personalityColor": { "type": "STRING" },
+                                    "coords": { "type": "OBJECT", "properties": { "x": { "type": "NUMBER" }, "y": { "type": "NUMBER" } } }
+                                },
+                                required: ["name", "description", "whiteBalance", "settings"]
+                            }
+                        }
+                    }
+                };
+            }
+        }
+
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -494,324 +592,92 @@ async function callAIApi(prompt, generationConfig = null) {
         });
 
         const responseData = await response.json();
+        console.log("Raw AI Response:", responseData); // Log the full response for debugging
 
         if (!response.ok) {
-            console.error("API Error Response:", responseData);
-            throw new Error(`API call failed with status ${response.status}: ${responseData.error?.message || response.statusText}`);
+            console.error(`API call failed with status ${response.status}:`, responseData);
+            throw new Error(`API call failed: ${response.statusText}`);
         }
 
         if (responseData.candidates && responseData.candidates[0]?.content?.parts?.[0]) {
             const text = responseData.candidates[0].content.parts[0].text;
-            if (generationConfig?.responseMimeType === "application/json") {
+            if (isStructured) {
                 try {
-                    const cleanedText = text.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-                    return JSON.parse(cleanedText);
+                    result = JSON.parse(text);
                 } catch (e) {
-                    console.error("AI Response JSON Parsing Error:", e, "Raw text:", text);
-                    return null;
+                    console.error("AI Response JSON parsing error:", e);
+                    console.error("Raw AI response text that failed parsing:", text);
+                    result = null;
                 }
+            } else {
+                result = text;
             }
-            return text;
         } else {
-            console.error("No valid content in AI response:", responseData);
-            if (responseData.candidates?.[0]?.finishReason === 'SAFETY') {
-                console.error('AI response blocked due to safety settings:', responseData.candidates[0].safetyRatings);
+            // Log safety ratings or other reasons for no content
+            if(responseData.candidates && responseData.candidates[0]?.finishReason) {
+                 console.error("AI response finished with reason:", responseData.candidates[0].finishReason);
+                 if(responseData.candidates[0].safetyRatings) {
+                       console.error("Safety Ratings:", responseData.candidates[0].safetyRatings);
+                 }
+            } else {
+                 console.error("Unexpected AI response structure or empty content:", responseData);
             }
-            return null;
+            result = isStructured ? null : "";
         }
     } catch (error) {
-        console.error("Full error in callAIApi:", error);
-        return null;
+        console.error("AI API call failed in catch block:", error);
+        result = isStructured ? null : "";
     } finally {
         state.isAILoading = false;
         updateUIAfterAILoading();
+        return result;
     }
 }
 
-// --- UTILITY & HELPER FUNCTIONS ---
-function t(key) { return translations[key]?.[state.currentLang] || key; }
-
-function applyTranslations() {
-    document.querySelectorAll('[data-translate-key]').forEach(el => {
-        const key = el.dataset.translateKey;
-        if (translations[key] && translations[key][state.currentLang]) {
-            const translation = t(key);
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                el.placeholder = translation;
-            } else {
-                el.innerHTML = translation;
-            }
-        }
-    });
-    document.getElementById('langVI').classList.toggle('active', state.currentLang === 'vi');
-    document.getElementById('langEN').classList.toggle('active', state.currentLang === 'en');
-}
-
+/**
+ * Formats a recipe object into a clean, readable string for AI prompts.
+ * @param {object} recipe The recipe object.
+ * @param {string} lang The current language ('vi' or 'en').
+ * @returns {string} A formatted string detailing the recipe.
+ */
 function formatRecipeForPrompt(recipe, lang) {
     const settings = recipe.settings ? Object.entries(recipe.settings).map(([k, v]) => `- ${k}: ${v}`).join('\n') : 'N/A';
     const colorDepth = recipe.colorDepth ? Object.entries(recipe.colorDepth).map(([k, v]) => `- ${k}: ${v}`).join('\n') : 'N/A';
     const detail = recipe.detailSettings ? Object.entries(recipe.detailSettings).map(([k, v]) => `- ${k}: ${v}`).join('\n') : 'N/A';
-    return `Tên: ${recipe.name[lang]}\nMô tả: ${recipe.description[lang]}\nCân bằng trắng: ${recipe.whiteBalance}\nCài đặt chính:\n${settings}\nĐộ sâu màu:\n${colorDepth}\nChi tiết:\n${detail}`.trim();
-}
 
-function updateUIAfterAILoading() {
-    document.querySelectorAll('button:disabled').forEach(btn => {
-        if (btn.querySelector('.spinner')) {
-            btn.innerHTML = btn.dataset.originalText || '';
-            btn.disabled = false;
-        }
-    });
-}
-
-// --- MODAL & LIGHTBOX FUNCTIONS ---
-function showPromptConfirmationModal(originalPrompt, improvedPrompt) {
-    document.getElementById('originalPromptText').textContent = originalPrompt;
-    document.getElementById('improvedPromptText').textContent = improvedPrompt;
-    document.getElementById('promptConfirmationModal').classList.remove('hidden');
-    return new Promise((resolve) => { promptConfirmationResolver = resolve; });
-}
-
-function closePromptConfirmationModal() {
-    document.getElementById('promptConfirmationModal').classList.add('hidden');
-    if (promptConfirmationResolver) {
-        promptConfirmationResolver(null);
-        promptConfirmationResolver = null;
-    }
-}
-
-function openLightbox(images, initialIndex = 0) {
-    if (!images || images.length === 0) return;
-    Object.assign(state.lightbox, { isOpen: true, images, currentIndex: initialIndex });
-    document.getElementById('lightbox').classList.remove('hidden');
-    updateLightboxContent();
-}
-
-function closeLightbox() {
-    state.lightbox.isOpen = false;
-    document.getElementById('lightbox').classList.add('hidden');
-}
-
-function updateLightboxContent() {
-    if (!state.lightbox.isOpen) return;
-    const { images, currentIndex } = state.lightbox;
-    const mainImageEl = document.getElementById('lightbox-main-image');
-    const thumbnailsContainer = document.getElementById('lightbox-thumbnails');
-    
-    mainImageEl.style.opacity = '0';
-    setTimeout(() => {
-        mainImageEl.src = images[currentIndex];
-        mainImageEl.onload = () => { mainImageEl.style.opacity = '1'; };
-    }, 150);
-
-    thumbnailsContainer.innerHTML = images.map((imgSrc, index) =>
-        `<img src="${imgSrc}" loading="lazy" class="lightbox-thumb w-16 h-16 md:w-20 md:h-20 object-cover rounded-md ${index === currentIndex ? 'active' : ''}" data-index="${index}">`
-    ).join('');
-}
-
-function navigateLightbox(direction) {
-    if (!state.lightbox.isOpen) return;
-    const { images } = state.lightbox;
-    let newIndex = state.lightbox.currentIndex + direction;
-    if (newIndex < 0) newIndex = images.length - 1;
-    else if (newIndex >= images.length) newIndex = 0;
-    state.lightbox.currentIndex = newIndex;
-    updateLightboxContent();
+    return `
+Tên: ${recipe.name[lang]}
+Mô tả: ${recipe.description[lang]}
+Cân bằng trắng: ${recipe.whiteBalance}
+Cài đặt chính:
+${settings}
+Độ sâu màu:
+${colorDepth}
+Chi tiết:
+${detail}
+`.trim();
 }
 
 
-// --- AI FEATURE HANDLERS (REBUILT) ---
-async function handleAiComparison(id1, id2, recipe2Obj = null) {
-    const modal = document.getElementById('comparisonModal');
-    const titleEl = document.getElementById('comparisonModalTitle');
-    const contentEl = document.getElementById('comparisonModalContent');
-    modal.classList.remove('hidden');
-    titleEl.textContent = t('comparisonModalTitle');
-    contentEl.innerHTML = `<div class="flex items-center justify-center p-8"><div class="spinner !w-12 !h-12 !border-4"></div><p class="ml-4 text-lg font-semibold">${t('comparisonLoading')}</p></div>`;
-    
-    const recipe1 = recipesData.find(r => r.id === id1);
-    const recipe2 = recipe2Obj ? { ...recipe2Obj, id: 'ai-adjusted', name: recipe2Obj.name } : recipesData.find(r => r.id === id2);
+function t(key) { return translations[key]?.[state.currentLang] || key; }
 
-    const prompt = `
-Hãy là một chuyên gia về màu sắc nhiếp ảnh. So sánh hai công thức Sony Picture Profile sau đây.
-**Yêu cầu:**
-1. Tạo một bảng Markdown so sánh chi tiết các thông số kỹ thuật chính.
-2. Sau bảng, viết một đoạn phân tích chuyên sâu về "cảm giác" và "phong cách" của mỗi công thức.
-3. Đề xuất các tình huống sử dụng (ví dụ: chân dung, phong cảnh, đường phố) và điều kiện ánh sáng lý tưởng cho từng công thức.
-4. Trình bày toàn bộ kết quả bằng định dạng Markdown.
-5. **Quan trọng:** Viết toàn bộ câu trả lời bằng ngôn ngữ sau: ${state.currentLang === 'vi' ? 'Tiếng Việt' : 'English'}.
-
-**Công thức 1:**
-${formatRecipeForPrompt(recipe1, state.currentLang)}
-
-**Công thức 2:**
-${formatRecipeForPrompt(recipe2, state.currentLang)}
-`;
-
-    const comparisonText = await callAIApi(prompt);
-    contentEl.innerHTML = comparisonText ? marked.parse(comparisonText) : `<p class="text-red-500 text-center">${t('aiError')}</p>`;
+function applyTranslations() {
+document.querySelectorAll('[data-translate-key]').forEach(el => {
+const key = el.dataset.translateKey;
+if (translations[key] && translations[key][state.currentLang]) {
+if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = t(key); }
+else if (el.tagName === 'OPTION') { el.textContent = t(key); }
+else { el.innerHTML = t(key); }
+}
+});
+document.querySelectorAll('.nav-btn-mobile').forEach(btn => {
+const key = 'nav' + btn.dataset.view.charAt(0).toUpperCase() + btn.dataset.view.slice(1);
+btn.textContent = t(key);
+});
+document.getElementById('langVI').classList.toggle('active', state.currentLang === 'vi');
+document.getElementById('langEN').classList.toggle('active', state.currentLang === 'en');
 }
 
-async function handleAiRecipeExplanation(button) {
-    const recipeId = button.dataset.recipeId;
-    const explanationContainer = document.getElementById('aiExplanationContainer');
-    if (!explanationContainer || state.isAILoading) return;
-
-    button.disabled = true;
-    button.dataset.originalText = button.innerHTML;
-    button.innerHTML = `<div class="spinner"></div> ${t('aiExplainRecipeBtn')}`;
-    explanationContainer.innerHTML = `<div class="flex items-center justify-center p-4"><div class="spinner"></div><p class="ml-2 text-base font-semibold">${t('aiExplanationLoading')}</p></div>`;
-    explanationContainer.classList.remove('hidden');
-
-    const recipe = recipesData.find(r => r.id === recipeId);
-    const prompt = `
-Hãy là một chuyên gia về màu sắc nhiếp ảnh. Phân tích công thức Sony Picture Profile sau đây.
-**Yêu cầu:**
-1. Giải thích súc tích, dễ hiểu về đặc điểm và ý đồ nghệ thuật của công thức này.
-2. Phân tích cách các thông số chính (Cân bằng trắng, Gamma, Mức độ đen, Chế độ màu, Độ sâu màu) phối hợp với nhau để tạo ra phong cách độc đáo.
-3. Gợi ý các tình huống chụp và loại chủ thể lý tưởng (ví dụ: chân dung ngoài trời, kiến trúc, thời trang).
-4. Trình bày toàn bộ kết quả bằng định dạng Markdown.
-5. **Quan trọng:** Viết toàn bộ câu trả lời bằng ngôn ngữ sau: ${state.currentLang === 'vi' ? 'Tiếng Việt' : 'English'}.
-
-**Công thức cần phân tích:**
-${formatRecipeForPrompt(recipe, state.currentLang)}
-`;
-
-    const aiResponse = await callAIApi(prompt);
-    if (aiResponse) {
-        explanationContainer.innerHTML = `<div class="mt-4 p-4 rounded-xl bg-blue-50"><h4 class="font-bold text-lg mb-2" data-translate-key="aiExplanationTitle"></h4><div class="prose max-w-none text-gray-700">${marked.parse(aiResponse)}</div></div>`;
-    } else {
-        explanationContainer.innerHTML = `<p class="text-red-500 text-center">${t('aiError')}</p>`;
-    }
-    button.disabled = false;
-    button.innerHTML = button.dataset.originalText;
-    applyTranslations();
-}
-
-async function handleAiAdjustment(button) {
-    const recipeId = button.dataset.recipeId;
-    const textarea = document.getElementById('aiTuningTextarea');
-    const userInput = textarea.value.trim();
-    const resultContainer = document.getElementById('aiResultContainer');
-
-    if (!userInput || state.isAILoading) return;
-
-    button.disabled = true;
-    button.dataset.originalText = button.innerHTML;
-    button.innerHTML = `<div class="spinner"></div> ${t('aiTuningBtn')}`;
-    resultContainer.innerHTML = '';
-
-    // --- Step 1: Improve the user's prompt ---
-    const language = state.currentLang === 'vi' ? 'Vietnamese' : 'English';
-    const improvePromptSystemInstruction = `As a prompt engineering expert, rewrite the following user request for adjusting a Sony Picture Profile recipe into a more detailed and effective prompt for a downstream AI model. The rewritten prompt should be clear, specific, and maintain the original intent and language (${language}). Return ONLY the rewritten prompt text, with no extra explanation, preamble, or quotation marks.`;
-    
-    const improvedPromptText = await callAIApi(`${improvePromptSystemInstruction}\n\nOriginal User Request: "${userInput}"`);
-
-    button.disabled = false;
-    button.innerHTML = button.dataset.originalText;
-
-    if (!improvedPromptText) {
-        resultContainer.innerHTML = `<p class="text-red-500 text-center font-semibold mt-4">${t('promptOptimizationFailed')}</p>`;
-        return;
-    }
-    
-    // --- Step 2: Show confirmation modal ---
-    const confirmedPrompt = await showPromptConfirmationModal(userInput, improvedPromptText.trim());
-    if (!confirmedPrompt) return; // User cancelled
-    
-    // --- Step 3: Generate the recipe with the confirmed prompt ---
-    button.disabled = true;
-    button.innerHTML = `<div class="spinner"></div> ${t('aiTuningBtn')}`;
-    
-    const originalRecipe = recipesData.find(r => r.id === recipeId);
-    
-    const finalPrompt = `
-**Nhiệm vụ:** Tinh chỉnh một công thức Sony Picture Profile dựa trên yêu cầu của người dùng.
-**Định dạng đầu ra:** Chỉ trả về một đối tượng JSON duy nhất chứa khóa "recipe". Không giải thích, không thêm bất kỳ văn bản nào khác.
-**Công thức gốc:**
-${formatRecipeForPrompt(originalRecipe, state.currentLang)}
-**Yêu cầu đã được tối ưu:** "${confirmedPrompt}"
-**Hướng dẫn:**
-1. Đọc kỹ yêu cầu đã được tối ưu.
-2. Chỉ thay đổi các giá trị trong \`whiteBalance\`, \`settings\`, \`colorDepth\`, và \`detailSettings\` để đáp ứng yêu cầu.
-3. Giữ nguyên cấu trúc của công thức gốc.
-4. Cập nhật trường \`name\` và \`description\` bằng ${language} để phản ánh sự thay đổi. Ví dụ: thêm "(AI Tinh chỉnh)" vào tên.
-5. Trả về đối tượng JSON hợp lệ theo schema đã cung cấp.
-`;
-
-    const generationConfig = {
-        responseMimeType: "application/json",
-        responseSchema: {
-            type: "OBJECT",
-            properties: { "recipe": { type: "OBJECT" } }
-        }
-    };
-
-    const aiResponse = await callAIApi(finalPrompt, generationConfig);
-    
-    if (aiResponse && aiResponse.recipe) {
-        const adjustedRecipe = { ...JSON.parse(JSON.stringify(originalRecipe)), ...aiResponse.recipe };
-        adjustedRecipe.id = `${originalRecipe.id}-ai`;
-        state.lastGeneratedAiRecipe = adjustedRecipe;
-        resultContainer.innerHTML = `<div class="mt-6 border-t border-gray-200/50 pt-6">
-            <h4 class="font-bold text-lg mb-2" data-translate-key="aiResultTitle"></h4>
-            <div class="p-4 rounded-xl bg-blue-50">${createFullRecipeHTML(state.lastGeneratedAiRecipe, false)}</div>
-            <button id="compareWithOriginalBtn" data-original-id="${recipeId}" class="btn bg-gray-200 text-black w-full mt-4 py-3" data-translate-key="compareWithOriginalBtn"></button>
-        </div>`;
-    } else {
-        resultContainer.innerHTML = `<p class="text-red-500 text-center font-semibold mt-4">${t('promptOptimizationFailed')}</p>`;
-    }
-    
-    button.disabled = false; 
-    button.innerHTML = button.dataset.originalText; 
-    applyTranslations();
-}
-
-async function handleQuizSubmit() {
-    const selectedTags = Object.values(state.quizAnswers);
-    
-    await renderView('home');
-    const homeView = document.getElementById('homeView');
-    if (!homeView) { console.error("Quiz Submit Error: homeView not found after render."); return; }
-    homeView.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><div class="spinner !w-16 !h-16 !border-4"></div><h2 class="landing-title mt-8" data-translate-key="loadingAnalyze"></h2></div>`;
-    applyTranslations();
-    await new Promise(resolve => setTimeout(resolve, 400));
-
-    let maxScore = -1;
-    let bestLocalRecipe = null;
-
-    recipesData.forEach(recipe => {
-        let score = 0;
-        selectedTags.forEach(tag => {
-            if (recipe.tags.includes(tag)) score++;
-        });
-        
-        if (state.quizAnswers.type && recipe.type === state.quizAnswers.type) score += 5; 
-        if (state.quizAnswers.contrast && recipe.contrast === state.quizAnswers.contrast) score += 2; 
-        if (state.quizAnswers.saturation && recipe.saturation === state.quizAnswers.saturation) score += 2; 
-
-        if (score > maxScore) {
-            maxScore = score;
-            bestLocalRecipe = recipe;
-        }
-    });
-
-    const recommendedRecipe = bestLocalRecipe || recipesData[0];
-    
-    if (recommendedRecipe) {
-        state.selectedRecipeId = recommendedRecipe.id;
-        state.isMobileDetailActive = true;
-        await renderView('recipeFormulas');
-    } else {
-        await renderView('home');
-        const fallbackHomeView = document.getElementById('homeView');
-        if(fallbackHomeView) {
-            fallbackHomeView.innerHTML = `<p class="text-red-500">Không thể tìm thấy công thức phù hợp. Vui lòng thử lại.</p>`;
-        }
-    }
-}
-
-
-// --- UI RENDERING & VIEW MANAGEMENT ---
 function createSettingsGrid(settings) {
 if (!settings) return '';
 return Object.entries(settings).map(([key, value]) => `<div class="flex flex-col"><span class="text-xs text-neutral-500">${key}</span><span class="font-semibold text-lg">${value}</span></div>`).join('');
@@ -831,6 +697,15 @@ return `${noteHTML}<div class="space-y-6 mt-6">
               ${recipe.colorDepth ? `<div><h4 class="${titleClass} mb-2" data-translate-key="colorDepthTitle"></h4><div class="grid grid-cols-3 sm:grid-cols-6 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.colorDepth)}</div></div>` : ''}
               ${recipe.detailSettings ? `<div><h4 class="${titleClass} mb-2" data-translate-key="detailTitle"></h4><div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.detailSettings)}</div></div>` : ''}
         </div>`;
+}
+
+function updateUIAfterAILoading() {
+document.querySelectorAll('button:disabled').forEach(btn => {
+if (btn.querySelector('.spinner')) {
+btn.innerHTML = btn.dataset.originalText || '';
+btn.disabled = false;
+}
+});
 }
 
 const viewTemplates = {
@@ -867,21 +742,28 @@ return `<div id="quizView" class="w-full h-full absolute inset-0 overflow-y-auto
 
 recipeFormulas: () => `
                   <div id="recipeFormulasView" class="w-full h-full flex flex-col md:flex-row gap-6 absolute inset-0 view-transition">
+                      <!-- Left Panel: Recipe List & Mobile Filters -->
                       <aside id="recipeListPanel" class="w-full md:w-1/3 lg:w-[30%] xl:w-1/4 glass-panel p-4 md:p-6 flex flex-col flex-shrink-0 md:flex">
+                          <!-- Removed h2 title: <h2 class="text-2xl md:text-3xl font-bold" data-translate-key="sidebarTitle"></h2> -->
                           <input type="search" id="searchInput" class="w-full p-3 my-4 rounded-xl bg-gray-200/50 border-2 border-transparent focus:border-blue-500 focus:bg-white transition-all" data-translate-key="searchInputPlaceholder">
                           
+                          <!-- FILTERS FOR MOBILE - hidden on medium screens and up -->
                           <div class="space-y-4 text-sm mb-4 md:hidden">
                               <div><h4 class="font-semibold mb-2" data-translate-key="filterType"></h4><div class="flex gap-2" data-filter-group="type"><button class="filter-btn flex-1 py-2 px-3 rounded-full active" data-filter-value="all">All</button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterTypeColor" data-filter-value="color"></button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterTypeBW" data-filter-value="bw"></button></div></div>
                               <div><h4 class="font-semibold mb-2" data-translate-key="filterContrast"></h4><div class="flex gap-2" data-filter-group="contrast"><button class="filter-btn flex-1 py-2 px-3 rounded-full active" data-filter-value="all">All</button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterHigh" data-filter-value="high"></button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterMedium" data-filter-value="medium"></button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterLow" data-filter-value="low"></button></div></div>
                               <div><h4 class="font-semibold mb-2" data-translate-key="filterSaturation"></h4><div class="flex gap-2" data-filter-group="saturation"><button class="filter-btn flex-1 py-2 px-3 rounded-full active" data-filter-value="all">All</button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterHigh" data-filter-value="high"></button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterMedium" data-filter-value="medium"></button><button class="filter-btn flex-1 py-2 px-3 rounded-full" data-translate-key="filterLow" data-filter-value="low"></button></div></div>
                           </div>
 
+                          <!-- The recipe list itself -->
                           <div id="recipeListContainer" class="space-y-2 md:pt-0 pt-4 border-t md:border-t-0 flex-grow overflow-y-auto pr-2 -mr-3"></div>
                           
+                          <!-- Compare button at the bottom -->
                           <div id="compareBtnContainer" class="pt-4 flex-shrink-0 border-t mt-auto"></div>
                       </aside>
 
+                      <!-- Right Panel: Details, Charts, and now Desktop Filters -->
                       <main id="recipeMainPanel" class="w-full md:w-2/3 lg:w-[70%] xl:w-3/4 flex-col min-h-0 hidden md:flex">
+                          <!-- FILTERS FOR DESKTOP - hidden on small screens -->
                           <div id="filtersContainerDesktop" class="glass-panel p-4 mb-6 hidden md:flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
  <div class="flex items-center gap-3"><h4 class="font-semibold shrink-0" data-translate-key="filterType"></h4><div class="flex gap-2" data-filter-group="type"><button class="filter-btn py-2 px-3 rounded-full active" data-filter-value="all">All</button><button class="filter-btn py-2 px-3 rounded-full" data-translate-key="filterTypeColor" data-filter-value="color"></button><button class="filter-btn py-2 px-3 rounded-full" data-translate-key="filterTypeBW" data-filter-value="bw"></button></div></div>
  <div class="flex items-center gap-3"><h4 class="font-semibold shrink-0" data-translate-key="filterContrast"></h4><div class="flex gap-2" data-filter-group="contrast"><button class="filter-btn py-2 px-3 rounded-full active" data-filter-value="all">All</button><button class="filter-btn py-2 px-3 rounded-full" data-translate-key="filterHigh" data-filter-value="high"></button><button class="filter-btn py-2 px-3 rounded-full" data-translate-key="filterMedium" data-filter-value="medium"></button><button class="filter-btn py-2 px-3 rounded-full" data-translate-key="filterLow" data-filter-value="low"></button></div></div>
@@ -1036,374 +918,804 @@ explain: () => `
           </div>`
 };
 
-// --- UI RENDERING & VIEW MANAGEMENT ---
-function createSettingsGrid(settings) {
-if (!settings) return '';
-return Object.entries(settings).map(([key, value]) => `<div class="flex flex-col"><span class="text-xs text-neutral-500">${key}</span><span class="font-semibold text-lg">${value}</span></div>`).join('');
-};
+function openLightbox(images, initialIndex = 0) {
+if (!images || images.length === 0) return;
+state.lightbox.isOpen = true;
+state.lightbox.images = images;
+state.lightbox.currentIndex = initialIndex;
+const lightboxEl = document.getElementById('lightbox');
+lightboxEl.classList.remove('hidden');
+updateLightboxContent();
+}
 
-function createFullRecipeHTML(recipe, isMainView = false) {
-const titleClass = isMainView ? 'text-xl font-bold' : 'text-lg font-bold';
-const noteHTML = (recipe.notes && recipe.notes[state.currentLang])
-? `<div class="mt-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-xl">
-                                  <p class="font-bold" data-translate-key="noteTitle"></p>
-                                  <p>${recipe.notes[state.currentLang]}</p>
-                                </div>` : '';
+function closeLightbox() {
+state.lightbox.isOpen = false;
+document.getElementById('lightbox').classList.add('hidden');
+}
 
-return `${noteHTML}<div class="space-y-6 mt-6">
-              <div><h4 class="${titleClass} mb-2" data-translate-key="whiteBalanceTitle"></h4><div class="p-4 bg-black/5 rounded-xl"><p class="font-semibold text-lg">${recipe.whiteBalance || ''}</p></div></div>
-              <div><h4 class="${titleClass} mb-2" data-translate-key="recipeSettingsTitle"></h4><div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.settings)}</div></div>
-              ${recipe.colorDepth ? `<div><h4 class="${titleClass} mb-2" data-translate-key="colorDepthTitle"></h4><div class="grid grid-cols-3 sm:grid-cols-6 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.colorDepth)}</div></div>` : ''}
-              ${recipe.detailSettings ? `<div><h4 class="${titleClass} mb-2" data-translate-key="detailTitle"></h4><div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.detailSettings)}</div></div>` : ''}
-        </div>`;
+function updateLightboxContent() {
+if (!state.lightbox.isOpen) return;
+const mainImageEl = document.getElementById('lightbox-main-image');
+const thumbnailsContainer = document.getElementById('lightbox-thumbnails');
+const newSrc = state.lightbox.images[state.lightbox.currentIndex];
+mainImageEl.style.opacity = '0';
+setTimeout(() => {
+mainImageEl.src = newSrc;
+mainImageEl.onload = () => { mainImageEl.style.opacity = '1'; };
+}, 150);
+
+thumbnailsContainer.innerHTML = state.lightbox.images.map((imgSrc, index) => `
+                  <img src="${imgSrc}" loading="lazy" class="lightbox-thumb w-16 h-16 md:w-20 md:h-20 object-cover rounded-md ${index === state.lightbox.currentIndex ? 'active' : ''}" data-index="${index}">
+              `).join('');
+}
+
+function navigateLightbox(direction) {
+if (!state.lightbox.isOpen) return;
+const imageCount = state.lightbox.images.length;
+let newIndex = state.lightbox.currentIndex + direction;
+if (newIndex < 0) newIndex = imageCount - 1;
+else if (newIndex >= imageCount) newIndex = 0;
+state.lightbox.currentIndex = newIndex;
+updateLightboxContent();
 }
 
 function destroyAllCharts() {
-    Object.values(activeCharts).forEach(chart => { if(chart && typeof chart.destroy === 'function') chart.destroy(); });
-    activeCharts = {};
+Object.values(activeCharts).forEach(chart => { if(chart && typeof chart.destroy === 'function') chart.destroy(); });
+activeCharts = {};
 }
 
+function initInteractiveGrid() {
+const grid = document.getElementById('abgm-grid');
+const pointer = document.getElementById('abgm-pointer');
+const valuesDisplay = document.getElementById('abgm-values');
+if (!grid || !pointer || !valuesDisplay) return;
+
+let isDragging = false;
+
+function updatePosition(clientX, clientY) {
+const rect = grid.getBoundingClientRect();
+let x = clientX - rect.left;
+let y = clientY - rect.top;
+
+x = Math.max(0, Math.min(x, rect.width));
+y = Math.max(0, Math.min(y, rect.height));
+
+pointer.style.left = `${x}px`;
+pointer.style.top = `${y}px`;
+
+const abValue = Math.round((x / rect.width) * 18 - 9);
+const gmValue = Math.round(((rect.height - y) / rect.height) * 18 - 9);
+
+const abLabel = abValue > 0 ? `A${abValue}` : (abValue < 0 ? `B${Math.abs(abValue)}` : '0');
+const gmLabel = gmValue > 0 ? `G${gmValue}` : (gmValue < 0 ? `M${Math.abs(gmValue)}` : '0');
+
+valuesDisplay.textContent = `${abLabel}, ${gmLabel}`;
+}
+
+grid.addEventListener('mousedown', (e) => {
+isDragging = true;
+updatePosition(e.clientX, e.clientY);
+});
+
+grid.addEventListener('touchstart', (e) => {
+isDragging = true;
+updatePosition(e.touches[0].clientX, e.touches[0].clientY);
+e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+if (isDragging) updatePosition(e.clientX, e.clientY);
+});
+
+document.addEventListener('touchmove', (e) => {
+if (isDragging) updatePosition(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+document.addEventListener('mouseup', () => { isDragging = false; });
+document.addEventListener('touchend', () => { isDragging = false; });
+}
+
+
 function renderView(viewName) {
-    return new Promise(resolve => {
-        const currentContent = mainContentEl.children[0];
-        if (currentContent) {
-            currentContent.classList.add('view-transition-out');
-            destroyAllCharts();
-            currentContent.addEventListener('animationend', () => {
-                mainContentEl.innerHTML = viewTemplates[viewName]();
-                attachViewEventListeners(viewName);
-                applyTranslations();
-                resolve();
-            }, { once: true });
-        } else {
-            mainContentEl.innerHTML = viewTemplates[viewName]();
-            attachViewEventListeners(viewName);
-            applyTranslations();
-            resolve();
+return new Promise(resolve => {
+const currentContent = mainContentEl.children[0];
+if (currentContent) {
+currentContent.classList.add('view-transition-out');
+destroyAllCharts();
+currentContent.addEventListener('animationend', () => {
+mainContentEl.innerHTML = viewTemplates[viewName]();
+attachViewEventListeners(viewName);
+applyTranslations();
+resolve();
+}, { once: true });
+} else {
+mainContentEl.innerHTML = viewTemplates[viewName]();
+attachViewEventListeners(viewName);
+applyTranslations();
+resolve();
+}
+});
+}
+
+function handleFilterClick(e) {
+const btn = e.target.closest('.filter-btn'); if (!btn) return;
+const group = btn.closest('[data-filter-group]').dataset.filterGroup;
+const value = btn.dataset.filterValue;
+state.activeFilters[group] = value;
+
+// Syncs active state across both mobile and desktop filter sets
+document.querySelectorAll(`[data-filter-group="${group}"] .filter-btn`).forEach(b => {
+b.classList.toggle('active', b.dataset.filterValue === value);
+});
+
+renderLibraryList();
+}
+
+function handleRecipeSelection(id, type) {
+if (type === 'checkbox') {
+const index = state.comparisonList.indexOf(id);
+if (index > -1) { state.comparisonList.splice(index, 1); }
+else if (state.comparisonList.length < 2) { state.comparisonList.push(id); }
+} else {
+if (state.selectedRecipeId === id) {
+state.selectedRecipeId = null;
+state.isMobileDetailActive = false;
+} else {
+state.selectedRecipeId = id;
+state.isMobileDetailActive = true;
+}
+state.comparisonList = [];
+}
+renderLibraryList();
+renderLibraryDetails();
+
+if (activeCharts.color && typeof activeCharts.color.update === 'function') { activeCharts.color.update(); }
+if (activeCharts.bw && typeof activeCharts.bw.update === 'function') { activeCharts.bw.update(); }
+}
+
+async function handleAiComparison(id1, id2, recipe2Obj = null) {
+    const modal = document.getElementById('comparisonModal');
+    const titleEl = document.getElementById('comparisonModalTitle');
+    const contentEl = document.getElementById('comparisonModalContent');
+    modal.classList.remove('hidden');
+    titleEl.textContent = t('comparisonModalTitle');
+    contentEl.innerHTML = `<div class="flex items-center justify-center p-8"><div class="spinner !w-12 !h-12 !border-4"></div><p class="ml-4 text-lg font-semibold">${t('comparisonLoading')}</p></div>`;
+    
+    const recipe1 = recipesData.find(r => r.id === id1);
+    const recipe2 = recipe2Obj ? { ...recipe2Obj, id: 'ai-adjusted', name: recipe2Obj.name } : recipesData.find(r => r.id === id2);
+
+    const recipe1Details = formatRecipeForPrompt(recipe1, state.currentLang);
+    const recipe2Details = formatRecipeForPrompt(recipe2, state.currentLang);
+
+    const prompt = `
+Hãy là một chuyên gia về màu sắc nhiếp ảnh. So sánh hai công thức Sony Picture Profile sau đây.
+
+**Yêu cầu:**
+1.  Tạo một bảng so sánh chi tiết các thông số kỹ thuật chính.
+2.  Sau bảng, viết một đoạn phân tích chuyên sâu về "cảm giác" và "phong cách" của mỗi công thức.
+3.  Đề xuất các tình huống sử dụng (ví dụ: chân dung, phong cảnh, đường phố) và điều kiện ánh sáng lý tưởng cho từng công thức.
+4.  Trình bày toàn bộ kết quả bằng định dạng Markdown.
+
+**Công thức 1:**
+${recipe1Details}
+
+**Công thức 2:**
+${recipe2Details}
+`;
+
+    const comparisonText = await callAIApi(prompt, false);
+    contentEl.innerHTML = marked.parse(comparisonText || "Error loading comparison.");
+    applyTranslations();
+}
+
+async function handleAiAdjustment(button) {
+    const recipeId = button.dataset.recipeId;
+    const textarea = document.getElementById('aiTuningTextarea');
+    const resultContainer = document.getElementById('aiResultContainer');
+    if (!textarea.value || !resultContainer || state.isAILoading) return;
+    button.disabled = true;
+    button.dataset.originalText = button.innerHTML;
+    button.innerHTML = `<div class="spinner"></div> ${t('aiTuningBtn')}`;
+
+    const originalRecipe = recipesData.find(r => r.id === recipeId);
+    const originalRecipeFormatted = formatRecipeForPrompt(originalRecipe, state.currentLang);
+
+    const prompt = `
+**Nhiệm vụ:** Tinh chỉnh một công thức Sony Picture Profile dựa trên yêu cầu của người dùng.
+**Định dạng đầu ra:** Chỉ trả về một đối tượng JSON duy nhất chứa khóa "recipe". Không giải thích, không thêm bất kỳ văn bản nào khác.
+
+**Công thức gốc:**
+${originalRecipeFormatted}
+
+**Yêu cầu của người dùng:** "${textarea.value}"
+
+**Hướng dẫn:**
+1.  Đọc kỹ yêu cầu của người dùng.
+2.  Chỉ thay đổi các giá trị trong \`whiteBalance\`, \`settings\`, \`colorDepth\`, và \`detailSettings\` để đáp ứng yêu cầu.
+3.  Giữ nguyên cấu trúc của công thức gốc.
+4.  Cập nhật trường \`name\` và \`description\` để phản ánh sự thay đổi. Ví dụ: thêm "(AI Tinh chỉnh)" vào tên.
+5.  Trả về đối tượng JSON hợp lệ theo schema đã cung cấp.
+`;
+
+    const aiResponse = await callAIApi(prompt, true);
+
+    let adjustedRecipe;
+
+    if (aiResponse && aiResponse.recipe) {
+        console.log("AI successfully returned a structured recipe.");
+        // Merge AI response with original to ensure all fields are present
+        adjustedRecipe = { ...JSON.parse(JSON.stringify(originalRecipe)), ...aiResponse.recipe };
+        adjustedRecipe.id = `${originalRecipe.id}-ai`; // Ensure ID is unique
+    } else {
+        console.warn("AI did not return a valid structured recipe. Proceeding with keyword-based adjustments as a fallback.");
+        // Fallback logic remains the same
+        adjustedRecipe = JSON.parse(JSON.stringify(originalRecipe));
+        adjustedRecipe.id = `${originalRecipe.id}-ai`;
+        adjustedRecipe.name = { vi: `${originalRecipe.name.vi} (AI Tinh chỉnh)`, en: `${originalRecipe.name.en} (AI Adjusted)` };
+        adjustedRecipe.description = { vi: `Đã tinh chỉnh theo yêu cầu: "${textarea.value}"`, en: `Adjusted based on request: "${textarea.value}"` };
+        const userRequestLower = textarea.value.toLowerCase();
+        if (userRequestLower.includes('ấm hơn') || userRequestLower.includes('warmer')) {
+            adjustedRecipe.whiteBalance = "5500K, A6-M1";
+        }
+        // ... (add other keyword checks here if needed)
+    }
+
+    state.lastGeneratedAiRecipe = adjustedRecipe;
+    resultContainer.innerHTML = `<div class="mt-6 border-t border-gray-200/50 pt-6"><h4 class="font-bold text-lg mb-2">${state.lastGeneratedAiRecipe.name[state.currentLang]}</h4><div class="p-4 rounded-xl bg-blue-50">${createFullRecipeHTML(state.lastGeneratedAiRecipe, false)}</div><button id="compareWithOriginalBtn" data-original-id="${recipeId}" class="btn btn-secondary w-full mt-4 py-3 bg-gray-200 text-black" data-translate-key="compareWithOriginalBtn"></button></div>`;
+
+    button.disabled = false; button.innerHTML = button.dataset.originalText; applyTranslations();
+}
+
+async function handleAiRecipeExplanation(button) {
+    const recipeId = button.dataset.recipeId;
+    const explanationContainer = document.getElementById('aiExplanationContainer');
+    if (!explanationContainer || state.isAILoading) return;
+
+    button.disabled = true;
+    button.dataset.originalText = button.innerHTML;
+    button.innerHTML = `<div class="spinner"></div> ${t('aiExplainRecipeBtn')}`;
+    explanationContainer.innerHTML = `<div class="flex items-center justify-center p-4"><div class="spinner"></div><p class="ml-2 text-base font-semibold">${t('aiExplanationLoading')}</p></div>`;
+    explanationContainer.classList.remove('hidden');
+
+    const recipe = recipesData.find(r => r.id === recipeId);
+    if (!recipe) {
+        explanationContainer.innerHTML = `<p class="text-red-500">Error: Recipe not found.</p>`;
+        button.disabled = false;
+        button.innerHTML = button.dataset.originalText;
+        return;
+    }
+
+    const recipeDetails = formatRecipeForPrompt(recipe, state.currentLang);
+    const prompt = `
+Hãy là một chuyên gia về màu sắc nhiếp ảnh. Phân tích công thức Sony Picture Profile sau đây.
+
+**Yêu cầu:**
+1.  Giải thích một cách súc tích, dễ hiểu về các đặc điểm và ý đồ nghệ thuật của công thức này.
+2.  Tập trung phân tích cách các thông số chính (Cân bằng trắng, Gamma, Mức độ đen, Chế độ màu, Độ sâu màu) phối hợp với nhau để tạo ra phong cách độc đáo của công thức.
+3.  Gợi ý các tình huống chụp ảnh và loại chủ thể lý tưởng (ví dụ: chân dung ngoài trời, kiến trúc, thời trang) để tận dụng tối đa công thức này.
+4.  Trình bày toàn bộ kết quả bằng định dạng Markdown.
+
+**Công thức cần phân tích:**
+${recipeDetails}
+`;
+
+    const aiResponse = await callAIApi(prompt, false);
+
+    if (aiResponse) {
+        explanationContainer.innerHTML = `<div class="mt-4 p-4 rounded-xl bg-blue-50">
+            <h4 class="font-bold text-lg mb-2" data-translate-key="aiExplanationTitle"></h4>
+            <div class="prose max-w-none text-gray-700">${marked.parse(aiResponse)}</div>
+        </div>`;
+    } else {
+        explanationContainer.innerHTML = `<p class="text-red-500">Lỗi khi tạo giải thích bằng AI. Vui lòng thử lại.</p>`;
+    }
+
+    button.disabled = false;
+    button.innerHTML = button.dataset.originalText;
+    applyTranslations();
+}
+
+
+async function handleQuizSubmit() {
+    const selectedTags = Object.values(state.quizAnswers);
+    
+    // Show a brief loading state before transitioning
+    await renderView('home');
+    const homeView = document.getElementById('homeView');
+    if (!homeView) { console.error("Quiz Submit Error: homeView not found after render."); return; }
+    homeView.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><div class="spinner !w-16 !h-16 !border-4"></div><h2 class="landing-title mt-8" data-translate-key="loadingAnalyze"></h2></div>`;
+    applyTranslations();
+    await new Promise(resolve => setTimeout(resolve, 400)); // Short delay for UX
+
+    let maxScore = -1;
+    let bestLocalRecipe = null;
+
+    recipesData.forEach(recipe => {
+        let score = 0;
+        selectedTags.forEach(tag => {
+            // Direct match gets a point
+            if (recipe.tags.includes(tag)) {
+                score++;
+            }
+        });
+        
+        // Give extra weight to critical matches
+        if (state.quizAnswers.type && recipe.type === state.quizAnswers.type) {
+            score += 5; 
+        }
+        if (state.quizAnswers.contrast && recipe.contrast === state.quizAnswers.contrast) {
+            score += 2; 
+        }
+        if (state.quizAnswers.saturation && recipe.saturation === state.quizAnswers.saturation) {
+            score += 2; 
+        }
+
+        if (score > maxScore) {
+            maxScore = score;
+            bestLocalRecipe = recipe;
         }
     });
+
+    const recommendedRecipe = bestLocalRecipe || recipesData[0]; // Fallback to first recipe if no match
+    
+    // Navigate to the recommended recipe's detail page
+    if (recommendedRecipe) {
+        state.selectedRecipeId = recommendedRecipe.id;
+        state.isMobileDetailActive = true;
+        await renderView('recipeFormulas');
+    } else {
+        // This case is highly unlikely but good to have a fallback
+        await renderView('home');
+        const fallbackHomeView = document.getElementById('homeView');
+        if(fallbackHomeView) {
+            fallbackHomeView.innerHTML = `<p class="text-red-500">Không thể tìm thấy công thức phù hợp. Vui lòng thử lại.</p>`;
+        }
+    }
+}
+
+function attachViewEventListeners(viewName) {
+if (viewName === 'recipeFormulas') {
+renderLibraryList();
+renderLibraryDetails();
+renderInteractiveCharts(state.currentLang);
+} else if (viewName === 'explain') {
+initInteractiveGrid();
+} else if (viewName === 'quiz') {
+const quizView = document.getElementById('quizView');
+quizView.addEventListener('click', (e) => {
+const card = e.target.closest('.quiz-option-card');
+if (!card) return;
+
+const group = card.closest('[data-quiz-group]').dataset.quizGroup;
+const value = card.dataset.value;
+
+// Update state
+state.quizAnswers[group] = value;
+
+// Update UI
+document.querySelectorAll(`[data-quiz-group="${group}"] .quiz-option-card`).forEach(c => c.classList.remove('selected'));
+card.classList.add('selected');
+
+// Animation
+card.classList.remove('bouncing'); // reset animation
+void card.offsetWidth; // trigger reflow
+card.classList.add('bouncing');
+
+// Check if all questions are answered
+const allAnswered = quizQuestions.every(q => state.quizAnswers[q.id]);
+document.getElementById('submitQuizBtn').disabled = !allAnswered;
+});
+document.getElementById('submitQuizBtn').addEventListener('click', handleQuizSubmit);
+}
 }
 
 function renderLibraryList() {
-    const container = document.getElementById('recipeListContainer'); if (!container) return;
-    const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    let recipesToRender = recipesData.filter(recipe => {
-        const nameMatch = recipe.name[state.currentLang].toLowerCase().includes(searchTerm);
-        const descriptionMatch = recipe.description[state.currentLang].toLowerCase().includes(searchTerm);
-        const typeMatch = state.activeFilters.type === 'all' || recipe.type === state.activeFilters.type;
-        const contrastMatch = state.activeFilters.contrast === 'all' || recipe.contrast === state.activeFilters.contrast;
-        const saturationMatch = state.activeFilters.saturation === 'all' || recipe.saturation === state.activeFilters.saturation;
-        return (nameMatch || descriptionMatch) && typeMatch && contrastMatch && saturationMatch;
-    });
+const container = document.getElementById('recipeListContainer'); if (!container) return;
+const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
+let recipesToRender = recipesData.filter(recipe => {
+    const nameMatch = recipe.name[state.currentLang].toLowerCase().includes(searchTerm);
+    const descriptionMatch = recipe.description[state.currentLang].toLowerCase().includes(searchTerm);
+    const typeMatch = state.activeFilters.type === 'all' || recipe.type === state.activeFilters.type;
+    const contrastMatch = state.activeFilters.contrast === 'all' || recipe.contrast === state.activeFilters.contrast;
+    const saturationMatch = state.activeFilters.saturation === 'all' || recipe.saturation === state.activeFilters.saturation;
+    return (nameMatch || descriptionMatch) && typeMatch && contrastMatch && saturationMatch;
+});
 
-    container.innerHTML = recipesToRender.map(recipe => {
-        const isChecked = state.comparisonList.includes(recipe.id);
-        const isSelected = recipe.id === state.selectedRecipeId;
-        return `<div class="recipe-item p-3 rounded-xl transition-all duration-200 border-l-4 border-transparent flex items-start gap-4 ${isSelected ? 'selected' : ''}">
-                    <input type="checkbox" class="recipe-compare-cb form-checkbox h-5 w-5 text-blue-600 rounded-md border-gray-300 focus:ring-blue-500 self-start mt-1 flex-shrink-0" data-recipe-id="${recipe.id}" ${isChecked ? 'checked' : ''} ${state.comparisonList.length >= 2 && !isChecked ? 'disabled' : ''}>
-                    <div class="flex-grow cursor-pointer recipe-item-content" data-recipe-id="${recipe.id}">
-                        <div class="flex items-start gap-3">
-                            <div class="recipe-dot w-5 h-5 rounded-full flex-shrink-0 mt-1" style="background-color: ${recipe.personalityColor}" title="${recipe.name[state.currentLang]}"></div>
-                            <div class="flex-grow">
-                                <span class="font-semibold text-primary">${recipe.name[state.currentLang]}</span>
-                                <p class="text-sm text-neutral-600 mt-1 leading-snug">${recipe.description[state.currentLang]}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-    }).join('');
+container.innerHTML = recipesToRender.map(recipe => {
+const isChecked = state.comparisonList.includes(recipe.id);
+const isSelected = recipe.id === state.selectedRecipeId;
 
-    const btnContainer = document.getElementById('compareBtnContainer');
-    btnContainer.innerHTML = `<button id="compareBtn" class="btn btn-primary w-full mt-4 py-3" data-translate-key="compareBtn" ${state.comparisonList.length !== 2 ? 'disabled' : ''}></button>`;
-    applyTranslations();
+return `<div class="recipe-item p-3 rounded-xl transition-all duration-200 border-l-4 border-transparent flex items-start gap-4 ${isSelected ? 'selected' : ''}">
+                                  <input type="checkbox" class="recipe-compare-cb form-checkbox h-5 w-5 text-blue-600 rounded-md border-gray-300 focus:ring-blue-500 self-start mt-1 flex-shrink-0" data-recipe-id="${recipe.id}" ${isChecked ? 'checked' : ''} ${state.comparisonList.length >= 2 && !isChecked ? 'disabled' : ''}>
+                                   <div class="flex-grow cursor-pointer recipe-item-content" data-recipe-id="${recipe.id}">
+                                       <div class="flex items-start gap-3">
+                                           <div class="recipe-dot w-5 h-5 rounded-full flex-shrink-0 mt-1" style="background-color: ${recipe.personalityColor}" title="${recipe.name[state.currentLang]}"></div>
+                                          <div class="flex-grow">
+                                               <span class="font-semibold text-primary">${recipe.name[state.currentLang]}</span>
+                                              <p class="text-sm text-neutral-600 mt-1 leading-snug">${recipe.description[state.currentLang]}</p>
+                                          </div>
+                                       </div>
+                                   </div>
+                              </div>`;
+}).join('');
+
+const btnContainer = document.getElementById('compareBtnContainer');
+btnContainer.innerHTML = `<button id="compareBtn" class="btn btn-primary w-full mt-4 py-3" data-translate-key="compareBtn" ${state.comparisonList.length !== 2 ? 'disabled' : ''}></button>`;
+applyTranslations();
 }
 
 function renderLibraryDetails() {
-    const isMobile = window.innerWidth < 768;
-    const recipeListPanel = document.getElementById('recipeListPanel');
-    const recipeMainPanel = document.getElementById('recipeMainPanel');
-    const recipeDetailPanelMobile = document.getElementById('recipeDetailPanelMobile');
+const isMobile = window.innerWidth < 768;
+const recipeListPanel = document.getElementById('recipeListPanel');
+const recipeMainPanel = document.getElementById('recipeMainPanel');
+const recipeDetailPanelMobile = document.getElementById('recipeDetailPanelMobile');
 
-    if (isMobile) {
-        recipeListPanel.classList.toggle('hidden', state.isMobileDetailActive);
-        recipeDetailPanelMobile.classList.toggle('hidden', !state.isMobileDetailActive);
-    } else {
-        recipeListPanel?.classList.remove('hidden');
-        recipeDetailPanelMobile?.classList.add('hidden');
-    }
+if (isMobile) {
+if(state.isMobileDetailActive) {
+recipeListPanel.classList.add('hidden');
+recipeDetailPanelMobile.classList.remove('hidden');
+} else {
+recipeListPanel.classList.remove('hidden');
+recipeDetailPanelMobile.classList.add('hidden');
+}
+} else {
+recipeListPanel?.classList.remove('hidden');
+recipeDetailPanelMobile?.classList.add('hidden');
+}
 
-    const recipe = recipesData.find(r => r.id === state.selectedRecipeId);
-    const recipeContentContainer = isMobile && state.isMobileDetailActive ? document.getElementById('recipeContentMobile') : document.getElementById('recipeContent');
-    const chartsContainer = document.getElementById('chartsContainer');
+const recipe = recipesData.find(r => r.id === state.selectedRecipeId);
 
-    if (!recipeContentContainer) return;
+let recipeContentContainer, chartsContainer;
+if (isMobile && state.isMobileDetailActive) {
+recipeContentContainer = document.getElementById('recipeContentMobile');
+chartsContainer = null;
+} else {
+recipeContentContainer = document.getElementById('recipeContent');
+chartsContainer = document.getElementById('chartsContainer');
+}
 
-    if (!recipe) {
-        if (chartsContainer) chartsContainer.classList.remove('hidden');
-        recipeContentContainer.classList.add('hidden');
-        if(!isMobile) recipeMainPanel?.classList.remove('hidden');
-        return;
-    }
-    if (chartsContainer) chartsContainer.classList.add('hidden');
-    recipeContentContainer.classList.remove('hidden');
-    if(!isMobile) recipeMainPanel?.classList.remove('hidden');
+if (!recipeContentContainer) return;
 
-    const images = recipe.demoImages || [];
-    const imageElements = images.map((imgSrc, index) => 
-        `<div class="bg-gray-200 group rounded-xl overflow-hidden cursor-pointer lightbox-trigger-thumb" data-recipe-id="${recipe.id}" data-index="${index}"><img src="${imgSrc}" loading="lazy" alt="Ảnh demo ${recipe.name[state.currentLang]} ${index + 1}" class="aspect-[4/3] w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"></div>`
-    );
-    
-    recipeContentContainer.innerHTML = `
-        <h3 class="text-3xl md:text-4xl font-bold">${recipe.name[state.currentLang]}</h3>
-        <p class="text-lg text-neutral-600 mt-2 italic">"${recipe.description[state.currentLang]}"</p>
-        <div class="my-6"><div class="grid grid-cols-3 gap-2 md:gap-4">${imageElements.join('')}</div></div>
-        <div class="mt-12 pt-8 border-t-2 border-gray-200/60">
-            <h3 class="text-xl md:text-2xl font-bold mb-4" data-translate-key="exportRecipeBtn"></h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button id="downloadLutBtn" data-recipe-id="${recipe.id}" class="btn bg-blue-100 text-blue-800 hover:bg-blue-200 w-full py-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span data-translate-key="downloadLutBtn"></span>
-                </button>
-                <button id="memoryRecallGuideBtn" class="btn bg-gray-200 text-gray-800 hover:bg-gray-300 w-full py-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    <span data-translate-key="memoryRecallBtn"></span>
-                </button>
-            </div>
-        </div>
-        <div id="originalRecipeContainer" class="mt-8">${createFullRecipeHTML(recipe, true)}</div>
-        <div class="mt-8 pt-8 border-t-2 border-gray-200/60">
-            <button id="aiExplainRecipeBtn" data-recipe-id="${recipe.id}" class="btn btn-primary w-full py-3" data-translate-key="aiExplainRecipeBtn"></button>
-            <div id="aiExplanationContainer" class="mt-4 hidden"></div>
-        </div>
-        <div class="mt-12 pt-8 border-t-2 border-gray-200/60">
-            <h3 class="text-xl md:text-2xl font-bold mb-4" data-translate-key="aiTuningTitle"></h3>
-            <div class="glass-panel p-4 md:p-6 -mx-2">
-                <textarea id="aiTuningTextarea" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 transition-shadow" rows="3" data-translate-key="aiTuningPlaceholder"></textarea>
-                <button id="aiTuningBtn" data-recipe-id="${recipe.id}" class="btn btn-primary w-full mt-4 py-3" data-translate-key="aiTuningBtn"></button>
-                <div id="aiResultContainer"></div>
-            </div>
-        </div>`;
-    applyTranslations();
+if (!recipe) {
+if (chartsContainer) chartsContainer.classList.remove('hidden');
+recipeContentContainer.classList.add('hidden');
+if(!isMobile) recipeMainPanel?.classList.remove('hidden');
+return;
+}
+if (chartsContainer) chartsContainer.classList.add('hidden');
+recipeContentContainer.classList.remove('hidden');
+if(!isMobile) recipeMainPanel?.classList.remove('hidden');
+
+let thumbnailsHTML = '';
+const images = recipe.demoImages || [];
+let imageElements = [];
+images.forEach((imgSrc, index) => {
+imageElements.push(`<div class="bg-gray-200 group rounded-xl overflow-hidden cursor-pointer lightbox-trigger-thumb" data-recipe-id="${recipe.id}" data-index="${index}"><img src="${imgSrc}" loading="lazy" alt="Ảnh demo ${recipe.name[state.currentLang]} ${index + 1}" class="aspect-[4/3] w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"></div>`);
+});
+const placeholdersNeeded = 3 - imageElements.length;
+const placeholderColor = recipe.personalityColor ? recipe.personalityColor.substring(1) : 'cccccc';
+for (let i = 0; i < placeholdersNeeded; i++) {
+const placeholderIndex = images.length + i;
+imageElements.push(`<div class="bg-gray-200 group rounded-xl overflow-hidden"><img src="https://placehold.co/400x300/${placeholderColor}/ffffff?text=${encodeURIComponent(recipe.name[state.currentLang])}+Sample+${placeholderIndex + 1}" loading="lazy" alt="Ảnh minh họa ${recipe.name[state.currentLang]} ${placeholderIndex + 1}" class="aspect-[4/3] w-full h-full object-cover"></div>`);
+}
+thumbnailsHTML = `<div class="my-6"><div class="grid grid-cols-3 gap-2 md:gap-4">${imageElements.join('')}</div></div>`;
+
+const exportSectionHTML = `
+                  <div class="mt-12 pt-8 border-t-2 border-gray-200/60">
+                      <h3 class="text-xl md:text-2xl font-bold mb-4" data-translate-key="exportRecipeBtn"></h3>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <button id="downloadLutBtn" data-recipe-id="${recipe.id}" class="btn bg-blue-100 text-blue-800 hover:bg-blue-200 w-full py-3">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                              <span data-translate-key="downloadLutBtn"></span>
+                          </button>
+                          <button id="memoryRecallGuideBtn" class="btn bg-gray-200 text-gray-800 hover:bg-gray-300 w-full py-3">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                              <span data-translate-key="memoryRecallBtn"></span>
+                          </button>
+                      </div>
+                  </div>
+            `;
+
+recipeContentContainer.innerHTML = `
+                  <h3 class="text-3xl md:text-4xl font-bold">${recipe.name[state.currentLang]}</h3>
+                <p class="text-lg text-neutral-600 mt-2 italic">"${recipe.description[state.currentLang]}"</p>
+                ${thumbnailsHTML}
+                ${exportSectionHTML}
+                  <div id="originalRecipeContainer" class="mt-8">${createFullRecipeHTML(recipe, true)}</div>
+                  <div class="mt-8 pt-8 border-t-2 border-gray-200/60">
+                      <button id="aiExplainRecipeBtn" data-recipe-id="${recipe.id}" class="btn btn-primary w-full py-3" data-translate-key="aiExplainRecipeBtn"></button>
+                      <div id="aiExplanationContainer" class="mt-4 hidden"></div>
+                  </div>
+                  <div id="setupGuideSection" class="mt-12 pt-8 border-t-2 border-gray-200/60">
+                      <details open class="group">
+                          <summary class="text-xl md:text-2xl font-bold cursor-pointer list-none flex justify-between items-center group-hover:text-blue-600 transition-colors">
+                              <span data-translate-key="tutorialTitle"></span>
+                              <svg class="w-6 h-6 transition-transform transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                          </summary>
+                          <div class="prose max-w-none mt-6 space-y-4 text-base text-gray-700">
+                              <div><h4 class="font-bold" data-translate-key="tutorialStep1Title"></h4><p data-translate-key="tutorialStep1P1"></p><p data-translate-key="tutorialStep1P2"></p></div>
+                              <div><h4 class="font-bold" data-translate-key="tutorialStep2Title"></h4><p data-translate-key="tutorialStep2P1"></p></div>
+                              <div><h4 class="font-bold" data-translate-key="tutorialStep3Title"></h4><p data-translate-key="tutorialStep3P1"></p></div>
+                              <div><h4 class="font-bold" data-translate-key="tutorialStep4Title"></h4><p data-translate-key="tutorialStep4P1"></p></div>
+                          </div>
+                      </details>
+                  </div>
+                  <div class="mt-12 pt-8 border-t-2 border-gray-200/60">
+                      <h3 class="text-xl md:text-2xl font-bold mb-4" data-translate-key="aiTuningTitle"></h3>
+                      <div class="glass-panel p-4 md:p-6 -mx-2">
+                          <textarea id="aiTuningTextarea" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 transition-shadow" rows="3" data-translate-key="aiTuningPlaceholder"></textarea>
+                          <button id="aiTuningBtn" data-recipe-id="${recipe.id}" class="btn btn-primary w-full mt-4 py-3" data-translate-key="aiTuningBtn"></button>
+                          <div id="aiResultContainer"></div>
+                      </div>
+                  </div>`;
+applyTranslations();
 }
 
 function renderInteractiveCharts(lang) {
-    destroyAllCharts();
-    const chartDefaultOptions = (yAxisTitleKey) => ({
-        responsive: true, maintainAspectRatio: false,
-        onClick: (e) => {
-            const chart = e.chart;
-            const elements = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
-            if (elements.length) {
-                const recipeId = chart.data.datasets[elements[0].datasetIndex].data[elements[0].index].id;
-                if (recipeId) handleRecipeSelection(recipeId, 'chart');
-            }
-        },
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => c.raw.name } } },
-        scales: {
-            x: { min: -10, max: 10, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { display: false }, border: { dash: [4, 4] }, title: { display: true, text: t('axisTonality') } },
-            y: { min: -10, max: 10, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { display: false }, border: { dash: [4, 4] }, title: { display: true, text: t(yAxisTitleKey) } }
-        }
-    });
+destroyAllCharts();
+const chartDefaultOptions = (yAxisTitleKey) => ({
+responsive: true,
+maintainAspectRatio: false,
+onClick: (e) => {
+const chart = e.chart;
+const elements = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+if (elements.length) {
+const firstPoint = elements[0];
+const recipeId = chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index].id;
+if (recipeId) { handleRecipeSelection(recipeId, 'chart'); }
+}
+},
+plugins: {
+legend: { display: false },
+tooltip: {
+backgroundColor: 'rgba(0,0,0,0.8)',
+titleFont: { size: 14 },
+bodyFont: { size: 13 },
+padding: 10,
+callbacks: { label: function(context) { return context.raw.name; } }
+}
+},
+scales: {
+x: { min: -10, max: 10, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { display: false }, border: { dash: [4, 4] }, title: { display: true, text: t('axisTonality') } },
+y: { min: -10, max: 10, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { display: false }, border: { dash: [4, 4] }, title: { display: true, text: t(yAxisTitleKey) } }
+}
+});
 
-    const colorCtx = document.getElementById('colorChart')?.getContext('2d');
-    if (colorCtx) {
-        const colorData = recipesData.filter(r => r.type === 'color').map(r => ({ ...r.coords, id: r.id, name: r.name[lang] }));
-        activeCharts.color = new Chart(colorCtx, {
-            type: 'scatter',
-            data: { datasets: [{ data: colorData, pointBackgroundColor: colorData.map(d => recipesData.find(r=>r.id===d.id).personalityColor), pointBorderColor: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? '#007AFF' : '#fff'), pointBorderWidth: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 4 : 2), pointRadius: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 11 : 7), pointHoverRadius: 11 }] },
-            options: chartDefaultOptions('axisSaturation')
-        });
-    }
+const colorCtx = document.getElementById('colorChart')?.getContext('2d');
+if (colorCtx) {
+const colorData = recipesData.filter(r => r.type === 'color' && r.coords && typeof r.coords.x === 'number' && typeof r.coords.y === 'number' && r.personalityColor).map(r => ({ ...r.coords, id: r.id, name: r.name[lang] }));
+activeCharts.color = new Chart(colorCtx, {
+type: 'scatter',
+data: {
+datasets: [{
+data: colorData,
+pointBackgroundColor: colorData.map(d => {
+const recipe = recipesData.find(r => r.id === d.id);
+return recipe ? recipe.personalityColor : '#CCCCCC';
+}),
+pointBorderColor: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? '#007AFF' : 'rgba(255, 255, 255, 0.8)'),
+pointBorderWidth: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 4 : 2),
+pointRadius: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 11 : 7),
+pointHoverRadius: 11
+}]
+},
+options: chartDefaultOptions('axisSaturation')
+});
+}
 
-    const bwCtx = document.getElementById('bwChart')?.getContext('2d');
-    if (bwCtx) {
-        const bwData = recipesData.filter(r => r.type === 'bw').map(r => ({ ...r.coords, id: r.id, name: r.name[lang] }));
-        activeCharts.bw = new Chart(bwCtx, {
-            type: 'scatter',
-            data: { datasets: [{ data: bwData, pointBackgroundColor: '#475569', pointBorderColor: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? '#007AFF' : '#fff'), pointBorderWidth: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 4 : 2), pointRadius: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 11 : 7), pointHoverRadius: 11 }] },
-            options: chartDefaultOptions('axisChroma')
-        });
-    }
+const bwCtx = document.getElementById('bwChart')?.getContext('2d');
+if (bwCtx) {
+const bwData = recipesData.filter(r => r.type === 'bw' && r.coords && typeof r.coords.x === 'number' && typeof r.coords.y === 'number').map(r => ({ ...r.coords, id: r.id, name: r.name[lang] }));
+activeCharts.bw = new Chart(bwCtx, {
+type: 'scatter',
+data: {
+datasets: [{
+data: bwData,
+pointBackgroundColor: '#475569',
+pointBorderColor: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? '#007AFF' : 'rgba(255, 255, 255, 0.8)'),
+pointBorderWidth: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 4 : 2),
+pointRadius: (ctx) => (ctx.raw?.id === state.selectedRecipeId ? 11 : 7),
+pointHoverRadius: 11,
+pointHoverBorderWidth: 3
+}]
+},
+options: chartDefaultOptions('axisChroma')
+});
+}
 }
 
 function toggleMobileNav(show) {
-    const menu = document.getElementById('mobileNavMenu');
-    menu.classList.toggle('translate-x-full', !show);
+const menu = document.getElementById('mobileNavMenu');
+menu.classList.toggle('translate-x-full', !show);
 }
 
 function handleDropdownNav() {
-    const container = document.getElementById('pp-dropdown-container');
-    const btn = document.getElementById('pp-dropdown-btn');
-    const menu = document.getElementById('pp-dropdown-menu');
-    const chevron = document.getElementById('pp-dropdown-chevron');
+const container = document.getElementById('pp-dropdown-container');
+const btn = document.getElementById('pp-dropdown-btn');
+const menu = document.getElementById('pp-dropdown-menu');
+const chevron = document.getElementById('pp-dropdown-chevron');
 
-    if (!container || !btn || !menu) return;
+if (!container || !btn || !menu) return;
 
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isHidden = menu.classList.contains('hidden');
-        if (isHidden) {
-            menu.classList.remove('hidden');
-            setTimeout(() => {
-                menu.classList.remove('opacity-0', 'scale-95');
-                chevron.style.transform = 'rotate(180deg)';
-            }, 10);
-        } else {
-            menu.classList.add('opacity-0', 'scale-95');
-            chevron.style.transform = 'rotate(0deg)';
-            menu.addEventListener('transitionend', () => menu.classList.add('hidden'), { once: true });
-        }
-    });
+btn.addEventListener('click', (e) => {
+e.stopPropagation();
+const isHidden = menu.classList.contains('hidden');
+if (isHidden) {
+menu.classList.remove('hidden');
+setTimeout(() => {
+menu.classList.remove('opacity-0', 'scale-95');
+chevron.style.transform = 'rotate(180deg)';
+}, 10);
+} else {
+menu.classList.add('opacity-0', 'scale-95');
+chevron.style.transform = 'rotate(0deg)';
+menu.addEventListener('transitionend', () => {
+menu.classList.add('hidden');
+}, { once: true });
+}
+});
 
-    document.addEventListener('click', (e) => {
-        if (!container.contains(e.target) && !menu.classList.contains('hidden')) {
-            menu.classList.add('opacity-0', 'scale-95');
-            chevron.style.transform = 'rotate(0deg)';
-            menu.addEventListener('transitionend', () => menu.classList.add('hidden'), { once: true });
-        }
-    });
+document.addEventListener('click', (e) => {
+if (!container.contains(e.target)) {
+menu.classList.add('opacity-0', 'scale-95');
+chevron.style.transform = 'rotate(0deg)';
+if (!menu.classList.contains('hidden')) {
+menu.addEventListener('transitionend', () => {
+menu.classList.add('hidden');
+}, { once: true });
+}
+}
+});
 }
 
+// Cookie helper functions
+function setCookie(name, value, days) {
+let expires = "";
+if (days) {
+const date = new Date();
+date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+expires = "; expires=" + date.toUTCString();
+}
+document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
 
-// --- INITIALIZATION & EVENT LISTENERS ---
-function attachViewEventListeners(viewName) {
-    if (viewName === 'recipeFormulas') {
-        renderLibraryList();
-        renderLibraryDetails();
-        renderInteractiveCharts(state.currentLang);
-    } else if (viewName === 'explain') {
-        initInteractiveGrid();
-    } else if (viewName === 'quiz') {
-        const quizView = document.getElementById('quizView');
-        quizView.addEventListener('click', (e) => {
-            const card = e.target.closest('.quiz-option-card');
-            if (!card) return;
-
-            const group = card.closest('[data-quiz-group]').dataset.quizGroup;
-            state.quizAnswers[group] = card.dataset.value;
-
-            document.querySelectorAll(`[data-quiz-group="${group}"] .quiz-option-card`).forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            card.classList.remove('bouncing');
-            void card.offsetWidth;
-            card.classList.add('bouncing');
-
-            const allAnswered = quizQuestions.every(q => state.quizAnswers[q.id]);
-            document.getElementById('submitQuizBtn').disabled = !allAnswered;
-        });
-        document.getElementById('submitQuizBtn').addEventListener('click', handleQuizSubmit);
-    }
+function getCookie(name) {
+const nameEQ = name + "=";
+const ca = document.cookie.split(';');
+for(let i = 0; i < ca.length; i++) {
+let c = ca[i];
+while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+}
+return null;
 }
 
 function init() {
-    // REFACTORED: Centralized event delegation for better performance and maintainability.
-    document.body.addEventListener('click', async (e) => {
-        const target = e.target;
-        const closest = (selector) => target.closest(selector);
+document.body.addEventListener('click', async (e) => {
+const target = e.target;
 
-        // High-priority handlers (modals, lightboxes)
-        if (state.lightbox.isOpen) {
-            if (closest('#lightbox-close') || target.id === 'lightbox-bg') closeLightbox();
-            else if (closest('#lightbox-next')) navigateLightbox(1);
-            else if (closest('#lightbox-prev')) navigateLightbox(-1);
-            else if (closest('.lightbox-thumb')) {
-                state.lightbox.currentIndex = parseInt(closest('.lightbox-thumb').dataset.index, 10);
-                updateLightboxContent();
-            }
-            return; // Stop further processing
-        }
-        
-        const eventHandlers = {
-            // Modals
-            '#closeComparisonModalBtn': () => document.getElementById('comparisonModal').classList.add('hidden'),
-            '#closePromptModalBtn': closePromptConfirmationModal,
-            '#cancelPromptBtn': closePromptConfirmationModal,
-            '#confirmPromptBtn': () => {
-                if (promptConfirmationResolver) {
-                    promptConfirmationResolver(document.getElementById('improvedPromptText').textContent);
-                    promptConfirmationResolver = null;
-                }
-                closePromptConfirmationModal();
-            },
-            // Navigation
-            '#homeBtn': () => { state.selectedRecipeId = null; state.isMobileDetailActive = false; renderView('home'); },
-            '.nav-btn, .nav-btn-mobile': (el) => {
-                state.selectedRecipeId = null; state.isMobileDetailActive = false;
-                if (el.classList.contains('nav-btn-mobile')) toggleMobileNav(false);
-                renderView(el.dataset.view);
-            },
-            '#hamburgerBtn': () => toggleMobileNav(true),
-            '#closeMobileNavBtn': () => toggleMobileNav(false),
-            // Language
-            '.lang-btn': (el) => {
-                state.currentLang = el.id.replace('lang', '').toLowerCase();
-                renderView(state.currentView);
-            },
-            // Main Actions
-            '#startQuizBtn': () => { state.quizAnswers = {}; renderView('quiz'); },
-            '#compareBtn': (el) => { if (!el.disabled) handleAiComparison(state.comparisonList[0], state.comparisonList[1]); },
-            '#compareWithOriginalBtn': (el) => handleAiComparison(el.dataset.originalId, null, state.lastGeneratedAiRecipe),
-            '#aiTuningBtn': (el) => handleAiAdjustment(el),
-            '#aiExplainRecipeBtn': (el) => handleAiRecipeExplanation(el),
-            // Recipe List
-            '.recipe-item-content, .recipe-dot': (el) => handleRecipeSelection(closest('[data-recipe-id]').dataset.recipeId, 'div'),
-            '.recipe-compare-cb': (el) => handleRecipeSelection(el.dataset.recipeId, 'checkbox'),
-            '#backToListBtn': () => { state.isMobileDetailActive = false; renderLibraryDetails(); },
-            // Other
-            '.lightbox-trigger-thumb': (el) => {
-                const recipe = recipesData.find(r => r.id === el.dataset.recipeId);
-                if (recipe?.demoImages?.length) openLightbox(recipe.demoImages, parseInt(el.dataset.index, 10));
-            },
-            '.filter-btn': (el) => {
-                const group = el.closest('[data-filter-group]').dataset.filterGroup;
-                state.activeFilters[group] = el.dataset.filterValue;
-                document.querySelectorAll(`[data-filter-group="${group}"] .filter-btn`).forEach(b => b.classList.toggle('active', b.dataset.filterValue === state.activeFilters[group]));
-                renderLibraryList();
-            },
-            '#downloadLutBtn': (el) => {
-                const recipe = recipesData.find(r => r.id === el.dataset.recipeId);
-                if (!recipe) return;
-                const lutContent = `# Generated by Alpha AI Color Lab for ${recipe.name[state.currentLang]}\nTITLE "${recipe.name[state.currentLang]}"\nLUT_3D_SIZE 33\n# Dummy LUT data\n0.0 0.0 0.0\n1.0 1.0 1.0`;
-                const blob = new Blob([lutContent], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${recipe.id}.cube`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            },
-            '#memoryRecallGuideBtn': () => document.getElementById('setupGuideSection')?.scrollIntoView({ behavior: 'smooth' })
-        };
+if (state.lightbox.isOpen) {
+if (target.id === 'lightbox-bg' || target.closest('#lightbox-close')) { closeLightbox(); }
+else if (target.closest('#lightbox-next')) { navigateLightbox(1); }
+else if (target.closest('#lightbox-prev')) { navigateLightbox(-1); }
+const thumb = target.closest('.lightbox-thumb');
+if (thumb) {
+state.lightbox.currentIndex = parseInt(thumb.dataset.index);
+updateLightboxContent();
+}
+return;
+}
 
-        for (const selector in eventHandlers) {
-            const el = closest(selector);
-            if (el) {
-                eventHandlers[selector](el);
-                return; // Stop after the first match
-            }
-        }
-    });
+const lightboxTrigger = target.closest('.lightbox-trigger-thumb');
+const homeBtn = target.closest('#homeBtn');
+const navBtn = target.closest('.nav-btn');
+const mobileNavBtn = target.closest('.nav-btn-mobile');
+const langBtn = target.closest('.lang-btn');
+const startQuizBtn = target.closest('#startQuizBtn');
+const exploreMoreBtn = target.closest('#exploreMoreBtn');
+const hamburgerBtn = target.closest('#hamburgerBtn');
+const closeMobileNavBtn = target.closest('#closeMobileNavBtn');
 
-    document.body.addEventListener('input', (e) => {
-        if (e.target.id === 'searchInput') {
-            renderLibraryList();
-        }
-    });
+if (hamburgerBtn) { toggleMobileNav(true); return; }
+if (closeMobileNavBtn || (target.id === 'mobileNavMenu' && !target.closest('#mobileNavMenu > div'))) { toggleMobileNav(false); return; }
+if (mobileNavBtn) {
+toggleMobileNav(false);
+state.selectedRecipeId = null; state.isMobileDetailActive = false;
+await renderView(mobileNavBtn.dataset.view); return;
+}
+if (homeBtn) { state.selectedRecipeId = null; state.isMobileDetailActive = false; await renderView('home'); return; }
+if (navBtn) {
+const dropdownMenu = document.getElementById('pp-dropdown-menu');
+if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
+dropdownMenu.classList.add('opacity-0', 'scale-95', 'hidden');
+document.getElementById('pp-dropdown-chevron').style.transform = 'rotate(0deg)';
+}
+state.selectedRecipeId = null;
+state.isMobileDetailActive = false;
+await renderView(navBtn.dataset.view);
+return;
+}
+if (exploreMoreBtn) { state.selectedRecipeId = null; state.isMobileDetailActive = false; await renderView('recipeFormulas'); return; }
+if (langBtn) { state.currentLang = langBtn.id.replace('lang', '').toLowerCase(); await renderView(state.currentView); return; }
 
-    window.addEventListener('resize', () => {
-        if (state.currentView === 'recipeFormulas') {
-            renderLibraryDetails();
-        }
-    });
+if (startQuizBtn) {
+state.quizStep = 0;
+state.quizAnswers = {};
+await renderView('quiz');
+return;
+}
 
-    handleDropdownNav();
-    renderView('home');
+const recipeItemContent = target.closest('.recipe-item-content');
+const recipeDot = target.closest('.recipe-dot');
+const recipeCompareCb = target.closest('.recipe-compare-cb');
+const compareBtn = target.closest('#compareBtn');
+const compareWithOriginalBtn = target.closest('#compareWithOriginalBtn');
+const aiTuningBtn = target.closest('#aiTuningBtn');
+const aiExplainRecipeBtn = target.closest('#aiExplainRecipeBtn'); // New button
+const backToListBtn = target.closest('#backToListBtn');
+const closeModalBtn = target.closest('#closeComparisonModalBtn');
+const downloadLutBtn = target.closest('#downloadLutBtn');
+const memoryRecallGuideBtn = target.closest('#memoryRecallGuideBtn');
+
+if (recipeItemContent || recipeDot) { handleRecipeSelection(target.closest('[data-recipe-id]').dataset.recipeId, 'div'); return; }
+if (recipeCompareCb) { handleRecipeSelection(recipeCompareCb.dataset.recipeId, 'checkbox'); return; }
+if (compareBtn && !compareBtn.disabled) { handleAiComparison(state.comparisonList[0], state.comparisonList[1]); return; }
+if (compareWithOriginalBtn) { handleAiComparison(compareWithOriginalBtn.dataset.originalId, null, state.lastGeneratedAiRecipe); return; }
+if (aiTuningBtn) { handleAiAdjustment(aiTuningBtn); return; }
+if (aiExplainRecipeBtn) { handleAiRecipeExplanation(aiExplainRecipeBtn); return; } // New event listener
+if (backToListBtn) { state.isMobileDetailActive = false; renderLibraryDetails(); return; }
+if (closeModalBtn) { document.getElementById('comparisonModal').classList.add('hidden'); return; }
+if (lightboxTrigger) {
+const recipeId = lightboxTrigger.dataset.recipeId;
+const recipe = recipesData.find(r => r.id === recipeId);
+if (recipe && recipe.demoImages && recipe.demoImages.length > 0) {
+openLightbox(recipe.demoImages, parseInt(lightboxTrigger.dataset.index));
+}
+return;
+}
+if (downloadLutBtn) {
+const recipe = recipesData.find(r => r.id === downloadLutBtn.dataset.recipeId);
+if (recipe) {
+const lutContent = `# Generated by Alpha AI Color Lab for ${recipe.name[state.currentLang]}\nTITLE "${recipe.name[state.currentLang]}"\nLUT_3D_SIZE 33\n# Dummy LUT data\n0.0 0.0 0.0\n1.0 1.0 1.0`;
+const blob = new Blob([lutContent], { type: 'text/plain' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `${recipe.id}.cube`;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+return;
+}
+if (memoryRecallGuideBtn) {
+document.getElementById('setupGuideSection')?.scrollIntoView({ behavior: 'smooth' });
+return;
+}
+
+
+if (document.getElementById('filtersContainer')?.contains(target) || document.getElementById('filtersContainerDesktop')?.contains(target)) {
+handleFilterClick(e); return;
+}
+});
+
+document.body.addEventListener('input', (e) => {
+if (e.target.id === 'searchInput') {
+renderLibraryList();
+}
+});
+
+window.addEventListener('resize', () => { if(state.currentView === 'recipeFormulas') renderLibraryDetails(); });
+
+renderView('home');
+handleDropdownNav();
 }
 
 document.addEventListener("DOMContentLoaded", init);
-
 </script>
 </body>
 </html>
+
+
+
