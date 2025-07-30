@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sony AI Color Lab Web-App</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6.253v11.494m-5.747-8.662l11.494 5.747m-11.494 0l11.494-5.747M4.75 12A7.25 7.25 0 0112 4.75v0A7.25 7.25 0 0119.25 12v0a7.25 7.25 0 01-7.25 7.25v0A7.25 7.25 0 014.75 12v0z' stroke='%231d1d1f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3C/path%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6.253v11.494m-5.747-8.662l11.494 5.747m-11.494 0l11.494-5.747M4.75 12A7.25 7.25 0 0112 4.75v0A7.25 7.25 0 0119.25 12v0a7.25 7.25 0 01-7.25 7.25v0A7.25 7.25 0 014.75 12v0z' stroke='%231d1d1f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3C/path%E3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -347,7 +347,7 @@ const mainContentEl = document.getElementById('mainContent');
 let activeCharts = {};
 let promptConfirmationResolver = null;
 
-// --- TRANSLATIONS ---
+// --- TRANSLATIONS & QUIZ DATA (RESTORED) ---
 const translations = {
     // General
     headerTitle: {vi: "Alpha AI Color Lab", en: "Alpha AI Color Lab"},
@@ -423,16 +423,40 @@ const translations = {
     recallTitle: { vi: 'Lưu Trữ & Tái Sử Dụng: Làm Chủ Memory Recall', en: 'Save & Reuse: Mastering Memory Recall' },
     tutorialTitle: { vi: "Hướng dẫn Cài đặt Nhanh", en: "Quick Setup Guide" },
     exposureNoteTitle: { vi: "Lưu ý về Phơi sáng", en: "Note on Exposure" },
+    
+    // Quiz Questions (Restored)
+    quizQ1: {vi: "Chủ đề bạn sắp chụp là gì?", en: "What's your subject?"},
+    quizQ1A1: {vi: "Chân dung", en: "Portrait"},
+    quizQ1A2: {vi: "Phong cảnh", en: "Landscape"},
+    quizQ1A3: {vi: "Đường phố / Đô thị", en: "Street / Urban"},
+    quizQ1A4: {vi: "Đời thường", en: "Everyday"},
+    quizQ2: {vi: "Bạn muốn tông màu chủ đạo nào?", en: "What's your desired primary tone?"},
+    quizQ2A1: {vi: "Ấm áp (Vàng, Cam)", en: "Warm (Yellow, Orange)"},
+    quizQ2A2: {vi: "Mát mẻ (Xanh dương)", en: "Cool (Blue)"},
+    quizQ2A3: {vi: "Trung tính", en: "Natural"},
+    quizQ2A4: {vi: "Hoài cổ (Film)", en: "Nostalgic (Film)"},
+    quizQ3: {vi: "Độ tương phản bạn thích?", en: "How about the contrast?"},
+    quizQ3A1: {vi: "Cao (Gắt)", en: "High (Punchy)"},
+    quizQ3A2: {vi: "Thấp (Mềm mại)", en: "Low (Soft)"},
+    quizQ3A3: {vi: "Trung bình", en: "Medium"},
+    quizQ4: {vi: "Bạn thích ảnh màu hay trắng đen?", en: "Color or Black & White?"},
+    quizQ4A1: {vi: "Ảnh màu", en: "Color"},
+    quizQ4A2: {vi: "Ảnh trắng đen", en: "Black & White"},
+    quizQ5: {vi: "Độ bão hòa màu sắc bạn muốn?", en: "What's your preferred saturation?"},
+    quizQ5A1: {vi: "Đậm", en: "High"},
+    quizQ5A2: {vi: "Trung bình", en: "Medium"},
+    quizQ5A3: {vi: "Nhạt", en: "Low"},
 };
 
-// --- CORE AI FUNCTION ---
-/**
- * A robust, centralized function to call the Gemini API.
- * Handles loading states, error logging, and response parsing.
- * @param {string} prompt The complete prompt to send to the AI.
- * @param {object|null} generationConfig The generation configuration, including response schema if needed.
- * @returns {Promise<object|string|null>} The parsed JSON object, a text string, or null if an error occurs.
- */
+const quizQuestions = [
+    { id: 'subject', title: 'quizQ1', options: [ { key: 'quizQ1A1', value: 'portrait', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>` }, { key: 'quizQ1A2', value: 'landscape', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.59a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>` }, { key: 'quizQ1A3', value: 'urban', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>` }, { key: 'quizQ1A4', value: 'everyday', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 9 3-3 3 3"/><path d="M13 18V2H7"/><path d="m22 15-3 3-3-3"/><path d="m11 6 10 12"/></svg>` } ] },
+    { id: 'tone', title: 'quizQ2', options: [ { key: 'quizQ2A1', value: 'warm', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>` }, { key: 'quizQ2A2', value: 'cool', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7L12 22l4-7.3c1.8-1.2 3-3.3 3-5.7a7 7 0 0 0-7-7z"/><path d="M12 9a3 3 0 0 0-3 3c0 1.2.8 2.2 2 2.7l1 1.3l1-1.3c1.2-.5 2-1.5 2-2.7a3 3 0 0 0-3-3z"/></svg>` }, { key: 'quizQ2A3', value: 'natural', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-2 0-4-1-4-4 0-2 2-3 4-3s4 1 4 3c0 3-2 4-4 4z"/><path d="M12 15V2"/><path d="m5 12-3-3 3-3"/><path d="m19 12 3-3-3-3"/></svg>` }, { key: 'quizQ2A4', value: 'vintage', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h4"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M21 7.5h-4"/><path d="M21 12h-4"/><path d="M21 16.5h-4"/></svg>` } ] },
+    { id: 'contrast', title: 'quizQ3', options: [ { key: 'quizQ3A1', value: 'high', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></svg>` }, { key: 'quizQ3A2', value: 'low', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="currentColor" fill-opacity="0.2"/><path d="M12 18a6 6 0 0 0 0-12v12z"/></svg>` }, { key: 'quizQ3A3', value: 'medium', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12v12z" fill="currentColor" fill-opacity="0.5"/></svg>` } ] },
+    { id: 'type', title: 'quizQ4', options: [ { key: 'quizQ4A1', value: 'color', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path></svg>` }, { key: 'quizQ4A2', value: 'bw', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>` } ] },
+    { id: 'saturation', title: 'quizQ5', options: [ { key: 'quizQ5A1', value: 'high', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` }, { key: 'quizQ5A2', value: 'medium', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/></svg>` }, { key: 'quizQ5A3', value: 'low', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` } ] }
+];
+
+// --- CORE AI FUNCTION (REBUILT FOR STABILITY) ---
 async function callAIApi(prompt, generationConfig = null) {
     if (state.isAILoading) {
         console.warn("AI call aborted: another request is already in progress.");
@@ -440,14 +464,13 @@ async function callAIApi(prompt, generationConfig = null) {
     }
     state.isAILoading = true;
     
-    // Use the API Key you provided.
     const apiKey = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ";
     const model = "gemini-1.5-flash-latest";
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const payload = {
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        ...(generationConfig && { generationConfig }) // Conditionally add generationConfig
+        ...(generationConfig && { generationConfig })
     };
 
     try {
@@ -466,22 +489,18 @@ async function callAIApi(prompt, generationConfig = null) {
 
         if (responseData.candidates && responseData.candidates[0]?.content?.parts?.[0]) {
             const text = responseData.candidates[0].content.parts[0].text;
-            // If JSON is expected, parse it carefully.
             if (generationConfig?.responseMimeType === "application/json") {
                 try {
-                    // The API sometimes wraps JSON in markdown, so we clean it.
                     const cleanedText = text.replace(/^```json\s*/, '').replace(/\s*```$/, '');
                     return JSON.parse(cleanedText);
                 } catch (e) {
-                    console.error("AI Response JSON Parsing Error:", e);
-                    console.error("Raw text that failed parsing:", text);
-                    return null; // Return null on parsing failure.
+                    console.error("AI Response JSON Parsing Error:", e, "Raw text:", text);
+                    return null;
                 }
             }
-            return text; // Return plain text otherwise.
+            return text;
         } else {
             console.error("No valid content in AI response:", responseData);
-            // Check for safety blocks
             if (responseData.candidates?.[0]?.finishReason === 'SAFETY') {
                 console.error('AI response blocked due to safety settings:', responseData.candidates[0].safetyRatings);
             }
@@ -489,7 +508,7 @@ async function callAIApi(prompt, generationConfig = null) {
         }
     } catch (error) {
         console.error("Full error in callAIApi:", error);
-        return null; // Ensure null is returned on any kind of error.
+        return null;
     } finally {
         state.isAILoading = false;
         updateUIAfterAILoading();
@@ -587,7 +606,7 @@ function navigateLightbox(direction) {
 }
 
 
-// --- AI FEATURE HANDLERS ---
+// --- AI FEATURE HANDLERS (REBUILT) ---
 async function handleAiComparison(id1, id2, recipe2Obj = null) {
     const modal = document.getElementById('comparisonModal');
     const titleEl = document.getElementById('comparisonModalTitle');
@@ -710,7 +729,7 @@ ${formatRecipeForPrompt(originalRecipe, state.currentLang)}
         responseMimeType: "application/json",
         responseSchema: {
             type: "OBJECT",
-            properties: { "recipe": { type: "OBJECT" } } // A simple schema is enough here
+            properties: { "recipe": { type: "OBJECT" } }
         }
     };
 
@@ -959,6 +978,28 @@ explain: () => `
           </div>`
 };
 
+// --- UI RENDERING & VIEW MANAGEMENT ---
+function createSettingsGrid(settings) {
+if (!settings) return '';
+return Object.entries(settings).map(([key, value]) => `<div class="flex flex-col"><span class="text-xs text-neutral-500">${key}</span><span class="font-semibold text-lg">${value}</span></div>`).join('');
+};
+
+function createFullRecipeHTML(recipe, isMainView = false) {
+const titleClass = isMainView ? 'text-xl font-bold' : 'text-lg font-bold';
+const noteHTML = (recipe.notes && recipe.notes[state.currentLang])
+? `<div class="mt-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-xl">
+                                  <p class="font-bold" data-translate-key="noteTitle"></p>
+                                  <p>${recipe.notes[state.currentLang]}</p>
+                                </div>` : '';
+
+return `${noteHTML}<div class="space-y-6 mt-6">
+              <div><h4 class="${titleClass} mb-2" data-translate-key="whiteBalanceTitle"></h4><div class="p-4 bg-black/5 rounded-xl"><p class="font-semibold text-lg">${recipe.whiteBalance || ''}</p></div></div>
+              <div><h4 class="${titleClass} mb-2" data-translate-key="recipeSettingsTitle"></h4><div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.settings)}</div></div>
+              ${recipe.colorDepth ? `<div><h4 class="${titleClass} mb-2" data-translate-key="colorDepthTitle"></h4><div class="grid grid-cols-3 sm:grid-cols-6 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.colorDepth)}</div></div>` : ''}
+              ${recipe.detailSettings ? `<div><h4 class="${titleClass} mb-2" data-translate-key="detailTitle"></h4><div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5 p-5 bg-black/5 rounded-xl">${createSettingsGrid(recipe.detailSettings)}</div></div>` : ''}
+        </div>`;
+}
+
 function destroyAllCharts() {
     Object.values(activeCharts).forEach(chart => { if(chart && typeof chart.destroy === 'function') chart.destroy(); });
     activeCharts = {};
@@ -1172,8 +1213,28 @@ function attachViewEventListeners(viewName) {
         renderLibraryList();
         renderLibraryDetails();
         renderInteractiveCharts(state.currentLang);
+    } else if (viewName === 'explain') {
+        initInteractiveGrid();
+    } else if (viewName === 'quiz') {
+        const quizView = document.getElementById('quizView');
+        quizView.addEventListener('click', (e) => {
+            const card = e.target.closest('.quiz-option-card');
+            if (!card) return;
+
+            const group = card.closest('[data-quiz-group]').dataset.quizGroup;
+            state.quizAnswers[group] = card.dataset.value;
+
+            document.querySelectorAll(`[data-quiz-group="${group}"] .quiz-option-card`).forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            card.classList.remove('bouncing');
+            void card.offsetWidth;
+            card.classList.add('bouncing');
+
+            const allAnswered = quizQuestions.every(q => state.quizAnswers[q.id]);
+            document.getElementById('submitQuizBtn').disabled = !allAnswered;
+        });
+        document.getElementById('submitQuizBtn').addEventListener('click', handleQuizSubmit);
     }
-    // Add other view-specific listeners if needed
 }
 
 function init() {
