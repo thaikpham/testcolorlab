@@ -418,8 +418,21 @@ const translations = {
     explainSubtitle: {vi: "Hướng dẫn toàn diện để tạo ra màu sắc đậm chất riêng cho ảnh tĩnh", en:"A comprehensive guide to creating your unique color signature for stills"},
     pillarsTitle: {vi: "Hai Trụ Cột Sáng Tạo Màu Sắc", en:"The Two Pillars of Color Creation"},
     wbPillarTitle: {vi: "Trụ cột 1: White Balance - Nền Tảng Cảm Xúc", en:"Pillar 1: White Balance - The Emotional Foundation"},
+    wbKelvinTitle: { vi: "Nhiệt Độ Kelvin (K): Tạo Tông Màu Chủ Đạo", en: "Kelvin Temperature (K): Creating the Main Tone"},
+    wbKelvinDesc: { vi: 'Sử dụng thang đo Kelvin như một nét cọ lớn để "nhuộm" toàn bộ khung hình bằng tông màu ấm hoặc lạnh, định hình "mood" cho bức ảnh.', en: 'Use the Kelvin scale like a broad brush to "tint" the entire frame with warm or cool tones, shaping the photo\'s mood.'},
+    wbShiftTitle: { vi: "Lưới Tinh Chỉnh (A-B/G-M Shift): Thêm Sắc Thái Tinh Vi", en:"Fine-Tuning Grid (A-B/G-M Shift): Adding Subtle Hues"},
+    wbShiftDesc: { vi: 'Nếu Kelvin là nét cọ lớn, lưới tinh chỉnh là cọ tỉa. Đây là chìa khóa để mô phỏng các loại phim đặc trưng bằng cách thêm các sắc thái Hổ phách/Xanh hoặc Xanh lá/Tím.', en: 'If Kelvin is the broad brush, this is the fine-detail brush. It\'s key to simulating specific films by adding Amber/Blue or Green/Magenta tints.'},
     ppPillarTitle: {vi: "Trụ cột 2: Picture Profile - Tạo Dáng Vẻ Phim Ảnh", en:"Pillar 2: Picture Profile - Crafting the Film Look"},
     ppInfographicTitle: {vi: "Quy trình Tinh chỉnh Picture Profile", en:"Picture Profile Adjustment Workflow"},
+    ppItemBlackLevel: { vi: "Black Level (Mức độ đen)", en: "Black Level" },
+    ppItemGamma: { vi: "Gamma", en: "Gamma" },
+    ppItemBlackGamma: { vi: "Black Gamma", en: "Black Gamma" },
+    ppItemKnee: { vi: "Knee (Điểm uốn)", en: "Knee" },
+    ppItemColorMode: { vi: "Color Mode (Chế độ màu)", en: "Color Mode" },
+    ppItemSaturation: { vi: "Saturation (Bão hòa)", en: "Saturation" },
+    ppItemColorPhase: { vi: "Color Phase (Pha màu)", en: "Color Phase" },
+    ppItemColorDepth: { vi: "Color Depth (Độ sâu màu)", en: "Color Depth" },
+    ppItemDetail: { vi: "Detail (Chi tiết)", en: "Detail" },
     recallTitle: { vi: 'Lưu Trữ & Tái Sử Dụng: Làm Chủ Memory Recall', en: 'Save & Reuse: Mastering Memory Recall' },
     tutorialTitle: { vi: "Hướng dẫn Cài đặt Nhanh", en: "Quick Setup Guide" },
     exposureNoteTitle: { vi: "Lưu ý về Phơi sáng", en: "Note on Exposure" },
@@ -752,6 +765,51 @@ ${formatRecipeForPrompt(originalRecipe, state.currentLang)}
     button.innerHTML = button.dataset.originalText; 
     applyTranslations();
 }
+
+async function handleQuizSubmit() {
+    const selectedTags = Object.values(state.quizAnswers);
+    
+    await renderView('home');
+    const homeView = document.getElementById('homeView');
+    if (!homeView) { console.error("Quiz Submit Error: homeView not found after render."); return; }
+    homeView.innerHTML = `<div class="flex flex-col items-center justify-center h-full"><div class="spinner !w-16 !h-16 !border-4"></div><h2 class="landing-title mt-8" data-translate-key="loadingAnalyze"></h2></div>`;
+    applyTranslations();
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    let maxScore = -1;
+    let bestLocalRecipe = null;
+
+    recipesData.forEach(recipe => {
+        let score = 0;
+        selectedTags.forEach(tag => {
+            if (recipe.tags.includes(tag)) score++;
+        });
+        
+        if (state.quizAnswers.type && recipe.type === state.quizAnswers.type) score += 5; 
+        if (state.quizAnswers.contrast && recipe.contrast === state.quizAnswers.contrast) score += 2; 
+        if (state.quizAnswers.saturation && recipe.saturation === state.quizAnswers.saturation) score += 2; 
+
+        if (score > maxScore) {
+            maxScore = score;
+            bestLocalRecipe = recipe;
+        }
+    });
+
+    const recommendedRecipe = bestLocalRecipe || recipesData[0];
+    
+    if (recommendedRecipe) {
+        state.selectedRecipeId = recommendedRecipe.id;
+        state.isMobileDetailActive = true;
+        await renderView('recipeFormulas');
+    } else {
+        await renderView('home');
+        const fallbackHomeView = document.getElementById('homeView');
+        if(fallbackHomeView) {
+            fallbackHomeView.innerHTML = `<p class="text-red-500">Không thể tìm thấy công thức phù hợp. Vui lòng thử lại.</p>`;
+        }
+    }
+}
+
 
 // --- UI RENDERING & VIEW MANAGEMENT ---
 function createSettingsGrid(settings) {
