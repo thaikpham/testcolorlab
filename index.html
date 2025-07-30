@@ -12,8 +12,7 @@
 <!-- OPTIMIZATION: Defer non-critical scripts to speed up initial page load -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-<!-- Load recipe data before the main app script -->
-<script src="recipes.js" defer></script>
+<!-- REMOVED: <script src="recipes.js" defer></script> as it will be imported as a module -->
 <style>
 html { scroll-behavior: smooth; }
 body {
@@ -303,6 +302,9 @@ gtag('config', 'G-QKGB56ZKQD');
 </div>
 
 <script type="module">
+// --- FIX: Import recipesData from the module ---
+import recipesData from './recipes.js';
+
 // --- STATE & CONFIGURATION ---
 const state = {
 currentLang: 'vi',
@@ -322,8 +324,7 @@ const mainContentEl = document.getElementById('mainContent');
 let activeCharts = {};
 
 // --- DATA ---
-// Data is now loaded from the recipes.js file included before this script.
-// The recipesData variable is available globally.
+// The recipesData variable is now correctly imported from recipes.js
 
 const translations = {
 // General
@@ -1715,4 +1716,5 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
+
 
