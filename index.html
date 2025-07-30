@@ -436,7 +436,7 @@ recallTitle: { vi: 'Lưu Trữ & Tái Sử Dụng: Làm Chủ Memory Recall', en
 recallDesc: { vi: 'Đừng lãng phí công sức! Lưu lại các công thức của bạn vào bộ nhớ của máy ảnh để gọi ra nhanh chóng chỉ bằng một thao tác xoay nút.', en: 'Don\'t waste your effort! Save your recipes to the camera\'s memory for quick recall with a simple turn of a dial.' },
 recallInternalTitle: { vi: 'Bộ Nhớ Trong (1, 2, 3)', en: 'Internal Memory (1, 2, 3)' },
 recallInternalDesc: { vi: 'Lưu trực tiếp vào máy. Truy cập nhanh nhất bằng cách xoay vòng xoay chế độ. Lý tưởng cho các công thức bạn sử dụng hàng ngày.', en: 'Saves directly to the camera. Quickest access via the mode dial. Ideal for your daily-use recipes.' },
-recallCardTitle: { vi: 'Thẻ Nhớ (M1, M2, M3, M4)', en: 'Memory Card (M1, M2, M3, M4)' },
+recallCardTitle: { vi: 'Thẻ Nhớ (M1, M2, M3, M4)', en: 'Memory Card (M1, 2, 3, 4)' },
 recallCardDesc: { vi: 'Lưu dưới dạng file trên thẻ nhớ. Cực kỳ hữu ích để sao lưu an toàn hoặc chuyển công thức sang một thân máy Sony khác.', en: 'Saves as a file on your memory card. Extremely useful for backups or transferring recipes to another Sony camera body.' },
 tutorialTitle: { vi: "Hướng dẫn Cài đặt Nhanh", en: "Quick Setup Guide" },
 tutorialStep1Title: { vi: "Bước 1: Tìm Picture Profile", en: "Step 1: Find Picture Profile" },
@@ -524,23 +524,32 @@ options: [
 }
 ];
 
-async function callAIApi(prompt, isStructured = false, customDelay = 500) { // Changed default delay to 500ms
+/**
+ * Calls the Gemini API to get a response.
+ * @param {string} prompt The prompt to send to the AI.
+ * @param {boolean} isStructured Whether to expect a structured JSON response.
+ * @param {number} customDelay A delay to simulate network latency for UX.
+ * @returns {Promise<object|string|null>} The parsed JSON object, a text string, or null if an error occurs.
+ */
+async function callAIApi(prompt, isStructured = false, customDelay = 500) {
     if (state.isAILoading) return;
     state.isAILoading = true;
-    let result = null; // Default to null for structured, or empty string for unstructured
+    let result = null;
 
     try {
-        await new Promise(resolve => setTimeout(resolve, customDelay)); // Use customDelay
+        // The delay is for simulating network latency, can be removed or kept for UX.
+        await new Promise(resolve => setTimeout(resolve, customDelay));
 
-        let chatHistory = [];
-        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-        let payload = { contents: chatHistory };
-        const apiKey = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ"; // API Key của bạn
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+        const payload = { contents: chatHistory };
+        
+        // IMPORTANT: The API key is an empty string. The environment will provide it.
+        const apiKey = ""; 
+        const model = "gemini-2.5-flash-preview-05-20";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
         if (isStructured) {
-            // Define schema for structured output (e.g., quiz results or adjusted recipe)
+            // Define schema for structured output
             if (prompt.includes("Suggest the single best existing recipe")) {
                 payload.generationConfig = {
                     responseMimeType: "application/json",
@@ -550,11 +559,11 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) { // C
                             "recipeId": { "type": "STRING" },
                             "moodDescription": { "type": "STRING" }
                         },
-                        "propertyOrdering": ["recipeId", "moodDescription"]
+                        required: ["recipeId", "moodDescription"]
                     }
                 };
-            } else if (prompt.includes("adjusted settings")) {
-                // Explicitly define a robust schema for adjusted recipe
+            } else if (prompt.includes("hãy tinh chỉnh các cài đặt theo yêu cầu của người dùng")) {
+                // More flexible schema for recipe adjustment
                 payload.generationConfig = {
                     responseMimeType: "application/json",
                     responseSchema: {
@@ -563,46 +572,20 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) { // C
                             "recipe": {
                                 type: "OBJECT",
                                 properties: {
-                                    "id": { "type": "STRING" },
                                     "name": { "type": "OBJECT", "properties": { "vi": { "type": "STRING" }, "en": { "type": "STRING" } } },
                                     "description": { "type": "OBJECT", "properties": { "vi": { "type": "STRING" }, "en": { "type": "STRING" } } },
+                                    "whiteBalance": { "type": "STRING" },
+                                    "settings": { "type": "OBJECT", "additionalProperties": { "type": "STRING" } },
+                                    "colorDepth": { "type": "OBJECT", "additionalProperties": { "type": "STRING" } },
+                                    "detailSettings": { "type": "OBJECT", "additionalProperties": { "type": "STRING" } },
                                     "type": { "type": "STRING" },
                                     "contrast": { "type": "STRING" },
                                     "saturation": { "type": "STRING" },
                                     "tags": { "type": "ARRAY", "items": { "type": "STRING" } },
-                                    "whiteBalance": { "type": "STRING" },
-                                    "settings": {
-                                        "type": "OBJECT",
-                                        properties: { // All possible settings keys
-                                            "Black level": { "type": "STRING" },
-                                            "Gamma": { "type": "STRING" },
-                                            "Black Gamma": { "type": "STRING" },
-                                            "Knee": { "type": "STRING" },
-                                            "Color Mode": { "type": "STRING" },
-                                            "Saturation": { "type": "STRING" },
-                                            "Color Phase": { "type": "STRING" }
-                                        },
-                                        "additionalProperties": true // Allow for other properties if LLM adds them
-                                    },
-                                    "colorDepth": {
-                                        "type": "OBJECT",
-                                        properties: { // All possible color depth keys
-                                            "R": { "type": "STRING" }, "G": { "type": "STRING" }, "B": { "type": "STRING" },
-                                            "C": { "type": "STRING" }, "M": { "type": "STRING" }, "Y": { "type": "STRING" }
-                                        },
-                                        "additionalProperties": true
-                                    },
-                                    "detailSettings": {
-                                        "type": "OBJECT",
-                                        properties: {
-                                            "Level": { "type": "STRING" }
-                                        },
-                                        "additionalProperties": true
-                                    },
                                     "personalityColor": { "type": "STRING" },
                                     "coords": { "type": "OBJECT", "properties": { "x": { "type": "NUMBER" }, "y": { "type": "NUMBER" } } }
                                 },
-                                "required": ["id", "name", "description", "type", "contrast", "saturation", "whiteBalance", "settings", "personalityColor", "coords"] // Ensure these are always present
+                                required: ["name", "description", "whiteBalance", "settings"]
                             }
                         }
                     }
@@ -623,11 +606,9 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) { // C
         }
 
         const responseData = await response.json();
-        console.log("Raw AI responseData:", responseData); // Log raw response for debugging
+        console.log("Raw AI responseData:", responseData);
 
-        if (responseData.candidates && responseData.candidates.length > 0 &&
-            responseData.candidates[0].content && responseData.candidates[0].content.parts &&
-            responseData.candidates[0].content.parts.length > 0) {
+        if (responseData.candidates && responseData.candidates[0]?.content?.parts?.[0]) {
             const text = responseData.candidates[0].content.parts[0].text;
             if (isStructured) {
                 try {
@@ -635,18 +616,18 @@ async function callAIApi(prompt, isStructured = false, customDelay = 500) { // C
                 } catch (e) {
                     console.error("AI Response JSON parsing error:", e);
                     console.error("Raw AI response text that failed parsing:", text);
-                    result = null; // Explicitly null for structured parsing failure
+                    result = null;
                 }
             } else {
-                result = text; // Return the raw text for unstructured
+                result = text;
             }
         } else {
             console.error("Unexpected AI response structure or empty content:", responseData);
-            result = isStructured ? null : ""; // Return null for structured, empty string for unstructured
+            result = isStructured ? null : "";
         }
     } catch (error) {
         console.error("AI API call failed in catch block:", error);
-        result = isStructured ? null : ""; // Return null for structured, empty string for unstructured
+        result = isStructured ? null : "";
     } finally {
         state.isAILoading = false;
         updateUIAfterAILoading();
