@@ -735,11 +735,6 @@ ${formatRecipeForPrompt(originalRecipe, state.currentLang)}
 }
 
 // --- UI RENDERING & VIEW MANAGEMENT ---
-// (This section contains the non-AI logic for rendering views, which remains largely unchanged)
-// ... [The extensive UI rendering functions like viewTemplates, renderLibraryList, renderLibraryDetails, etc. go here] ...
-// ... [For brevity, I'm omitting the large, unchanged template and rendering functions. The provided code above has them.] ...
-// NOTE: The full code from the previous turn should be used for the UI functions. This is just a placeholder for the explanation.
-
 function createSettingsGrid(settings) {
 if (!settings) return '';
 return Object.entries(settings).map(([key, value]) => `<div class="flex flex-col"><span class="text-xs text-neutral-500">${key}</span><span class="font-semibold text-lg">${value}</span></div>`).join('');
@@ -1132,6 +1127,45 @@ function renderInteractiveCharts(lang) {
     }
 }
 
+function toggleMobileNav(show) {
+    const menu = document.getElementById('mobileNavMenu');
+    menu.classList.toggle('translate-x-full', !show);
+}
+
+function handleDropdownNav() {
+    const container = document.getElementById('pp-dropdown-container');
+    const btn = document.getElementById('pp-dropdown-btn');
+    const menu = document.getElementById('pp-dropdown-menu');
+    const chevron = document.getElementById('pp-dropdown-chevron');
+
+    if (!container || !btn || !menu) return;
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = menu.classList.contains('hidden');
+        if (isHidden) {
+            menu.classList.remove('hidden');
+            setTimeout(() => {
+                menu.classList.remove('opacity-0', 'scale-95');
+                chevron.style.transform = 'rotate(180deg)';
+            }, 10);
+        } else {
+            menu.classList.add('opacity-0', 'scale-95');
+            chevron.style.transform = 'rotate(0deg)';
+            menu.addEventListener('transitionend', () => menu.classList.add('hidden'), { once: true });
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!container.contains(e.target) && !menu.classList.contains('hidden')) {
+            menu.classList.add('opacity-0', 'scale-95');
+            chevron.style.transform = 'rotate(0deg)';
+            menu.addEventListener('transitionend', () => menu.classList.add('hidden'), { once: true });
+        }
+    });
+}
+
+
 // --- INITIALIZATION & EVENT LISTENERS ---
 function attachViewEventListeners(viewName) {
     if (viewName === 'recipeFormulas') {
@@ -1139,14 +1173,16 @@ function attachViewEventListeners(viewName) {
         renderLibraryDetails();
         renderInteractiveCharts(state.currentLang);
     }
+    // Add other view-specific listeners if needed
 }
 
 function init() {
+    // REFACTORED: Centralized event delegation for better performance and maintainability.
     document.body.addEventListener('click', async (e) => {
         const target = e.target;
         const closest = (selector) => target.closest(selector);
 
-        // Modal/Lightbox handling is high priority
+        // High-priority handlers (modals, lightboxes)
         if (state.lightbox.isOpen) {
             if (closest('#lightbox-close') || target.id === 'lightbox-bg') closeLightbox();
             else if (closest('#lightbox-next')) navigateLightbox(1);
@@ -1155,63 +1191,95 @@ function init() {
                 state.lightbox.currentIndex = parseInt(closest('.lightbox-thumb').dataset.index, 10);
                 updateLightboxContent();
             }
-            return;
+            return; // Stop further processing
         }
-        if (closest('#closeComparisonModalBtn')) { document.getElementById('comparisonModal').classList.add('hidden'); return; }
-        if (closest('#closePromptModalBtn') || closest('#cancelPromptBtn')) { closePromptConfirmationModal(); return; }
-        if (closest('#confirmPromptBtn')) {
-            if (promptConfirmationResolver) {
-                promptConfirmationResolver(document.getElementById('improvedPromptText').textContent);
-                promptConfirmationResolver = null;
+        
+        const eventHandlers = {
+            // Modals
+            '#closeComparisonModalBtn': () => document.getElementById('comparisonModal').classList.add('hidden'),
+            '#closePromptModalBtn': closePromptConfirmationModal,
+            '#cancelPromptBtn': closePromptConfirmationModal,
+            '#confirmPromptBtn': () => {
+                if (promptConfirmationResolver) {
+                    promptConfirmationResolver(document.getElementById('improvedPromptText').textContent);
+                    promptConfirmationResolver = null;
+                }
+                closePromptConfirmationModal();
+            },
+            // Navigation
+            '#homeBtn': () => { state.selectedRecipeId = null; state.isMobileDetailActive = false; renderView('home'); },
+            '.nav-btn, .nav-btn-mobile': (el) => {
+                state.selectedRecipeId = null; state.isMobileDetailActive = false;
+                if (el.classList.contains('nav-btn-mobile')) toggleMobileNav(false);
+                renderView(el.dataset.view);
+            },
+            '#hamburgerBtn': () => toggleMobileNav(true),
+            '#closeMobileNavBtn': () => toggleMobileNav(false),
+            // Language
+            '.lang-btn': (el) => {
+                state.currentLang = el.id.replace('lang', '').toLowerCase();
+                renderView(state.currentView);
+            },
+            // Main Actions
+            '#startQuizBtn': () => { state.quizAnswers = {}; renderView('quiz'); },
+            '#compareBtn': (el) => { if (!el.disabled) handleAiComparison(state.comparisonList[0], state.comparisonList[1]); },
+            '#compareWithOriginalBtn': (el) => handleAiComparison(el.dataset.originalId, null, state.lastGeneratedAiRecipe),
+            '#aiTuningBtn': (el) => handleAiAdjustment(el),
+            '#aiExplainRecipeBtn': (el) => handleAiRecipeExplanation(el),
+            // Recipe List
+            '.recipe-item-content, .recipe-dot': (el) => handleRecipeSelection(closest('[data-recipe-id]').dataset.recipeId, 'div'),
+            '.recipe-compare-cb': (el) => handleRecipeSelection(el.dataset.recipeId, 'checkbox'),
+            '#backToListBtn': () => { state.isMobileDetailActive = false; renderLibraryDetails(); },
+            // Other
+            '.lightbox-trigger-thumb': (el) => {
+                const recipe = recipesData.find(r => r.id === el.dataset.recipeId);
+                if (recipe?.demoImages?.length) openLightbox(recipe.demoImages, parseInt(el.dataset.index, 10));
+            },
+            '.filter-btn': (el) => {
+                const group = el.closest('[data-filter-group]').dataset.filterGroup;
+                state.activeFilters[group] = el.dataset.filterValue;
+                document.querySelectorAll(`[data-filter-group="${group}"] .filter-btn`).forEach(b => b.classList.toggle('active', b.dataset.filterValue === state.activeFilters[group]));
+                renderLibraryList();
+            },
+            '#downloadLutBtn': (el) => {
+                const recipe = recipesData.find(r => r.id === el.dataset.recipeId);
+                if (!recipe) return;
+                const lutContent = `# Generated by Alpha AI Color Lab for ${recipe.name[state.currentLang]}\nTITLE "${recipe.name[state.currentLang]}"\nLUT_3D_SIZE 33\n# Dummy LUT data\n0.0 0.0 0.0\n1.0 1.0 1.0`;
+                const blob = new Blob([lutContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${recipe.id}.cube`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            },
+            '#memoryRecallGuideBtn': () => document.getElementById('setupGuideSection')?.scrollIntoView({ behavior: 'smooth' })
+        };
+
+        for (const selector in eventHandlers) {
+            const el = closest(selector);
+            if (el) {
+                eventHandlers[selector](el);
+                return; // Stop after the first match
             }
-            closePromptConfirmationModal();
-            return;
-        }
-
-        // Navigation
-        const navTargetView = closest('.nav-btn')?.dataset.view || closest('.nav-btn-mobile')?.dataset.view;
-        if (navTargetView) {
-            state.selectedRecipeId = null; state.isMobileDetailActive = false;
-            if (closest('.nav-btn-mobile')) toggleMobileNav(false);
-            await renderView(navTargetView);
-            return;
-        }
-        if (closest('#homeBtn')) { state.selectedRecipeId = null; state.isMobileDetailActive = false; await renderView('home'); return; }
-        if (closest('#startQuizBtn')) { state.quizAnswers = {}; await renderView('quiz'); return; }
-        if (closest('#hamburgerBtn')) { toggleMobileNav(true); return; }
-        if (closest('#closeMobileNavBtn')) { toggleMobileNav(false); return; }
-        if (closest('.lang-btn')) { state.currentLang = closest('.lang-btn').id.replace('lang', '').toLowerCase(); await renderView(state.currentView); return; }
-        
-        // Recipe List Interactions
-        if (closest('.recipe-item-content') || closest('.recipe-dot')) { handleRecipeSelection(closest('[data-recipe-id]').dataset.recipeId, 'div'); return; }
-        if (target.matches('.recipe-compare-cb')) { handleRecipeSelection(target.dataset.recipeId, 'checkbox'); return; }
-        if (closest('#backToListBtn')) { state.isMobileDetailActive = false; renderLibraryDetails(); return; }
-
-        // AI Feature Buttons
-        if (closest('#compareBtn') && !closest('#compareBtn').disabled) { handleAiComparison(state.comparisonList[0], state.comparisonList[1]); return; }
-        if (closest('#compareWithOriginalBtn')) { handleAiComparison(closest('#compareWithOriginalBtn').dataset.originalId, null, state.lastGeneratedAiRecipe); return; }
-        if (closest('#aiTuningBtn')) { handleAiAdjustment(closest('#aiTuningBtn')); return; }
-        if (closest('#aiExplainRecipeBtn')) { handleAiRecipeExplanation(closest('#aiExplainRecipeBtn')); return; }
-        
-        // Other interactions
-        if (closest('.lightbox-trigger-thumb')) {
-            const recipe = recipesData.find(r => r.id === closest('.lightbox-trigger-thumb').dataset.recipeId);
-            if (recipe?.demoImages?.length) openLightbox(recipe.demoImages, parseInt(closest('.lightbox-trigger-thumb').dataset.index, 10));
-            return;
-        }
-        if (closest('.filter-btn')) {
-            const btn = closest('.filter-btn');
-            const group = btn.closest('[data-filter-group]').dataset.filterGroup;
-            state.activeFilters[group] = btn.dataset.filterValue;
-            document.querySelectorAll(`[data-filter-group="${group}"] .filter-btn`).forEach(b => b.classList.toggle('active', b.dataset.filterValue === state.activeFilters[group]));
-            renderLibraryList();
-            return;
         }
     });
 
-    document.body.addEventListener('input', (e) => { if (e.target.id === 'searchInput') renderLibraryList(); });
-    window.addEventListener('resize', () => { if(state.currentView === 'recipeFormulas') renderLibraryDetails(); });
+    document.body.addEventListener('input', (e) => {
+        if (e.target.id === 'searchInput') {
+            renderLibraryList();
+        }
+    });
 
+    window.addEventListener('resize', () => {
+        if (state.currentView === 'recipeFormulas') {
+            renderLibraryDetails();
+        }
+    });
+
+    handleDropdownNav();
     renderView('home');
 }
 
