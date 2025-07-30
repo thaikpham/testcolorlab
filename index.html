@@ -50,17 +50,6 @@ border-radius: 24px;
 .glass-panel { border-radius: 28px; }
 }
 
-/* Custom style for Welcome Modal background */
-#welcomeModal .modal-content {
-    background: linear-gradient(to bottom right, #FFFFFF, #E0F2FE); /* White to very light blue gradient */
-    /* Ensure other glass-panel properties are retained or re-applied if needed */
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
-}
-
-
 .recipe-item.selected {    
 background-color: rgba(0, 122, 255, 0.1);    
 border-left: 4px solid var(--primary-accent);    
@@ -272,26 +261,6 @@ gtag('config', 'G-QKGB56ZKQD');
 </header>
 
 <div id="mainContent" class="flex-grow min-h-0 relative mt-4 md:mt-6 mb-2"></div>
-</div>
-
-<!-- Welcome Modal -->
-<div id="welcomeModal" class="modal hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-<div class="modal-content glass-panel w-full max-w-3xl max-h-[90vh] flex flex-col p-6 md:p-10 overflow-y-auto">
-<h2 class="font-semibold text-2xl mb-6" data-translate-key="manifestoTitle"></h2>
-<div class="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-4">
-<p data-translate-key="manifestoBody1"></p>
-<p data-translate-key="manifestoBody2"></p>
-<p class="font-semibold text-xl text-center text-blue-600 py-4" data-translate-key="manifestoBody3"></p>
-<p data-translate-key="manifestoBody4"></p>
-<p data-translate-key="manifestoBody5"></p>
-<p data-translate-key="manifestoBody6"></p>
-<p class="mb-8 font-bold" data-translate-key="manifestoBody7"></p>
-<p class="text-right" data-translate-key="manifestoSignature"></p>
-</div>
-<div class="text-center mt-8">
-<button id="closeWelcomeModalBtn" class="btn btn-primary py-3 px-8 text-lg" data-translate-key="startExploringBtn"></button>
-</div>
-</div>
 </div>
 
 <div id="mobileNavMenu" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transform translate-x-full md:hidden">
@@ -1823,19 +1792,6 @@ renderLibraryList();
 });
 
 window.addEventListener('resize', () => { if(state.currentView === 'recipeFormulas') renderLibraryDetails(); });
-
-// Welcome Modal Logic
-const welcomeModal = document.getElementById('welcomeModal');
-const closeWelcomeBtn = document.getElementById('closeWelcomeModalBtn');
-if (!getCookie('welcomeLetterSeen')) {
-welcomeModal.classList.remove('hidden');
-welcomeModal.classList.add('flex');
-}
-closeWelcomeBtn.addEventListener('click', () => {
-welcomeModal.classList.add('hidden');
-welcomeModal.classList.remove('flex');
-setCookie('welcomeLetterSeen', 'true', 365); // Set cookie for 1 year
-});
 
 renderView('home');
 handleDropdownNav();
