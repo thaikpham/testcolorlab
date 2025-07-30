@@ -12,6 +12,8 @@
 <!-- OPTIMIZATION: Defer non-critical scripts to speed up initial page load -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+<!-- Load recipe data before the main app script -->
+<script src="recipes.js" defer></script>
 <style>
 html { scroll-behavior: smooth; }
 body {
@@ -320,9 +322,8 @@ const mainContentEl = document.getElementById('mainContent');
 let activeCharts = {};
 
 // --- DATA ---
-// NOTE: In a real application, this would be fetched from a server.
-// For this demo, it's included here for simplicity.
-import recipesData from './recipes.js';
+// Data is now loaded from the recipes.js file included before this script.
+// The recipesData variable is available globally.
 
 const translations = {
 // General
@@ -1714,3 +1715,4 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
+
