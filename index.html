@@ -27,19 +27,19 @@
         --text-primary: #1d1d1f;
         --text-secondary: #6e6e73;
     }
-    .glass-panel {   
-        background: var(--glass-bg);   
-        backdrop-filter: blur(40px) saturate(180%);   
-        -webkit-backdrop-filter: blur(40px) saturate(180%);   
-        border: 1px solid var(--glass-border);   
+    .glass-panel {    
+        background: var(--glass-bg);    
+        backdrop-filter: blur(40px) saturate(180%);    
+        -webkit-backdrop-filter: blur(40px) saturate(180%);    
+        border: 1px solid var(--glass-border);    
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Refined shadow */
         border-radius: 24px;
     }
     @media (min-width: 768px) { .glass-panel { border-radius: 28px; } }
-    .recipe-item.selected {   
-        background-color: rgba(0, 122, 255, 0.1);   
-        border-left: 4px solid var(--primary-accent);   
-        color: var(--text-primary);   
+    
+    .recipe-item.selected {    
+        background-color: rgba(0, 122, 255, 0.1);    
+        color: var(--text-primary);    
         transform: translateX(4px);
         box-shadow: 0 4px 12px rgba(0, 122, 255, 0.1);
     }
@@ -48,7 +48,6 @@
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background-color: var(--primary-accent); border: none; color: white; box-shadow: 0 4px 14px rgba(0, 118, 255, 0.39); }
     .btn-primary:hover:not(:disabled) { background-color: var(--primary-accent-darker); transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 18px rgba(0, 118, 255, 0.45); }
-    /* UPDATE: Add active state for instant feedback on all buttons */
     .btn:active { transform: translateY(0px) scale(0.98); }
 
     .view-transition { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
@@ -104,7 +103,7 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* UI UPDATE: New styles for Quiz Options */
+    /* Quiz Options Styles */
     .quiz-option {
         background-color: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -123,7 +122,6 @@
         transform: scale(1.05);
         box-shadow: 0 6px 20px rgba(0, 118, 255, 0.2);
     }
-    /* UPDATE: Add active state for instant feedback */
     .quiz-option:active {
         transform: scale(1.02);
     }
@@ -142,30 +140,68 @@
         max-width: calc(50% - 0.5rem); /* Match width of others */
     }
 
-    /* UPDATE: New styles for the dynamic photo collage */
+    /* Dynamic photo collage and lightbox Styles */
     .photo-collage {
         display: grid;
         gap: 0.75rem;
-        grid-auto-flow: dense;
+        grid-auto-rows: 200px; /* Define a base row height */
     }
-    .photo-collage img {
+    .collage-item {
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: 0.75rem;
+    }
+    .collage-item img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 0.75rem;
+        transition: transform 0.3s ease-in-out;
     }
+    .collage-item:hover img {
+        transform: scale(1.05);
+    }
+    /* Masonry Layouts */
     .photo-collage.images-1 { grid-template-columns: 1fr; }
     .photo-collage.images-2 { grid-template-columns: repeat(2, 1fr); }
     .photo-collage.images-3 { grid-template-columns: repeat(3, 1fr); }
-    .photo-collage.images-4 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
-    .photo-collage.images-5 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(2, 1fr); }
-    .photo-collage.images-5 > div:nth-child(1) { grid-column: span 3; grid-row: span 1; }
-    .photo-collage.images-5 > div:nth-child(2) { grid-column: span 3; grid-row: span 1; }
-    .photo-collage.images-5 > div:nth-child(3) { grid-column: span 2; grid-row: span 1; }
-    .photo-collage.images-5 > div:nth-child(4) { grid-column: span 2; grid-row: span 1; }
-    .photo-collage.images-5 > div:nth-child(5) { grid-column: span 2; grid-row: span 1; }
-    .photo-collage.images-6 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
+    .photo-collage.images-4 { 
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: minmax(150px, auto);
+    }
+    .photo-collage.images-5 {
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(150px, auto);
+    }
+    .photo-collage.images-5 > .collage-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    .photo-collage.images-5 > .collage-item:nth-child(2) { grid-row: span 2; }
+    
+    .photo-collage.images-6 { 
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(150px, auto);
+    }
+    .photo-collage.images-6 > .collage-item:nth-child(3) { grid-column: span 2; }
+    .photo-collage.images-6 > .collage-item:nth-child(4) { grid-column: span 2; }
 
+    /* Lightbox Styles */
+    #lightbox {
+        position: fixed; inset: 0; background-color: rgba(0,0,0,0.85);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        z-index: 100; display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+    }
+    #lightbox.visible { opacity: 1; pointer-events: auto; }
+    #lightbox img {
+        max-width: 90vw; max-height: 85vh;
+        border-radius: 0.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        transform: scale(0.95); transition: transform 0.3s ease;
+    }
+    #lightbox.visible img { transform: scale(1); }
+    #lightboxClose {
+        position: absolute; top: 2rem; right: 2rem;
+        color: white; font-size: 3rem; font-weight: 200;
+        cursor: pointer; transition: transform 0.2s ease;
+    }
+    #lightboxClose:hover { transform: scale(1.1); }
 </style>
 </head>
 <body>
@@ -202,9 +238,18 @@
     </header>
 
     <div id="mainContent" class="flex-grow min-h-0 relative mt-4 md:mt-6 mb-2"></div>
+    
+    <footer class="text-center py-4 text-gray-500 text-sm flex-shrink-0">
+        Paint emotions with ColorLAB by Sony Alpha Vietnam
+    </footer>
 </div>
 
 <div id="infoTooltip" class="hidden"></div>
+
+<div id="lightbox" class="hidden">
+    <span id="lightboxClose">&times;</span>
+    <img id="lightboxImage" src="" alt="Full size view">
+</div>
 
 <div id="mobileNavMenu" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transform translate-x-full md:hidden">
     <div class="absolute top-0 right-0 h-full w-2/3 max-w-sm bg-white/80 backdrop-blur-xl shadow-2xl p-6">
@@ -247,7 +292,7 @@
     </div>
 </div>
 
-<!-- UPDATE: Add new modal for Caption AI Lab -->
+<!-- Caption AI Lab Modal -->
 <div id="captionLabModal" class="modal hidden fixed inset-0 bg-black/30 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div id="captionLabPanel" class="modal-panel w-full max-w-2xl max-h-[90vh] flex flex-col view-transition rounded-2xl">
         <div class="flex justify-between items-center p-5 border-b border-gray-200 flex-shrink-0">
@@ -266,8 +311,8 @@
 
 <script type="module">
 // --- CONFIGURATION & STATE ---
-const API_KEY = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ";
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+// UPDATE: Removed the static API_KEY. The API calls will now use the environment's authentication.
+const API_URL_BASE = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
 
 const state = {
     currentLang: 'vi',
@@ -283,7 +328,6 @@ const state = {
         generationPromise: null,
         abortController: null,
     },
-    // UPDATE: Add state for the new Caption AI feature
     captionAI: {
         isGenerating: false,
         recipe: null,
@@ -301,9 +345,106 @@ const state = {
 const mainContentEl = document.getElementById('mainContent');
 
 // --- DATA ---
-import recipesData from './recipes.js';
+const recipesData = [
+    {
+        "id": "scl-001",
+        "name": { "vi": "SCL-001: Mojave Sun", "en": "SCL-001: Mojave Sun" },
+        "formattedName": "SCL-001-Mojave Sun",
+        "description": {
+            "en": "A nostalgic, sun-drenched style that bathes scenes in the warm glow of golden hour.\nPerfect for travel and lifestyle, it recreates rich yellows and deep blues, evoking the feeling of an endless summer road trip.",
+            "vi": "Một phong cách hoài niệm, ngập tràn ánh nắng, bao phủ các khung cảnh trong ánh sáng ấm áp của giờ vàng. Hoàn hảo cho du lịch và đời sống, nó tái tạo màu vàng đậm và xanh dương sâu, gợi lên cảm giác về một chuyến đi mùa hè bất tận."
+        },
+        "type": "color",
+        "contrast": "normal",
+        "saturation": "normal",
+        "tags": ["nostalgic", "sun-drenched", "warm", "travel", "lifestyle", "summer", "golden-hour"],
+        "whiteBalance": "8300K, B3-M1.5",
+        "settings": { "Black level": "-5", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 75% +4", "Color Mode": "S-Gamut3", "Saturation": "+22", "Color Phase": "+4" },
+        "colorDepth": { "R": "-2", "G": "0", "B": "+5", "C": "+5", "M": "0", "Y": "+4" },
+        "detailSettings": { "Level": "0" },
+        "personalityColor": "#FFD700",
+        "coords": { "x": 6, "y": 7 },
+        "demoImages": [
+            "https://lh3.googleusercontent.com/pw/AP1GczPPT3oBJKObBMX8NEdTxe-PLC2BEd0eRGUMSUiYxocel93ljDNFyG58LJiiPhijnKyWkjJbkSim54sWvSLrRxeM22uF82BlckublQ4qsSic7gwhAVe-XX0jEzRuxDJG7j25PHU6tLUGIT0IRHjy_AvXuQ=w1658-h1105-s-no?authuser=0",
+            "https://lh3.googleusercontent.com/pw/AP1GczPC_ounREkB_Q6oj6ZM7ckVGcKKZ_saJP5O63nURHPk09iTI8l4YwSqUzyxJm8ZG760nUJhm5JgmMWyk4uGlDDaaWwjJJPO4E9IAoF1pNfMHqx-2g3OcDS2COZ1w93K8j16X08W24leuMEhZvXx6L4uyw=w736-h1105-s-no?authuser=0",
+            "https://lh3.googleusercontent.com/pw/AP1GczPwAttTxhJ89lhQ4Lbp9Klq73D30WWsG21oDGzsTZ9ig_5IYa3hLxdsQnMIb-8xJF-SOUMsNjaoGm-1RbfHrcRDn8lrLR7krn4ubwBkoe7fKqWes36h-8T05_EvDvJiHM04HZYdZzSkJ_4O2y7yhyXc3A=w1658-h1105-s-no?authuser=0",
+            "https://scontent-mxp2-1.xx.fbcdn.net/v/t39.30808-6/524715467_23871084269186656_4899892423308509034_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=24ef35&_nc_eui2=AeGdewaeMibHCZ0p8AZgnnHodzaivFYyjk53NqK8VjKOTgD28VtuYUtFFu37dUHp8v0okvz6FCq0BP3JCDnZ8DgS&_nc_ohc=evaYHCdfjMcQ7kNvwF_8WCn&_nc_oc=AdnstQUm2jMUPRkRipKC7Iort2IuqLjgMEeHd1k15NxJqZLEpVGMMDYX7UGBlUBOVqWqJVcdoEj8OVf-D4FQUe9G&_nc_zt=23&_nc_ht=scontent-mxp2-1.xx&_nc_gid=XlqPHHDl2gNc5o586u2hkg&oh=00_AfT_nXeytsXonahqI4CAPN73kT82CCPw_jB5rMvjIqh6DQ&oe=68911A5A"
+        ]
+    },
+    {
+        "id": "scl-002",
+        "name": { "vi": "SCL-002: Kyoto Jade", "en": "SCL-002: Kyoto Jade" },
+        "formattedName": "SCL-002-Kyoto Jade",
+        "description": {
+            "en": "A serene and subtle palette defined by rich jade tones and gentle skin colors.\nIdeal for contemplative portraits, street photography, and landscapes, creating a peaceful, painterly atmosphere.",
+            "vi": "Một bảng màu thanh tĩnh và tinh tế được định hình bởi các tông màu xanh ngọc bích đậm và màu da dịu. Lý tưởng cho chân dung trầm tư, nhiếp ảnh đường phố và phong cảnh, tạo ra một không khí yên bình, tựa như tranh vẽ."
+        },
+        "type": "color",
+        "contrast": "normal",
+        "saturation": "normal",
+        "tags": ["serene", "subtle", "portrait", "street-photography", "landscape", "peaceful", "painterly"],
+        "whiteBalance": "3700K, A7-M0.5",
+        "settings": { "Black level": "0", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 80% +4", "Color Mode": "Still", "Saturation": "+10", "Color Phase": "-4" },
+        "colorDepth": { "R": "-4", "G": "+7", "B": "-3", "C": "-3", "M": "-5", "Y": "-3" },
+        "detailSettings": { "Level": "0" },
+        "personalityColor": "#66CDAA",
+        "coords": { "x": -4, "y": 3 },
+        "demoImages": [
+            "https://placehold.co/800x600/66CDAA/ffffff?text=Kyoto+Jade+1",
+            "https://placehold.co/800x600/66CDAA/ffffff?text=Kyoto+Jade+2",
+            "https://placehold.co/800x600/66CDAA/ffffff?text=Kyoto+Jade+3"
+        ]
+    },
+    {
+        "id": "scl-003",
+        "name": { "vi": "SCL-003: Caspian Blue", "en": "SCL-003: Caspian Blue" },
+        "formattedName": "SCL-003-Caspian Blue",
+        "description": {
+            "en": "A cool-toned, cinematic profile with distinctive deep blues and rich, crushed blacks.\nIt lends a moody, atmospheric quality to images, perfect for urban nightscapes, dramatic portraits, and storytelling.",
+            "vi": "Một cấu hình điện ảnh, tông lạnh với sắc xanh dương đặc trưng và vùng tối sâu, đậm. Nó mang lại chất lượng tâm trạng, đầy không khí cho hình ảnh, hoàn hảo cho cảnh đêm đô thị, chân dung kịch tính và kể chuyện."
+        },
+        "type": "color",
+        "contrast": "high",
+        "saturation": "normal",
+        "tags": ["cinematic", "cool-tone", "deep-blues", "moody", "atmospheric", "urban-night", "dramatic-portrait", "storytelling"],
+        "whiteBalance": "8000K, B2-M2",
+        "settings": { "Black level": "-15", "Gamma": "Cine2", "Black Gamma": "Middle +7", "Knee": "Manual 85% +4", "Color Mode": "S-Gamut3.Cine", "Saturation": "+20", "Color Phase": "+7" },
+        "colorDepth": { "R": "0", "G": "-1", "B": "+3", "C": "+4", "M": "+5", "Y": "+2" },
+        "detailSettings": { "Level": "0" },
+        "personalityColor": "#4682B4",
+        "coords": { "x": -8, "y": 5 },
+        "demoImages": [
+            "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+1",
+            "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+2",
+            "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+3"
+        ]
+    },
+    {
+        "id": "scl-004",
+        "name": { "vi": "SCL-004: Tuscan Ochre", "en": "SCL-004: Tuscan Ochre" },
+        "formattedName": "SCL-004-Tuscan Ochre",
+        "description": {
+            "en": "A vibrant, high-saturation style with warm, earthy reds and yellows.\nIt brings a bold, sun-baked intensity to images, reminiscent of classic European travel photography.",
+            "vi": "Một phong cách rực rỡ, độ bão hòa cao với các tông màu đỏ đất và vàng đất ấm áp. Nó mang lại một cường độ táo bạo, cháy nắng cho hình ảnh, gợi nhớ đến nhiếp ảnh du lịch châu Âu cổ điển."
+        },
+        "type": "color",
+        "contrast": "normal",
+        "saturation": "high",
+        "tags": ["vibrant", "high-saturation", "earthy-reds", "warm-yellows", "bold", "sun-baked", "classic-european-travel"],
+        "whiteBalance": "4700K, A2-M0.5",
+        "settings": { "Black level": "+5", "Gamma": "Still", "Black Gamma": "Wide -7", "Knee": "Manual 85% +2", "Color Mode": "S-Gamut3.Cine", "Saturation": "+23", "Color Phase": "+3" },
+        "colorDepth": { "R": "-3", "G": "+7", "B": "+5", "C": "+5", "M": "+5", "Y": "+1" },
+        "detailSettings": { "Level": "0" },
+        "personalityColor": "#CD853F",
+        "coords": { "x": 7, "y": 8 },
+        "demoImages": [
+            "https://placehold.co/800x600/CD853F/ffffff?text=Tuscan+Ochre+1",
+            "https://placehold.co/800x600/CD853F/ffffff?text=Tuscan+Ochre+2",
+            "https://placehold.co/800x600/CD853F/ffffff?text=Tuscan+Ochre+3"
+        ]
+    },
+    ];
     
-// UI UPDATE: New, more refined SVG icons for quiz options
 const quizQuestions = [
     {
         question: { vi: "Bạn sẽ chụp gì hôm nay?", en: "What will you be shooting today?" },
@@ -381,7 +522,7 @@ const translations = {
     aiErrorTitle: {vi: "Đã có lỗi xảy ra", en: "An Error Occurred"},
     aiErrorText: {vi: "Rất tiếc, không thể tạo công thức lúc này. Vui lòng kiểm tra lại API Key hoặc thử lại sau.", en: "Sorry, the recipe could not be generated at this time. Please check your API Key or try again later."},
     tweakWithAI: {vi: "Tinh chỉnh với Gemini AI", en: "Tweak with Gemini AI"},
-    // UPDATE: Add translations for the new Caption AI feature
+    // Caption AI Translations
     captionLabTitle: {vi: "Trợ lý Caption Viral", en: "Viral Caption Assistant"},
     captionLabDescription: {vi: "Nhập ý tưởng cho bài đăng của bạn. AI sẽ giúp bạn viết một caption thật 'chất' theo phong cách màu <b>{recipeName}</b>.", en: "Enter an idea for your post. AI will help you write a captivating caption in the <b>{recipeName}</b> color style."},
     captionPromptPlaceholder: {vi: "VD: một buổi chiều hoàng hôn ở Đà Lạt...", en: "E.g., a sunset afternoon in Dalat..."},
@@ -426,12 +567,13 @@ function applyTranslations() {
 }
 
 function createFullRecipeHTML(recipe) {
-    // UPDATE: Rewritten collage function for dynamic layouts
     const createCollageHTML = (images) => {
         if (!images || images.length === 0) return '';
-        const count = Math.min(images.length, 6); // Cap at 6 images
+        const count = Math.min(images.length, 6);
         const imageElements = images.slice(0, count).map(img => 
-            `<div><img src="${img}" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/475569?text=Image+Not+Found';" alt="Recipe demo image" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 ease-in-out"></div>`
+            `<div class="collage-item" data-lightbox-src="${img}">
+                <img src="${img}" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/475569?text=Image+Not+Found';" alt="Recipe demo image">
+            </div>`
         ).join('');
         return `<div class="photo-collage images-${count} mb-8">${imageElements}</div>`;
     };
@@ -460,16 +602,21 @@ function createFullRecipeHTML(recipe) {
     
     return `
         ${createCollageHTML(recipe.demoImages)}
-        <div class="mt-8 pt-8 border-t border-gray-200 flex flex-col sm:flex-row gap-4 justify-center">
+        <div class="mt-8 pt-8 border-t border-gray-200 flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
             <button class="btn btn-primary py-3 px-6" id="tweakWithAIBtn" data-recipe-id="${recipe.id}">
                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
                 <span data-translate-key="tweakWithAI"></span>
             </button>
-            <!-- UPDATE: Add new button for Caption AI -->
             <button class="btn bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 shadow-lg shadow-purple-500/30" id="captionAIBtn" data-recipe-id="${recipe.id}">
                  <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 3h9.75m-9.75 3h9.75M3 3h18M3 21h18a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0021 3H3a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003 21z" /></svg>
                 <span data-translate-key="captionFromAI"></span>
             </button>
+            <a href="https://helpguide.sony.net/di/pp/v1/en/contents/TP0000909106.html" target="_blank" rel="noopener noreferrer" class="btn bg-gray-700 hover:bg-gray-800 text-white py-3 px-6 shadow-lg shadow-gray-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10.392C2.057 15.71 3.245 16 4.5 16s2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10.392c1.057.514 2.245.804 3.5.804s2.443-.29 3.5-.804V4.804C16.943 4.29 15.755 4 14.5 4z"></path>
+                </svg>
+                <span data-translate-key="sonyGuideBtn"></span>
+            </a>
         </div>
         ${createCTAHTML(recipe)}
         <div class="space-y-8 mt-8">
@@ -537,11 +684,9 @@ function renderQuizQuestion() {
             return;
         }
         const questionData = quizQuestions[qIndex];
-        // UI UPDATE: Add logic to handle 3-option layout
         const hasThreeOptions = questionData.options.length === 3;
         const gridClass = `quiz-options-grid ${hasThreeOptions ? 'has-three-options' : ''}`;
 
-        // UI UPDATE: New HTML structure for quiz options
         quizContent.innerHTML = `
             <div class="quiz-question-container">
                 <h3 class="text-2xl md:text-3xl font-semibold text-center mb-8">${questionData.question[state.currentLang]}</h3>
@@ -600,23 +745,19 @@ function openAILab(recipeId) {
     state.ai.originalRecipe = recipesData.find(r => r.id === recipeId);
     if (!state.ai.originalRecipe) return;
 
-    // Reset AI state for a new session
-    state.ai.generatedRecipe = null;
-    state.ai.userPrompt = '';
-    state.ai.expertPrompt = '';
-    state.ai.generationPromise = null;
-    if (state.ai.abortController) {
-        state.ai.abortController.abort();
-    }
-    state.ai.abortController = null;
+    Object.assign(state.ai, {
+        generatedRecipe: null,
+        userPrompt: '',
+        expertPrompt: '',
+        generationPromise: null,
+        abortController: state.ai.abortController ? (state.ai.abortController.abort(), null) : null
+    });
     
-    const aiLabModal = document.getElementById('aiLabModal');
-    aiLabModal.classList.remove('hidden');
+    document.getElementById('aiLabModal').classList.remove('hidden');
     renderAILab();
 }
 
 function closeAILab() {
-    // Abort any pending request when closing the modal
     if (state.ai.abortController) {
         state.ai.abortController.abort();
     }
@@ -738,6 +879,23 @@ function renderAIError(container, feature = 'ai') {
     applyTranslations();
 }
 
+async function callGeminiAPI(payload, signal) {
+    // This function now handles the API call without a hardcoded key.
+    // It assumes the environment will provide the necessary authentication.
+    const response = await fetch(API_URL_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: signal
+    });
+    if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`API Error: ${response.status} - ${errorBody}`);
+    }
+    return response.json();
+}
+
+
 function handleAIGeneration() {
     const userInput = document.getElementById('aiPromptInput').value.trim();
     if (!userInput) return;
@@ -757,25 +915,14 @@ function handleAIGeneration() {
         }
     };
 
-    state.ai.generationPromise = fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: abortController.signal
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => { throw new Error(`API Error: ${response.status} ${text}`) });
-        }
-        return response.json();
-    })
-    .then(result => {
-        if (!result.candidates?.[0]?.content?.parts?.[0]) {
-            throw new Error("Invalid API response structure.");
-        }
-        const jsonText = result.candidates[0].content.parts[0].text;
-        return JSON.parse(jsonText);
-    });
+    state.ai.generationPromise = callGeminiAPI(payload, abortController.signal)
+        .then(result => {
+            if (!result.candidates?.[0]?.content?.parts?.[0]) {
+                throw new Error("Invalid API response structure.");
+            }
+            const jsonText = result.candidates[0].content.parts[0].text;
+            return JSON.parse(jsonText);
+        });
 }
 
 async function confirmAndCallAI() {
@@ -804,7 +951,7 @@ async function confirmAndCallAI() {
     }
 }
 
-// UPDATE: Add all functions for the new Caption AI feature
+// --- CAPTION AI LOGIC ---
 function openCaptionLab(recipeId) {
     const recipe = recipesData.find(r => r.id === recipeId);
     if (!recipe) return;
@@ -848,10 +995,10 @@ function renderCaptionLab() {
             </div>
             <div class="mt-4 flex gap-2 justify-end">
                  <button class="btn bg-gray-200 text-gray-800 py-2 px-4" data-copy-target="hashtags-text">
-                    <span data-translate-key="copyBtn"></span> Hashtags
+                     <span data-translate-key="copyBtn"></span> Hashtags
                  </button>
                  <button class="btn btn-primary py-2 px-4" data-copy-target="caption-text">
-                    <span data-translate-key="copyBtn"></span> Caption
+                     <span data-translate-key="copyBtn"></span> Caption
                  </button>
             </div>
         `;
@@ -879,15 +1026,23 @@ async function handleCaptionGeneration() {
     renderCaptionLab();
 
     const { recipe } = state.captionAI;
-    const prompt = `You are a world-class social media strategist and copywriter, an expert in creating viral content for platforms like Instagram, Facebook, and TikTok. Your task is to generate a compelling social media post based on the user's idea, tailored to a specific photographic style.
-**Instructions:**
-1.  **Analyze the context:**
-    * **Photographic Style:** "${recipe.name[state.currentLang]}" - ${recipe.description[state.currentLang]}
-    * **User's Idea:** "${userInput}"
-2.  **Generate a Caption:** Write an engaging and creative caption that captures the essence of both the user's idea and the photographic style. The caption should be evocative and encourage interaction (e.g., ask a question, start a story).
-3.  **Generate Hashtags:** Provide a list of 5-10 highly relevant and effective hashtags. Include a mix of popular, niche, and style-specific tags.
-4.  **Language:** **Crucially, you must write the entire response (caption and hashtags) in the same language as the User's Idea. The target language is: ${state.currentLang}.**
-**Output Format:** You must respond with a single, valid JSON object with two keys: "caption" (string) and "hashtags" (string, with each hashtag starting with '#').`;
+    // UPDATE: New, more detailed prompt for the Caption AI
+    const recipeHashtag = `#${recipe.id.replace(/-/g, '')}${recipe.name.en.split(': ')[1].replace(/\s/g, '')}`;
+    const prompt = `You are a witty, trendy, and creative social media expert for Sony Alpha Vietnam, specializing in Gen Z vocabulary and viral content. Your task is to generate a compelling social media post.
+**CRITICAL RULES:**
+1.  **Mandatory Hashtags:** The final hashtag string MUST include '#sonycolorlab', '#sonyalphavietnam', and '${recipeHashtag}'. This is non-negotiable.
+2.  **Tone & Style:** The caption's tone must be creative, subtle, sophisticated, and potentially humorous. Use trendy Vietnamese Gen Z slang and phrasing to make it highly shareable and viral.
+3.  **Language:** The entire response (caption and hashtags) MUST be in the same language as the User's Idea, which is: ${state.currentLang}.
+
+**CONTEXT:**
+* **Photographic Style:** "${recipe.name[state.currentLang]}" - This style is known for: "${recipe.description[state.currentLang]}".
+* **User's Idea:** "${userInput}"
+
+**TASK:**
+Based on all the rules and context, generate a caption and a set of hashtags.
+
+**OUTPUT FORMAT:**
+You must respond with only a single, valid JSON object with two keys: "caption" (string) and "hashtags" (string).`;
 
     const payload = {
         contents: [{ parts: [{ text: prompt }] }],
@@ -895,13 +1050,7 @@ async function handleCaptionGeneration() {
     };
 
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (!response.ok) throw new Error(`API Error: ${response.status}`);
-        const result = await response.json();
+        const result = await callGeminiAPI(payload); // Using the new helper function
         const jsonText = result.candidates[0].content.parts[0].text;
         state.captionAI.result = JSON.parse(jsonText);
     } catch (error) {
@@ -972,7 +1121,11 @@ function renderLibraryList() {
     const recipesToRender = recipesData.filter(r => r.name[state.currentLang].toLowerCase().includes(searchTerm) || r.description[state.currentLang].toLowerCase().includes(searchTerm));
     container.innerHTML = recipesToRender.map(recipe => {
         const isSelected = recipe.id === state.selectedRecipeId;
-        return `<div class="recipe-item p-3 rounded-xl transition-all duration-200 border-l-4 border-transparent flex items-start gap-4 ${isSelected ? 'selected' : ''}" data-recipe-id="${recipe.id}"><div class="flex-grow cursor-pointer"><div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full flex-shrink-0 mt-1" style="background-color: ${recipe.personalityColor}" title="${recipe.name[state.currentLang]}"></div><div class="flex-grow"><span class="font-semibold text-primary">${recipe.name[state.currentLang]}</span><p class="text-sm text-neutral-600 mt-1 leading-snug">${recipe.description[state.currentLang]}</p></div></div></div></div>`;
+        const borderColor = isSelected ? recipe.personalityColor : 'transparent';
+        return `<div class="recipe-item p-3 rounded-xl transition-all duration-200 border-l-4 cursor-pointer ${isSelected ? 'selected' : ''}" style="border-left-color: ${borderColor};" data-recipe-id="${recipe.id}">
+            <span class="font-semibold text-primary">${recipe.name[state.currentLang]}</span>
+            <p class="text-sm text-neutral-600 mt-1 leading-snug">${recipe.description[state.currentLang]}</p>
+        </div>`;
     }).join('');
 }
 
@@ -1005,12 +1158,22 @@ function renderLibraryDetails() {
     recipeContentContainer.classList.remove('hidden');
     if(!isMobile) recipeMainPanel?.classList.remove('hidden');
     
-    recipeContentContainer.innerHTML = `<div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full flex-shrink-0" style="background-color: ${recipe.personalityColor}"></div><div><h3 class="text-3xl md:text-4xl font-bold">${recipe.name[state.currentLang]}</h3><p class="text-lg text-neutral-600 mt-1">"${recipe.description[state.currentLang]}"</p></div></div><div class="mt-8">${createFullRecipeHTML(recipe)}</div>`;
+    recipeContentContainer.innerHTML = `
+        <div>
+            <h3 class="text-3xl md:text-4xl font-bold">${recipe.name[state.currentLang]}</h3>
+            <p class="text-lg text-neutral-600 mt-1">"${recipe.description[state.currentLang]}"</p>
+        </div>
+        <div class="mt-8">${createFullRecipeHTML(recipe)}</div>
+    `;
     applyTranslations();
 }
 
 function init() {
     const tooltipEl = document.getElementById('infoTooltip');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxClose = document.getElementById('lightboxClose');
+
     document.body.addEventListener('mouseover', (e) => {
         const title = e.target.closest('.parameter-title');
         if (title) {
@@ -1039,6 +1202,17 @@ function init() {
         const langBtn = target.closest('.lang-btn-slider');
         const recipeItem = target.closest('.recipe-item');
         
+        const collageItem = target.closest('.collage-item');
+        if (collageItem) {
+            const imgSrc = collageItem.dataset.lightboxSrc;
+            if (imgSrc) {
+                lightboxImage.src = imgSrc;
+                lightbox.classList.remove('hidden');
+                setTimeout(() => lightbox.classList.add('visible'), 10);
+            }
+            return;
+        }
+
         if (target.closest('#homeBtn')) { await renderView('home'); return; }
         if (target.closest('#hamburgerBtn')) { document.getElementById('mobileNavMenu').classList.remove('translate-x-full'); return; }
         if (target.closest('#closeMobileNavBtn')) { document.getElementById('mobileNavMenu').classList.add('translate-x-full'); return; }
@@ -1068,7 +1242,6 @@ function init() {
             if (target.closest('#confirmAIBtn')) { confirmAndCallAI(); return; }
         }
 
-        // UPDATE: Add event listeners for the new Caption AI modal
         if (target.closest('#captionLabModal')) {
             if (target.closest('#closeCaptionLabBtn')) { closeCaptionLab(); return; }
             if (target.closest('#generateCaptionBtn')) { handleCaptionGeneration(); return; }
@@ -1118,6 +1291,20 @@ function init() {
         }
     });
     
+    const closeLightbox = () => {
+        lightbox.classList.remove('visible');
+        setTimeout(() => {
+            lightbox.classList.add('hidden');
+            lightboxImage.src = ''; // Clear src to prevent loading in background
+        }, 300);
+    };
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) { // Only close if clicking on the backdrop
+            closeLightbox();
+        }
+    });
+
     document.addEventListener('input', e => {
         if(e.target.id === 'searchInput') renderLibraryList();
     });
@@ -1131,4 +1318,3 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
-
