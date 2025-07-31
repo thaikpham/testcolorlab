@@ -210,8 +210,10 @@
         <button id="homeBtn" class="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-3">
             <svg viewBox="0 0 111 110" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8">
                 <g style="mix-blend-mode: multiply;">
-                    <circle cx="34" cy="34" r="34" fill="#f7b71d"/><circle cx="77" cy="34" r="34" fill="#b2b2b2"/>
-                    <circle cx="34" cy="76" r="34" fill="#42b4d1"/><circle cx="77" cy="76" r="34" fill="#e62634"/>
+                    <circle cx="34" cy="34" r="34" fill="#f7b71d"/>
+                    <circle cx="77" cy="34" r="34" fill="#b2b2b2"/>
+                    <circle cx="34" cy="76" r="34" fill="#42b4d1"/>
+                    <circle cx="77" cy="76" r="34" fill="#e62634"/>
                 </g>
             </svg>
             <span data-translate-key="headerTitle" class="hidden sm:inline"></span>
@@ -281,7 +283,11 @@
     <div id="aiLabPanel" class="modal-panel w-full max-w-4xl max-h-[90vh] flex flex-col view-transition rounded-2xl">
         <div class="flex justify-between items-center p-5 border-b border-gray-200 flex-shrink-0">
             <div class="flex items-center gap-3">
-                 <svg class="w-7 h-7 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0Zm12.25-3.625a.75.75 0 0 0-1.06-1.06l-1.592 1.591a.75.75 0 1 0 1.06 1.061l1.592-1.591ZM21 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5h2.25a.75.75 0 0 1 .75.75ZM17.81 17.81a.75.75 0 0 0-1.06-1.06l-1.591 1.592a.75.75 0 0 0 1.06 1.06l1.591-1.592ZM12 18.75a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V19.5a.75.75 0 0 1 .75-.75ZM4.19 17.81a.75.75 0 1 0-1.06-1.06l-1.591 1.592a.75.75 0 0 0 1.06 1.06l1.591-1.592ZM3 12a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12ZM4.19 6.19a.75.75 0 0 0 1.06-1.06L3.657 3.536a.75.75 0 0 0-1.06 1.06l1.592 1.592Z" />
+                    </svg>
+                </div>
                  <h2 class="text-xl font-bold" data-translate-key="aiLabTitle"></h2>
             </div>
             <button id="closeAILabBtn" class="text-3xl font-light text-gray-400 hover:text-black">&times;</button>
@@ -297,7 +303,11 @@
     <div id="captionLabPanel" class="modal-panel w-full max-w-2xl max-h-[90vh] flex flex-col view-transition rounded-2xl">
         <div class="flex justify-between items-center p-5 border-b border-gray-200 flex-shrink-0">
             <div class="flex items-center gap-3">
-                 <svg class="w-7 h-7 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 3h9.75m-9.75 3h9.75M3 3h18M3 21h18a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0021 3H3a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003 21z" /></svg>
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg">
+                     <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 3h9.75m-9.75 3h9.75M3 3h18M3 21h18a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0021 3H3a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003 21z" />
+                    </svg>
+                </div>
                  <h2 class="text-xl font-bold" data-translate-key="captionLabTitle"></h2>
             </div>
             <button id="closeCaptionLabBtn" class="text-3xl font-light text-gray-400 hover:text-black">&times;</button>
@@ -311,8 +321,9 @@
 
 <script type="module">
 // --- CONFIGURATION & STATE ---
-// UPDATE: Removed the static API_KEY. The API calls will now use the environment's authentication.
-const API_URL_BASE = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
+// FIX: Re-introduced the API_KEY and full API_URL from the working version.
+const API_KEY = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ";
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
 
 const state = {
     currentLang: 'vi',
@@ -368,7 +379,7 @@ const recipesData = [
             "https://lh3.googleusercontent.com/pw/AP1GczPPT3oBJKObBMX8NEdTxe-PLC2BEd0eRGUMSUiYxocel93ljDNFyG58LJiiPhijnKyWkjJbkSim54sWvSLrRxeM22uF82BlckublQ4qsSic7gwhAVe-XX0jEzRuxDJG7j25PHU6tLUGIT0IRHjy_AvXuQ=w1658-h1105-s-no?authuser=0",
             "https://lh3.googleusercontent.com/pw/AP1GczPC_ounREkB_Q6oj6ZM7ckVGcKKZ_saJP5O63nURHPk09iTI8l4YwSqUzyxJm8ZG760nUJhm5JgmMWyk4uGlDDaaWwjJJPO4E9IAoF1pNfMHqx-2g3OcDS2COZ1w93K8j16X08W24leuMEhZvXx6L4uyw=w736-h1105-s-no?authuser=0",
             "https://lh3.googleusercontent.com/pw/AP1GczPwAttTxhJ89lhQ4Lbp9Klq73D30WWsG21oDGzsTZ9ig_5IYa3hLxdsQnMIb-8xJF-SOUMsNjaoGm-1RbfHrcRDn8lrLR7krn4ubwBkoe7fKqWes36h-8T05_EvDvJiHM04HZYdZzSkJ_4O2y7yhyXc3A=w1658-h1105-s-no?authuser=0",
-            "https://scontent-mxp2-1.xx.fbcdn.net/v/t39.30808-6/524715467_23871084269186656_4899892423308509034_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=24ef35&_nc_eui2=AeGdewaeMibHCZ0p8AZgnnHodzaivFYyjk53NqK8VjKOTgD28VtuYUtFFu37dUHp8v0okvz6FCq0BP3JCDnZ8DgS&_nc_ohc=evaYHCdfjMcQ7kNvwF_8WCn&_nc_oc=AdnstQUm2jMUPRkRipKC7Iort2IuqLjgMEeHd1k15NxJqZLEpVGMMDYX7UGBlUBOVqWqJVcdoEj8OVf-D4FQUe9G&_nc_zt=23&_nc_ht=scontent-mxp2-1.xx&_nc_gid=XlqPHHDl2gNc5o586u2hkg&oh=00_AfT_nXeytsXonahqI4CAPN73kT82CCPw_jB5rMvjIqh6DQ&oe=68911A5A"
+            "https://scontent-mxp2-1.xx.fbcdn.net/v/t39.30808-6/524715467_23871084269186656_4899892423308509034_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=24ef35&_nc_eui2=AeGdewaeMibHCZ0p8AZgnnHodzaivFYyjk53NqK8VjKOTgD28VtuYUtFFu37dUHp8v0okvz6FCq0BP3JCDnZ8DgS&nc_ohc=evaYHCdfjMcQ7kNvwF_8WCn&_nc_oc=AdnstQUm2jMUPRkRipKC7Iort2IuqLjgMEeHd1k15NxJqZLEpVGMMDYX7UGBlUBOVqWqJVcdoEj8OVf-D4FQUe9G&_nc_zt=23&_nc_ht=scontent-mxp2-1.xx&_nc_gid=XlqPHHDl2gNc5o586u2hkg&oh=00_AfT_nXeytsXonahqI4CAPN73kT82CCPw_jB5rMvjIqh6DQ&oe=68911A5A"
         ]
     },
     {
@@ -393,54 +404,6 @@ const recipesData = [
             "https://placehold.co/800x600/66CDAA/ffffff?text=Kyoto+Jade+1",
             "https://placehold.co/800x600/66CDAA/ffffff?text=Kyoto+Jade+2",
             "https://placehold.co/800x600/66CDAA/ffffff?text=Kyoto+Jade+3"
-        ]
-    },
-    {
-        "id": "scl-003",
-        "name": { "vi": "SCL-003: Caspian Blue", "en": "SCL-003: Caspian Blue" },
-        "formattedName": "SCL-003-Caspian Blue",
-        "description": {
-            "en": "A cool-toned, cinematic profile with distinctive deep blues and rich, crushed blacks.\nIt lends a moody, atmospheric quality to images, perfect for urban nightscapes, dramatic portraits, and storytelling.",
-            "vi": "Một cấu hình điện ảnh, tông lạnh với sắc xanh dương đặc trưng và vùng tối sâu, đậm. Nó mang lại chất lượng tâm trạng, đầy không khí cho hình ảnh, hoàn hảo cho cảnh đêm đô thị, chân dung kịch tính và kể chuyện."
-        },
-        "type": "color",
-        "contrast": "high",
-        "saturation": "normal",
-        "tags": ["cinematic", "cool-tone", "deep-blues", "moody", "atmospheric", "urban-night", "dramatic-portrait", "storytelling"],
-        "whiteBalance": "8000K, B2-M2",
-        "settings": { "Black level": "-15", "Gamma": "Cine2", "Black Gamma": "Middle +7", "Knee": "Manual 85% +4", "Color Mode": "S-Gamut3.Cine", "Saturation": "+20", "Color Phase": "+7" },
-        "colorDepth": { "R": "0", "G": "-1", "B": "+3", "C": "+4", "M": "+5", "Y": "+2" },
-        "detailSettings": { "Level": "0" },
-        "personalityColor": "#4682B4",
-        "coords": { "x": -8, "y": 5 },
-        "demoImages": [
-            "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+1",
-            "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+2",
-            "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+3"
-        ]
-    },
-    {
-        "id": "scl-004",
-        "name": { "vi": "SCL-004: Tuscan Ochre", "en": "SCL-004: Tuscan Ochre" },
-        "formattedName": "SCL-004-Tuscan Ochre",
-        "description": {
-            "en": "A vibrant, high-saturation style with warm, earthy reds and yellows.\nIt brings a bold, sun-baked intensity to images, reminiscent of classic European travel photography.",
-            "vi": "Một phong cách rực rỡ, độ bão hòa cao với các tông màu đỏ đất và vàng đất ấm áp. Nó mang lại một cường độ táo bạo, cháy nắng cho hình ảnh, gợi nhớ đến nhiếp ảnh du lịch châu Âu cổ điển."
-        },
-        "type": "color",
-        "contrast": "normal",
-        "saturation": "high",
-        "tags": ["vibrant", "high-saturation", "earthy-reds", "warm-yellows", "bold", "sun-baked", "classic-european-travel"],
-        "whiteBalance": "4700K, A2-M0.5",
-        "settings": { "Black level": "+5", "Gamma": "Still", "Black Gamma": "Wide -7", "Knee": "Manual 85% +2", "Color Mode": "S-Gamut3.Cine", "Saturation": "+23", "Color Phase": "+3" },
-        "colorDepth": { "R": "-3", "G": "+7", "B": "+5", "C": "+5", "M": "+5", "Y": "+1" },
-        "detailSettings": { "Level": "0" },
-        "personalityColor": "#CD853F",
-        "coords": { "x": 7, "y": 8 },
-        "demoImages": [
-            "https://placehold.co/800x600/CD853F/ffffff?text=Tuscan+Ochre+1",
-            "https://placehold.co/800x600/CD853F/ffffff?text=Tuscan+Ochre+2",
-            "https://placehold.co/800x600/CD853F/ffffff?text=Tuscan+Ochre+3"
         ]
     },
     ];
@@ -879,23 +842,7 @@ function renderAIError(container, feature = 'ai') {
     applyTranslations();
 }
 
-async function callGeminiAPI(payload, signal) {
-    // This function now handles the API call without a hardcoded key.
-    // It assumes the environment will provide the necessary authentication.
-    const response = await fetch(API_URL_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: signal
-    });
-    if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`API Error: ${response.status} - ${errorBody}`);
-    }
-    return response.json();
-}
-
-
+// FIX: Reverted to the direct fetch method with API_KEY
 function handleAIGeneration() {
     const userInput = document.getElementById('aiPromptInput').value.trim();
     if (!userInput) return;
@@ -915,14 +862,25 @@ function handleAIGeneration() {
         }
     };
 
-    state.ai.generationPromise = callGeminiAPI(payload, abortController.signal)
-        .then(result => {
-            if (!result.candidates?.[0]?.content?.parts?.[0]) {
-                throw new Error("Invalid API response structure.");
-            }
-            const jsonText = result.candidates[0].content.parts[0].text;
-            return JSON.parse(jsonText);
-        });
+    state.ai.generationPromise = fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: abortController.signal
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(`API Error: ${response.status} ${text}`) });
+        }
+        return response.json();
+    })
+    .then(result => {
+        if (!result.candidates?.[0]?.content?.parts?.[0]) {
+            throw new Error("Invalid API response structure.");
+        }
+        const jsonText = result.candidates[0].content.parts[0].text;
+        return JSON.parse(jsonText);
+    });
 }
 
 async function confirmAndCallAI() {
@@ -1017,6 +975,7 @@ function renderCaptionLab() {
     applyTranslations();
 }
 
+// FIX: Reverted to the direct fetch method with API_KEY
 async function handleCaptionGeneration() {
     const userInput = document.getElementById('captionPromptInput').value.trim();
     if (!userInput) return;
@@ -1026,7 +985,6 @@ async function handleCaptionGeneration() {
     renderCaptionLab();
 
     const { recipe } = state.captionAI;
-    // UPDATE: New, more detailed prompt for the Caption AI
     const recipeHashtag = `#${recipe.id.replace(/-/g, '')}${recipe.name.en.split(': ')[1].replace(/\s/g, '')}`;
     const prompt = `You are a witty, trendy, and creative social media expert for Sony Alpha Vietnam, specializing in Gen Z vocabulary and viral content. Your task is to generate a compelling social media post.
 **CRITICAL RULES:**
@@ -1050,7 +1008,13 @@ You must respond with only a single, valid JSON object with two keys: "caption" 
     };
 
     try {
-        const result = await callGeminiAPI(payload); // Using the new helper function
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        const result = await response.json();
         const jsonText = result.candidates[0].content.parts[0].text;
         state.captionAI.result = JSON.parse(jsonText);
     } catch (error) {
@@ -1318,3 +1282,4 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
+
