@@ -48,6 +48,9 @@
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background-color: var(--primary-accent); border: none; color: white; box-shadow: 0 4px 14px rgba(0, 118, 255, 0.39); }
     .btn-primary:hover:not(:disabled) { background-color: var(--primary-accent-darker); transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 18px rgba(0, 118, 255, 0.45); }
+    /* UPDATE: Add active state for instant feedback on all buttons */
+    .btn:active { transform: translateY(0px) scale(0.98); }
+
     .view-transition { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
     .view-transition-out { animation: fadeOutDown 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -120,6 +123,10 @@
         transform: scale(1.05);
         box-shadow: 0 6px 20px rgba(0, 118, 255, 0.2);
     }
+    /* UPDATE: Add active state for instant feedback */
+    .quiz-option:active {
+        transform: scale(1.02);
+    }
     .quiz-options-grid {
         display: flex;
         flex-wrap: wrap;
@@ -134,6 +141,31 @@
         flex-basis: 100%;
         max-width: calc(50% - 0.5rem); /* Match width of others */
     }
+
+    /* UPDATE: New styles for the dynamic photo collage */
+    .photo-collage {
+        display: grid;
+        gap: 0.75rem;
+        grid-auto-flow: dense;
+    }
+    .photo-collage img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.75rem;
+    }
+    .photo-collage.images-1 { grid-template-columns: 1fr; }
+    .photo-collage.images-2 { grid-template-columns: repeat(2, 1fr); }
+    .photo-collage.images-3 { grid-template-columns: repeat(3, 1fr); }
+    .photo-collage.images-4 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
+    .photo-collage.images-5 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(2, 1fr); }
+    .photo-collage.images-5 > div:nth-child(1) { grid-column: span 3; grid-row: span 1; }
+    .photo-collage.images-5 > div:nth-child(2) { grid-column: span 3; grid-row: span 1; }
+    .photo-collage.images-5 > div:nth-child(3) { grid-column: span 2; grid-row: span 1; }
+    .photo-collage.images-5 > div:nth-child(4) { grid-column: span 2; grid-row: span 1; }
+    .photo-collage.images-5 > div:nth-child(5) { grid-column: span 2; grid-row: span 1; }
+    .photo-collage.images-6 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
+
 </style>
 </head>
 <body>
@@ -215,6 +247,22 @@
     </div>
 </div>
 
+<!-- UPDATE: Add new modal for Caption AI Lab -->
+<div id="captionLabModal" class="modal hidden fixed inset-0 bg-black/30 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div id="captionLabPanel" class="modal-panel w-full max-w-2xl max-h-[90vh] flex flex-col view-transition rounded-2xl">
+        <div class="flex justify-between items-center p-5 border-b border-gray-200 flex-shrink-0">
+            <div class="flex items-center gap-3">
+                 <svg class="w-7 h-7 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 3h9.75m-9.75 3h9.75M3 3h18M3 21h18a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0021 3H3a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003 21z" /></svg>
+                 <h2 class="text-xl font-bold" data-translate-key="captionLabTitle"></h2>
+            </div>
+            <button id="closeCaptionLabBtn" class="text-3xl font-light text-gray-400 hover:text-black">&times;</button>
+        </div>
+        <div id="captionLabContent" class="p-6 md:p-8 flex-grow overflow-y-auto sleek-scrollbar">
+            <!-- Caption AI Lab content will be rendered here -->
+        </div>
+    </div>
+</div>
+
 
 <script type="module">
 // --- CONFIGURATION & STATE ---
@@ -232,9 +280,17 @@ const state = {
         userPrompt: '',
         expertPrompt: '',
         generatedRecipe: null,
-        // OPTIMIZATION: Add properties to manage the background API call
         generationPromise: null,
         abortController: null,
+    },
+    // UPDATE: Add state for the new Caption AI feature
+    captionAI: {
+        isGenerating: false,
+        recipe: null,
+        userPrompt: '',
+        generationPromise: null,
+        abortController: null,
+        result: null,
     },
     quiz: {
         currentQuestionIndex: 0,
@@ -245,13 +301,7 @@ const state = {
 const mainContentEl = document.getElementById('mainContent');
 
 // --- DATA ---
-const recipesData = [
-    { "id": "scl-001", "name": { "vi": "SCL-001: Mojave Sun", "en": "SCL-001: Mojave Sun" }, "description": { "en": "A nostalgic, sun-drenched style that bathes scenes in the warm glow of golden hour.", "vi": "Một phong cách hoài niệm, ngập tràn ánh nắng, bao phủ các khung cảnh trong ánh sáng ấm áp của giờ vàng." }, "type": "color", "contrast": "normal", "saturation": "normal", "tags": ["nostalgic", "sun-drenched", "warm", "travel", "lifestyle", "summer", "golden-hour"], "whiteBalance": "8300K, B3-M1.5", "settings": { "Black level": "-5", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 75% +4", "Color Mode": "S-Gamut3", "Saturation": "+22", "Color Phase": "+4" }, "colorDepth": { "R": "-2", "G": "0", "B": "+5", "C": "+5", "M": "0", "Y": "+4" }, "detailSettings": { "Level": "0" }, "personalityColor": "#FFD700", "demoImages": ["https://lh3.googleusercontent.com/pw/AP1GczPPT3oBJKObBMX8NEdTxe-PLC2BEd0eRGUMSUiYxocel93ljDNFyG58LJiiPhijnKyWkjJbkSim54sWvSLrRxeM22uF82BlckublQ4qsSic7gwhAVe-XX0jEzRuxDJG7j25PHU6tLUGIT0IRHjy_AvXuQ=w1658-h1105-s-no?authuser=0", "https://lh3.googleusercontent.com/pw/AP1GczPC_ounREkB_Q6oj6ZM7ckVGcKKZ_saJP5O63nURHPk09iTI8l4YwSqUzyxJm8ZG760nUJhm5JgmMWyk4uGlDDaaWwjJJPO4E9IAoF1pNfMHqx-2g3OcDS2COZ1w93K8j16X08W24leuMEhZvXx6L4uyw=w736-h1105-s-no?authuser=0", "https://lh3.googleusercontent.com/pw/AP1GczPwAttTxhJ89lhQ4Lbp9Klq73D30WWsG21oDGzsTZ9ig_5IYa3hLxdsQnMIb-8xJF-SOUMsNjaoGm-1RbfHrcRDn8lrLR7krn4ubwBkoe7fKqWes36h-8T05_EvDvJiHM04HZYdZzSkJ_4O2y7yhyXc3A=w1658-h1105-s-no?authuser=0"] },
-    { "id": "scl-003", "name": { "vi": "SCL-003: Caspian Blue", "en": "SCL-003: Caspian Blue" }, "description": { "en": "A cool-toned, cinematic profile with distinctive deep blues and rich, crushed blacks.", "vi": "Một cấu hình điện ảnh, tông lạnh với sắc xanh dương đặc trưng và vùng tối sâu, đậm." }, "type": "color", "contrast": "high", "saturation": "normal", "tags": ["cinematic", "cool-tone", "deep-blues", "moody", "atmospheric", "urban-night", "dramatic-portrait", "storytelling"], "whiteBalance": "8000K, B2-M2", "settings": { "Black level": "-15", "Gamma": "Cine2", "Black Gamma": "Middle +7", "Knee": "Manual 85% +4", "Color Mode": "S-Gamut3.Cine", "Saturation": "+20", "Color Phase": "+7" }, "colorDepth": { "R": "0", "G": "-1", "B": "+3", "C": "+4", "M": "+5", "Y": "+2" }, "detailSettings": { "Level": "0" }, "personalityColor": "#4682B4", "demoImages": ["https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+1", "https://placehold.co/600x800/4682B4/ffffff?text=Caspian+Blue+2", "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+3", "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+4"] },
-    { "id": "scl-015", "name": { "vi": "SCL-015: Vintage Slide", "en": "SCL-015: Vintage Slide" }, "description": { "en": "A warm, slightly faded style with a subtle green-cyan tint in the shadows.", "vi": "Một phong cách ấm áp, hơi phai màu với một chút sắc xanh lá-lục trong vùng tối." }, "type": "color", "contrast": "normal", "saturation": "faded", "tags": ["warm", "faded", "green-tint", "old-family-slides", "nostalgic-portrait", "everyday-scenes"], "whiteBalance": "3600K, A7-M1", "settings": { "Black level": "-4", "Gamma": "Movie", "Black Gamma": "Middle -7", "Knee": "Manual 80% +4", "Color Mode": "Still", "Saturation": "+10", "Color Phase": "-1" }, "colorDepth": { "R": "+3", "G": "+5", "B": "-4", "C": "+2", "M": "+6", "Y": "+5" }, "detailSettings": { "Level": "0" }, "personalityColor": "#BC8F8F", "demoImages": ["https://placehold.co/800x600/BC8F8F/ffffff?text=Vintage+Slide+1", "https://placehold.co/800x600/BC8F8F/ffffff?text=Vintage+Slide+2", "https://placehold.co/600x800/BC8F8F/ffffff?text=Vintage+Slide+3"] },
-    { "id": "scl-041", "name": { "vi": "SCL-041: Obsidian Contrast", "en": "SCL-041: Obsidian Contrast" }, "description": { "en": "A dramatic, high-contrast monochrome style with inky blacks and crisp whites.", "vi": "Một phong cách đơn sắc kịch tính, tương phản cao với màu đen sâu như mực và màu trắng sắc nét." }, "type": "bw", "contrast": "high", "saturation": "normal", "tags": ["dramatic-monochrome", "high-contrast", "inky-blacks", "crisp-whites", "architectural-details", "powerful-street-photography", "impressive-clarity"], "whiteBalance": "AWB", "settings": { "Black level": "-15", "Gamma": "Still", "Black Gamma": "Wide -7", "Knee": "Manual 85% +5", "Color Mode": "Black & White", "Saturation": "+15", "Color Phase": "0" }, "colorDepth": { "R": "+2", "G": "-4", "B": "-1", "C": "+2", "M": "-1", "Y": "+2" }, "detailSettings": { "Level": "0" }, "personalityColor": "#333333", "demoImages": ["https://placehold.co/800x600/333333/ffffff?text=Obsidian+Contrast+1", "https://placehold.co/600x800/333333/ffffff?text=Obsidian+Contrast+2", "https://placehold.co/800x600/333333/ffffff?text=Obsidian+Contrast+3"] },
-    { "id": "scl-043", "name": { "vi": "SCL-043: Silver Gelatin", "en": "SCL-043: Silver Gelatin" }, "description": { "en": "A flat, soft-contrast profile with rich mid-tones and smooth transitions.", "vi": "Một cấu hình tương phản phẳng, mềm mại với các tông màu trung bình phong phú và sự chuyển tiếp mượt mà." }, "type": "bw", "contrast": "soft", "saturation": "normal", "tags": ["flat", "soft-contrast", "rich-midtones", "smooth-transitions", "classic-darkroom-print", "silver-gelatin-paper", "fine-art-portrait", "subtle-compositions"], "whiteBalance": "5500K, A3-G2", "settings": { "Black level": "+3", "Gamma": "Cine1", "Black Gamma": "Narrow +5", "Knee": "Manual 75% +3", "Color Mode": "Black & White", "Saturation": "+24", "Color Phase": "0" }, "colorDepth": { "R": "+3", "G": "+3", "B": "+3", "C": "+2", "M": "+3", "Y": "+2" }, "detailSettings": { "Level": "0" }, "personalityColor": "#AAAAAA", "demoImages": ["https://placehold.co/800x600/AAAAAA/ffffff?text=Silver+Gelatin+1", "https://placehold.co/800x600/AAAAAA/ffffff?text=Silver+Gelatin+2", "https://placehold.co/600x800/AAAAAA/ffffff?text=Silver+Gelatin+3"] }
-];
+import recipesData from './recipes.js';
 
 // UI UPDATE: New, more refined SVG icons for quiz options
 const quizQuestions = [
@@ -331,6 +381,15 @@ const translations = {
     aiErrorTitle: {vi: "Đã có lỗi xảy ra", en: "An Error Occurred"},
     aiErrorText: {vi: "Rất tiếc, không thể tạo công thức lúc này. Vui lòng kiểm tra lại API Key hoặc thử lại sau.", en: "Sorry, the recipe could not be generated at this time. Please check your API Key or try again later."},
     tweakWithAI: {vi: "Tinh chỉnh với Gemini AI", en: "Tweak with Gemini AI"},
+    // UPDATE: Add translations for the new Caption AI feature
+    captionLabTitle: {vi: "Trợ lý Caption Viral", en: "Viral Caption Assistant"},
+    captionLabDescription: {vi: "Nhập ý tưởng cho bài đăng của bạn. AI sẽ giúp bạn viết một caption thật 'chất' theo phong cách màu <b>{recipeName}</b>.", en: "Enter an idea for your post. AI will help you write a captivating caption in the <b>{recipeName}</b> color style."},
+    captionPromptPlaceholder: {vi: "VD: một buổi chiều hoàng hôn ở Đà Lạt...", en: "E.g., a sunset afternoon in Dalat..."},
+    generateCaptionBtn: {vi: "Tạo Caption", en: "Generate Caption"},
+    captionResultTitle: {vi: "Gợi ý từ AI", en: "Suggestion from AI"},
+    copyBtn: {vi: "Sao chép", en: "Copy"},
+    copiedBtn: {vi: "Đã sao chép!", en: "Copied!"},
+    captionFromAI: { vi: "Tạo Caption Viral", en: "Viral Caption AI" }
 };
 
 const parameterExplanations = {
@@ -367,13 +426,14 @@ function applyTranslations() {
 }
 
 function createFullRecipeHTML(recipe) {
+    // UPDATE: Rewritten collage function for dynamic layouts
     const createCollageHTML = (images) => {
         if (!images || images.length === 0) return '';
-        const imageElements = images.slice(0, 4).map((img, index) => {
-            const spanClass = (images.length > 2 && index === 0) ? 'col-span-2' : 'col-span-1';
-            return `<div class="${spanClass} rounded-lg overflow-hidden bg-gray-100 shadow-inner"><img src="${img}" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/475569?text=Image+Not+Found';" alt="Recipe demo image" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 ease-in-out"></div>`;
-        }).join('');
-        return `<div class="grid grid-cols-2 gap-3 mb-8">${imageElements}</div>`;
+        const count = Math.min(images.length, 6); // Cap at 6 images
+        const imageElements = images.slice(0, count).map(img => 
+            `<div><img src="${img}" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/475569?text=Image+Not+Found';" alt="Recipe demo image" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 ease-in-out"></div>`
+        ).join('');
+        return `<div class="photo-collage images-${count} mb-8">${imageElements}</div>`;
     };
 
     const createCTAHTML = (recipe) => {
@@ -405,10 +465,11 @@ function createFullRecipeHTML(recipe) {
                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
                 <span data-translate-key="tweakWithAI"></span>
             </button>
-            <a href="https://helpguide.sony.net/di/pp/v1/en/index.html" target="_blank" rel="noopener noreferrer" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 py-3 px-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span data-translate-key="sonyGuideBtn"></span>
-            </a>
+            <!-- UPDATE: Add new button for Caption AI -->
+            <button class="btn bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 shadow-lg shadow-purple-500/30" id="captionAIBtn" data-recipe-id="${recipe.id}">
+                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 3h9.75m-9.75 3h9.75M3 3h18M3 21h18a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0021 3H3a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003 21z" /></svg>
+                <span data-translate-key="captionFromAI"></span>
+            </button>
         </div>
         ${createCTAHTML(recipe)}
         <div class="space-y-8 mt-8">
@@ -666,17 +727,17 @@ function renderAIComparison(container) {
     applyTranslations();
 }
 
-function renderAIError(container) {
+function renderAIError(container, feature = 'ai') {
+    const errorTextKey = feature === 'caption' ? 'aiErrorText' : 'aiErrorText';
     container.innerHTML = `
         <div class="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
             <h3 class="text-xl font-bold text-red-800" data-translate-key="aiErrorTitle"></h3>
-            <p class="mt-2 text-red-700" data-translate-key="aiErrorText"></p>
+            <p class="mt-2 text-red-700" data-translate-key="${errorTextKey}"></p>
         </div>
     `;
     applyTranslations();
 }
 
-// OPTIMIZATION: This function now starts the API call in the background.
 function handleAIGeneration() {
     const userInput = document.getElementById('aiPromptInput').value.trim();
     if (!userInput) return;
@@ -684,14 +745,11 @@ function handleAIGeneration() {
     state.ai.userPrompt = userInput;
     state.ai.expertPrompt = `As a professional colorist specializing in Sony Picture Profiles, analyze the following JSON object which represents an existing color recipe. Your task is to generate a new, modified JSON object based on the user's request: "${userInput}". The new JSON must be a complete, valid recipe object. You must only respond with the raw JSON object, without any surrounding text, explanations, or markdown formatting. The generated recipe name and description must be in the same language as the user's prompt (${state.currentLang}). Original recipe: ${JSON.stringify(state.ai.originalRecipe)}`;
     
-    // Show confirmation UI immediately
     renderAILab(); 
 
-    // Start API call in the background and store the promise
     const abortController = new AbortController();
     state.ai.abortController = abortController;
     
-    // OPTIMIZATION: Use JSON mode for reliable, clean output.
     const payload = {
         contents: [{ parts: [{ text: state.ai.expertPrompt }] }],
         generationConfig: {
@@ -703,7 +761,7 @@ function handleAIGeneration() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-        signal: abortController.signal // Pass the signal to allow cancellation
+        signal: abortController.signal
     })
     .then(response => {
         if (!response.ok) {
@@ -715,38 +773,144 @@ function handleAIGeneration() {
         if (!result.candidates?.[0]?.content?.parts?.[0]) {
             throw new Error("Invalid API response structure.");
         }
-        // OPTIMIZATION: No more manual cleanup needed. The response is clean JSON.
         const jsonText = result.candidates[0].content.parts[0].text;
         return JSON.parse(jsonText);
     });
 }
 
-// OPTIMIZATION: This function now just waits for the background call to finish.
 async function confirmAndCallAI() {
     state.ai.isGenerating = true;
-    renderAILab(); // Show loader
+    renderAILab(); 
 
     try {
-        // Wait for the promise that was already started in the background
         const generatedRecipe = await state.ai.generationPromise;
         state.ai.generatedRecipe = generatedRecipe;
 
     } catch (error) {
-        // Don't show an error if the user intentionally cancelled the request
         if (error.name === 'AbortError') {
             console.log('Fetch aborted by user.');
-            return; // Exit quietly
+            return;
         }
         console.error("Gemini API call failed:", error);
         renderAIError(document.getElementById('aiLabContent'));
     } finally {
         state.ai.isGenerating = false;
-        state.ai.expertPrompt = ''; // Reset for next time
-        // Clear the promise and controller
+        state.ai.expertPrompt = '';
         state.ai.generationPromise = null;
         state.ai.abortController = null;
         if (state.ai.generatedRecipe) {
-            renderAILab(); // Render comparison if successful
+            renderAILab();
+        }
+    }
+}
+
+// UPDATE: Add all functions for the new Caption AI feature
+function openCaptionLab(recipeId) {
+    const recipe = recipesData.find(r => r.id === recipeId);
+    if (!recipe) return;
+
+    Object.assign(state.captionAI, {
+        recipe: recipe,
+        isGenerating: false,
+        userPrompt: '',
+        generationPromise: null,
+        abortController: null,
+        result: null,
+    });
+    
+    document.getElementById('captionLabModal').classList.remove('hidden');
+    renderCaptionLab();
+}
+
+function closeCaptionLab() {
+    if (state.captionAI.abortController) {
+        state.captionAI.abortController.abort();
+    }
+    document.getElementById('captionLabModal').classList.add('hidden');
+}
+
+function renderCaptionLab() {
+    const contentEl = document.getElementById('captionLabContent');
+    if (!contentEl) return;
+
+    if (state.captionAI.isGenerating) {
+        contentEl.innerHTML = `<div class="flex flex-col items-center justify-center h-64"><div class="loader"></div><p class="mt-4 text-gray-600">Gemini is thinking...</p></div>`;
+        return;
+    }
+
+    if (state.captionAI.result) {
+        const { caption, hashtags } = state.captionAI.result;
+        contentEl.innerHTML = `
+            <h3 class="text-xl font-bold text-center" data-translate-key="captionResultTitle"></h3>
+            <div class="mt-4 p-4 bg-gray-50 border rounded-lg">
+                <p id="caption-text" class="text-gray-800 whitespace-pre-wrap">${caption}</p>
+                <p id="hashtags-text" class="mt-3 text-purple-700 font-semibold">${hashtags}</p>
+            </div>
+            <div class="mt-4 flex gap-2 justify-end">
+                 <button class="btn bg-gray-200 text-gray-800 py-2 px-4" data-copy-target="hashtags-text">
+                    <span data-translate-key="copyBtn"></span> Hashtags
+                 </button>
+                 <button class="btn btn-primary py-2 px-4" data-copy-target="caption-text">
+                    <span data-translate-key="copyBtn"></span> Caption
+                 </button>
+            </div>
+        `;
+    } else {
+        const recipeName = state.captionAI.recipe.name[state.currentLang];
+        contentEl.innerHTML = `
+            <p class="text-base text-gray-600 text-center">${t('captionLabDescription').replace('{recipeName}', `<b>${recipeName}</b>`)}</p>
+            <textarea id="captionPromptInput" class="w-full mt-4 p-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all min-h-[80px]" placeholder="${t('captionPromptPlaceholder')}"></textarea>
+            <div class="mt-6 text-center">
+                <button id="generateCaptionBtn" class="btn bg-purple-600 hover:bg-purple-700 text-white py-3 px-8 text-lg">
+                    <span data-translate-key="generateCaptionBtn"></span>
+                </button>
+            </div>
+        `;
+    }
+    applyTranslations();
+}
+
+async function handleCaptionGeneration() {
+    const userInput = document.getElementById('captionPromptInput').value.trim();
+    if (!userInput) return;
+
+    state.captionAI.userPrompt = userInput;
+    state.captionAI.isGenerating = true;
+    renderCaptionLab();
+
+    const { recipe } = state.captionAI;
+    const prompt = `You are a world-class social media strategist and copywriter, an expert in creating viral content for platforms like Instagram, Facebook, and TikTok. Your task is to generate a compelling social media post based on the user's idea, tailored to a specific photographic style.
+**Instructions:**
+1.  **Analyze the context:**
+    * **Photographic Style:** "${recipe.name[state.currentLang]}" - ${recipe.description[state.currentLang]}
+    * **User's Idea:** "${userInput}"
+2.  **Generate a Caption:** Write an engaging and creative caption that captures the essence of both the user's idea and the photographic style. The caption should be evocative and encourage interaction (e.g., ask a question, start a story).
+3.  **Generate Hashtags:** Provide a list of 5-10 highly relevant and effective hashtags. Include a mix of popular, niche, and style-specific tags.
+4.  **Language:** **Crucially, you must write the entire response (caption and hashtags) in the same language as the User's Idea. The target language is: ${state.currentLang}.**
+**Output Format:** You must respond with a single, valid JSON object with two keys: "caption" (string) and "hashtags" (string, with each hashtag starting with '#').`;
+
+    const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+    };
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        const result = await response.json();
+        const jsonText = result.candidates[0].content.parts[0].text;
+        state.captionAI.result = JSON.parse(jsonText);
+    } catch (error) {
+        console.error("Caption AI call failed:", error);
+        renderAIError(document.getElementById('captionLabContent'), 'caption');
+    } finally {
+        state.captionAI.isGenerating = false;
+        if (state.captionAI.result) {
+            renderCaptionLab();
         }
     }
 }
@@ -869,20 +1033,17 @@ function init() {
         }
     });
 
-    // Main click listener for the entire application
     document.body.addEventListener('click', async (e) => {
         const target = e.target;
         const navBtn = target.closest('[data-view]');
         const langBtn = target.closest('.lang-btn-slider');
         const recipeItem = target.closest('.recipe-item');
         
-        // --- High-priority specific button clicks ---
         if (target.closest('#homeBtn')) { await renderView('home'); return; }
         if (target.closest('#hamburgerBtn')) { document.getElementById('mobileNavMenu').classList.remove('translate-x-full'); return; }
         if (target.closest('#closeMobileNavBtn')) { document.getElementById('mobileNavMenu').classList.add('translate-x-full'); return; }
         if (target.closest('#backToListBtn')) { state.isMobileDetailActive = false; renderLibraryDetails(); return; }
         
-        // --- Modal specific clicks ---
         if (target.closest('#quizModal')) {
             if (target.closest('#closeQuizBtn')) { closeQuiz(); return; }
             if (target.closest('#retakeQuizBtn')) { state.quiz.currentQuestionIndex = 0; state.quiz.answers = []; renderQuizQuestion(); return; }
@@ -896,21 +1057,10 @@ function init() {
         }
         
         if (target.closest('#aiLabModal')) {
-            if (target.closest('#closeAILabBtn')) { 
-                closeAILab(); 
-                return; 
-            }
-            // OPTIMIZATION: Update cancel logic to abort the background request
+            if (target.closest('#closeAILabBtn')) { closeAILab(); return; }
             if (target.closest('#cancelAIBtn')) { 
-                if (state.ai.abortController) {
-                    state.ai.abortController.abort();
-                }
-                // Reset state and go back to the prompt input screen
-                state.ai.expertPrompt = ''; 
-                state.ai.userPrompt = '';
-                state.ai.generatedRecipe = null;
-                state.ai.generationPromise = null;
-                state.ai.abortController = null;
+                if (state.ai.abortController) state.ai.abortController.abort();
+                Object.assign(state.ai, { expertPrompt: '', userPrompt: '', generatedRecipe: null, generationPromise: null, abortController: null });
                 renderAILab();
                 return; 
             }
@@ -918,13 +1068,33 @@ function init() {
             if (target.closest('#confirmAIBtn')) { confirmAndCallAI(); return; }
         }
 
-        // --- General UI clicks ---
+        // UPDATE: Add event listeners for the new Caption AI modal
+        if (target.closest('#captionLabModal')) {
+            if (target.closest('#closeCaptionLabBtn')) { closeCaptionLab(); return; }
+            if (target.closest('#generateCaptionBtn')) { handleCaptionGeneration(); return; }
+            const copyBtn = target.closest('[data-copy-target]');
+            if (copyBtn) {
+                const targetId = copyBtn.dataset.copyTarget;
+                const textToCopy = document.getElementById(targetId).innerText;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = copyBtn.querySelector('span').innerText;
+                    copyBtn.querySelector('span').innerText = t('copiedBtn');
+                    copyBtn.disabled = true;
+                    setTimeout(() => {
+                        copyBtn.querySelector('span').innerText = originalText;
+                        copyBtn.disabled = false;
+                    }, 2000);
+                });
+                return;
+            }
+        }
+
         if (target.closest('#startQuizBtn') || target.closest('#quizShortcutBtn')) { startQuiz(); return; }
         if (target.closest('#tweakWithAIBtn')) { openAILab(target.closest('#tweakWithAIBtn').dataset.recipeId); return; }
+        if (target.closest('#captionAIBtn')) { openCaptionLab(target.closest('#captionAIBtn').dataset.recipeId); return; }
         
         if (navBtn) {
             await renderView(navBtn.dataset.view);
-            // Close mobile nav after selection
             if(target.closest('.nav-btn-mobile')) {
                  document.getElementById('mobileNavMenu').classList.add('translate-x-full');
             }
@@ -961,4 +1131,3 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
-
