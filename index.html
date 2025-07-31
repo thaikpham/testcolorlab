@@ -301,8 +301,8 @@ const state = {
 const mainContentEl = document.getElementById('mainContent');
 
 // --- DATA ---
-// UPDATE: Import data from external file
-import recipesData from 'https://raw.githubusercontent.com/thaikpham/testcolorlab/main/recipes.js';
+// FIX: Import data from a reliable CDN (jsDelivr) instead of raw.githubusercontent.com
+import recipesData from 'https://cdn.jsdelivr.net/gh/thaikpham/testcolorlab@main/recipes.js';
 
 // UI UPDATE: New, more refined SVG icons for quiz options
 const quizQuestions = [
@@ -1048,3 +1048,4 @@ async function initApp(recipesData) {
 </script>
 </body>
 </html>
+
