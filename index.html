@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alpha AI Color Lab</title>
-<!-- Favicon updated to the original logo SVG -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 111 110' xmlns='http://www.w3.org/2000/svg'%3E%3Cg style='mix-blend-mode: multiply;'%3E%3Ccircle cx='34' cy='34' r='34' fill='%23f7b71d'/%3E%3Ccircle cx='77' cy='34' r='34' fill='%23b2b2b2'/%3E%3Ccircle cx='34' cy='76' r='34' fill='%2342b4d1'/%3E%3Ccircle cx='77' cy='76' r='34' fill='%23e62634'/%3E%3C/g%3E%3C/svg%3E">
+<!-- UPDATE: Favicon updated to the new logo -->
+<link rel="icon" href="https://raw.githubusercontent.com/thaikpham/colorlab/main/logo.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,6 +76,10 @@
         background: #ffffff;
         box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         border: 1px solid #e5e7eb;
+    }
+    /* UPDATE: Added style for logo blend mode */
+    #homeBtn img {
+        mix-blend-mode: multiply;
     }
     .parameter-title {
         cursor: help;
@@ -207,16 +211,8 @@
 <body>
 <div id="appContainer" class="min-h-screen w-screen p-4 md:p-6 flex flex-col">
     <header class="flex justify-between items-center w-full z-20 flex-shrink-0">
-        <button id="homeBtn" class="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-3">
-            <svg viewBox="0 0 111 110" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8">
-                <g style="mix-blend-mode: multiply;">
-                    <circle cx="34" cy="34" r="34" fill="#f7b71d"/>
-                    <circle cx="77" cy="34" r="34" fill="#b2b2b2"/>
-                    <circle cx="34" cy="76" r="34" fill="#42b4d1"/>
-                    <circle cx="77" cy="76" r="34" fill="#e62634"/>
-                </g>
-            </svg>
-            <span data-translate-key="headerTitle" class="hidden sm:inline"></span>
+        <button id="homeBtn" class="flex items-center">
+            <img src="https://raw.githubusercontent.com/thaikpham/colorlab/main/logo_black.png" alt="Alpha AI Color Lab Logo" class="h-10">
         </button>
         <div class="flex items-center gap-2 md:gap-4">
             <nav id="mainNav" class="hidden md:flex items-center gap-2">
@@ -239,7 +235,8 @@
         </div>
     </header>
 
-    <div id="mainContent" class="flex-grow min-h-0 relative mt-4 md:mt-6 mb-2"></div>
+    <!-- UPDATE: Removed relative positioning to allow flexbox to control layout -->
+    <div id="mainContent" class="flex-grow"></div>
     
     <footer class="text-center py-4 text-gray-500 text-sm flex-shrink-0">
         Paint emotions with ColorLAB by Sony Alpha Vietnam
@@ -321,7 +318,6 @@
 
 <script type="module">
 // --- CONFIGURATION & STATE ---
-// FIX: Re-introduced the API_KEY and full API_URL from the working version.
 const API_KEY = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
 
@@ -445,11 +441,12 @@ const quizQuestions = [
     }
 ];
 
+// UPDATE: Added line breaks to text for better readability
 const translations = {
     headerTitle: {vi: "Alpha AI Color Lab", en: "Alpha AI Color Lab"},
     navRecipeFormulas: {vi:"Công thức màu", en:"Color Recipes"},
     landingTitle: {vi:"Tìm kiếm phong cách của bạn", en:"Find Your Signature Style"},
-    landingSubtitle: {vi:"Không chắc nên bắt đầu từ đâu? Hãy để chúng tôi giúp bạn tìm công thức màu hoàn hảo.", en:"Not sure where to start? Let us help you find the perfect color recipe."},
+    landingSubtitle: {vi:"Không chắc nên bắt đầu từ đâu?<br>Hãy để chúng tôi giúp bạn tìm công thức màu hoàn hảo.", en:"Not sure where to start?<br>Let us help you find the perfect color recipe."},
     startExploringBtn: {vi:"Khám phá tất cả", en:"Explore All Recipes"},
     findMyColorBtn: {vi: "Tìm màu cho bạn", en: "Find My Color"},
     quizTitle: {vi: "Trắc nghiệm Tìm màu", en: "Color Finder Quiz"},
@@ -459,7 +456,7 @@ const translations = {
     retakeQuizBtn: {vi: "Làm lại trắc nghiệm", en: "Retake Quiz"},
     searchInputPlaceholder: {vi: "Tìm công thức...", en: "Search recipes..."},
     recipeDetailWelcomeTitle: {vi: "Thư viện màu Tương tác", en: "Interactive Color Library"},
-    recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan. Nhấp vào một công thức trong danh sách để xem chi tiết.", en: "Explore Picture Profile color recipes visually. Click a recipe in the list to see details."},
+    recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan.<br>Nhấp vào một công thức trong danh sách để xem chi tiết.", en: "Explore Picture Profile color recipes visually.<br>Click a recipe in the list to see details."},
     whiteBalanceTitle: {vi: "Cân bằng trắng (WB)", en: "White Balance (WB)"},
     recipeSettingsTitle: {vi: "Cài đặt Chính", en: "Main Settings"},
     colorDepthTitle: {vi: "Độ sâu màu", en: "Color Depth"},
@@ -589,7 +586,7 @@ function createFullRecipeHTML(recipe) {
 }
 
 const viewTemplates = {
-    home: () => `<div id="homeView" class="w-full h-full flex flex-col items-center justify-center text-center absolute inset-0 view-transition p-4">
+    home: () => `<div id="homeView" class="w-full h-full flex flex-col items-center justify-center text-center view-transition p-4">
                             <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-2" data-translate-key="landingTitle"></h1>
                             <p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto" data-translate-key="landingSubtitle"></p>
                             <div class="flex flex-col sm:flex-row gap-4 mt-10">
@@ -601,7 +598,7 @@ const viewTemplates = {
                             </div>
                         </div>`,
     recipeFormulas: () => `
-                                <div id="recipeFormulasView" class="w-full h-full flex flex-col md:flex-row gap-6 absolute inset-0 view-transition">
+                                <div id="recipeFormulasView" class="w-full h-full flex flex-col md:flex-row gap-6 view-transition">
                                     <aside id="recipeListPanel" class="w-full md:w-1/3 lg:w-[30%] xl:w-1/4 glass-panel p-4 md:p-6 flex flex-col flex-shrink-0 md:flex">
                                         <div class="relative mb-4 flex-shrink-0">
                                             <input type="search" id="searchInput" class="w-full p-3 pl-4 pr-12 rounded-xl bg-gray-200/50 border-2 border-transparent focus:border-blue-500 focus:bg-white transition-all" data-translate-key="searchInputPlaceholder">
@@ -842,7 +839,6 @@ function renderAIError(container, feature = 'ai') {
     applyTranslations();
 }
 
-// FIX: Reverted to the direct fetch method with API_KEY
 function handleAIGeneration() {
     const userInput = document.getElementById('aiPromptInput').value.trim();
     if (!userInput) return;
@@ -975,7 +971,6 @@ function renderCaptionLab() {
     applyTranslations();
 }
 
-// FIX: Reverted to the direct fetch method with API_KEY
 async function handleCaptionGeneration() {
     const userInput = document.getElementById('captionPromptInput').value.trim();
     if (!userInput) return;
@@ -1282,4 +1277,3 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
-
