@@ -202,14 +202,57 @@
         cursor: pointer; transition: transform 0.2s ease;
     }
     #lightboxClose:hover { transform: scale(1.1); }
+
+    /* Landing Page Animation Styles */
+    @keyframes aura-pulse-rotate {
+        0% { transform: scale(1) rotate(0deg); opacity: 0.4; }
+        50% { transform: scale(1.05) rotate(180deg); opacity: 0.6; }
+        100% { transform: scale(1) rotate(360deg); opacity: 0.4; }
+    }
+    @keyframes professional-float {
+        0% { transform: translateY(10px) rotate(-5deg) scale(1); }
+        50% { transform: translateY(-15px) rotate(5deg) scale(1.05); }
+        100% { transform: translateY(10px) rotate(-5deg) scale(1); }
+    }
+    .landing-animation-container {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 0;
+        pointer-events: none; /* Allow clicks to pass through */
+        transition: opacity 0.8s ease-out;
+    }
+    .landing-animation-bg {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffadad, #ffd6a5, #fdffb6, #caffbf, #9bf6ff, #a0c4ff, #bdb2ff);
+        filter: blur(100px);
+        animation: aura-pulse-rotate 25s linear infinite;
+    }
+    .animated-logo {
+        animation: professional-float 8s ease-in-out infinite;
+    }
+    #homeView > * {
+        position: relative;
+        z-index: 1;
+    }
+    /* Class to stop animation */
+    .animation-stopped .landing-animation-container {
+        opacity: 0;
+    }
 </style>
 </head>
 <body>
 <div id="appContainer" class="min-h-screen w-screen p-4 md:p-6 flex flex-col">
     <header class="flex justify-between items-center w-full z-20 flex-shrink-0">
-        <!-- Logo đã được cập nhật. Đường dẫn bây giờ là tương đối. -->
+        <!-- Logo đã được cập nhật kích thước. -->
         <button id="homeBtn" class="flex items-center">
-             <img src="logo_black.png" alt="Alpha AI Color Lab Logo" class="h-12 w-auto">
+             <img src="logo_black.png" alt="Alpha AI Color Lab Logo" class="h-14 w-auto">
         </button>
         <div class="flex items-center gap-2 md:gap-4">
             <nav id="mainNav" class="hidden md:flex items-center gap-2">
@@ -531,7 +574,12 @@ function createFullRecipeHTML(recipe) {
 
 const viewTemplates = {
     home: () => `<div id="homeView" class="w-full h-full flex flex-col items-center justify-center text-center absolute inset-0 view-transition p-4">
-                            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-2" data-translate-key="landingTitle"></h1>
+                            <div id="landingAnimationContainer" class="landing-animation-container">
+                                <div class="landing-animation-bg"></div>
+                                <img src="logo.png" alt="Animated Logo" class="animated-logo h-32 w-32">
+                                <p class="animated-logo-text mt-4 text-gray-500 text-sm">Paint emotions with ColorLAB by Sony Alpha Vietnam</p>
+                            </div>
+                            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-2 mt-8" data-translate-key="landingTitle"></h1>
                             <p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto" data-translate-key="landingSubtitle"></p>
                             <div class="flex flex-col sm:flex-row gap-4 mt-10">
                                 <button id="startQuizBtn" class="btn btn-primary py-4 px-10 text-lg">
@@ -1024,6 +1072,23 @@ function attachViewEventListeners(viewName) {
         renderLibraryDetails();
         updateLangSlider();
     }
+    if (viewName === 'home') {
+        const animationContainer = document.getElementById('landingAnimationContainer');
+        
+        const stopWelcomeAnimation = () => {
+            if (animationContainer) {
+                animationContainer.classList.add('animation-stopped');
+            }
+            // Remove listeners after first interaction
+            window.removeEventListener('click', stopWelcomeAnimation);
+            window.removeEventListener('scroll', stopWelcomeAnimation);
+            window.removeEventListener('keydown', stopWelcomeAnimation);
+        };
+
+        window.addEventListener('click', stopWelcomeAnimation, { once: true });
+        window.addEventListener('scroll', stopWelcomeAnimation, { once: true });
+        window.addEventListener('keydown', stopWelcomeAnimation, { once: true });
+    }
 }
 
 function renderLibraryList() {
@@ -1229,4 +1294,3 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
-"
