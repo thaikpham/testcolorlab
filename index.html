@@ -45,6 +45,7 @@
     }
     .recipe-item:hover:not(.selected) { background-color: rgba(0, 0, 0, 0.04); }
     .btn { border-radius: 9999px; font-weight: 600; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;}
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background-color: var(--primary-accent); border: none; color: white; box-shadow: 0 4px 14px rgba(0, 118, 255, 0.39); }
     .btn-primary:hover:not(:disabled) { background-color: var(--primary-accent-darker); transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 18px rgba(0, 118, 255, 0.45); }
     .view-transition { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
@@ -67,86 +68,48 @@
         background-color: rgba(0,0,0,0.4);
     }
 
-    /* Quiz Styles */
-    #quizModal.hidden { display: none; }
-    #quizPanel {
+    /* Modal Styles */
+    .modal.hidden { display: none; }
+    .modal-panel {
         background: #ffffff;
         box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
         border: 1px solid #e5e7eb;
-    }
-    .quiz-option {
-        background: #f8f9fa;
-        border: 1px solid #f8f9fa;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .quiz-option:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-        border-color: rgba(0, 122, 255, 0.3);
-    }
-    .quiz-option.selected {
-        background-color: #e6f2ff !important;
-        color: var(--primary-accent) !important;
-        border-color: var(--primary-accent) !important;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
-    }
-    .quiz-question-container {
-        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-    }
-    .quiz-question-container.exiting {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    #infoTooltip {
-        position: absolute;
-        z-index: 1000;
-        background-color: rgba(29, 29, 31, 0.9);
-        color: white;
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
-        font-size: 0.875rem;
-        line-height: 1.5;
-        max-width: 300px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        opacity: 0;
-        transform: translateY(10px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        pointer-events: none;
-    }
-    #infoTooltip.visible {
-        opacity: 1;
-        transform: translateY(0);
     }
     .parameter-title {
         cursor: help;
         border-bottom: 1px dashed #ccc;
     }
+    #infoTooltip {
+        position: absolute; z-index: 1000; background-color: rgba(29, 29, 31, 0.9); color: white; padding: 0.75rem 1rem;
+        border-radius: 12px; font-size: 0.875rem; line-height: 1.5; max-width: 300px; backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(10px);
+        transition: opacity 0.2s ease, transform 0.2s ease; pointer-events: none;
+    }
+    #infoTooltip.visible { opacity: 1; transform: translateY(0); }
 
-    /* iPadOS-style Slider */
-    .aside-tab {
-        transition: all 0.2s ease-in-out;
-        border-bottom: 2px solid transparent;
+    /* AI Lab Specific Styles */
+    .comparison-grid .changed {
+        background-color: #e6f2ff;
+        border: 1px solid #99c8ff;
+        box-shadow: 0 0 0 2px #e6f2ff;
     }
-    .aside-tab.active {
-        color: var(--primary-accent);
-        border-bottom-color: var(--primary-accent);
+    .comparison-grid .value-original { color: #6b7280; }
+    .comparison-grid .value-new { color: #1d4ed8; font-weight: 700; }
+    .loader {
+        width: 24px; height: 24px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db;
+        border-radius: 50%; animation: spin 1s linear infinite;
     }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 <div id="appContainer" class="min-h-screen w-screen p-4 md:p-6 flex flex-col">
     <header class="flex justify-between items-center w-full z-20 flex-shrink-0">
         <button id="homeBtn" class="text-xl md:text-2xl font-bold text-gray-800 flex items-center gap-3">
-            <!-- LOGO FIXED: Using mix-blend-mode for perfect replication -->
             <svg viewBox="0 0 111 110" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8">
                 <g style="mix-blend-mode: multiply;">
-                    <circle cx="34" cy="34" r="34" fill="#f7b71d"/>
-                    <circle cx="77" cy="34" r="34" fill="#b2b2b2"/>
-                    <circle cx="34" cy="76" r="34" fill="#42b4d1"/>
-                    <circle cx="77" cy="76" r="34" fill="#e62634"/>
+                    <circle cx="34" cy="34" r="34" fill="#f7b71d"/><circle cx="77" cy="34" r="34" fill="#b2b2b2"/>
+                    <circle cx="34" cy="76" r="34" fill="#42b4d1"/><circle cx="77" cy="76" r="34" fill="#e62634"/>
                 </g>
             </svg>
             <span data-translate-key="headerTitle" class="hidden sm:inline"></span>
@@ -154,7 +117,6 @@
         <div class="flex items-center gap-2 md:gap-4">
             <nav id="mainNav" class="hidden md:flex items-center gap-2">
                 <button data-view="recipeFormulas" class="nav-btn font-semibold text-gray-600 hover:text-black transition-colors px-4 py-2 rounded-full hover:bg-gray-100" data-translate-key="navRecipeFormulas"></button>
-                <button data-view="featuredPhotos" class="nav-btn font-semibold text-gray-600 hover:text-black transition-colors px-4 py-2 rounded-full hover:bg-gray-100" data-translate-key="navFeaturedPhotos"></button>
             </nav>
             <div class="p-1 bg-gray-200/70 rounded-full flex relative">
                 <div id="lang-glider" class="absolute top-1 bottom-1 w-1/2 bg-white rounded-full shadow-sm transition-transform duration-300"></div>
@@ -183,21 +145,18 @@
         <button id="closeMobileNavBtn" class="absolute top-4 right-4 text-3xl p-2">&times;</button>
         <nav class="mt-16 flex flex-col gap-6 text-center">
             <button data-view="recipeFormulas" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navRecipeFormulas"></button>
-            <button data-view="featuredPhotos" class="nav-btn-mobile text-2xl font-semibold text-gray-700 py-2" data-translate-key="navFeaturedPhotos"></button>
         </nav>
     </div>
 </div>
 
 <!-- Quiz Modal -->
-<div id="quizModal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div id="quizPanel" class="w-full max-w-3xl max-h-[90vh] flex flex-col view-transition bg-white rounded-2xl shadow-2xl border">
+<div id="quizModal" class="modal hidden fixed inset-0 bg-black/30 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div id="quizPanel" class="modal-panel w-full max-w-3xl max-h-[90vh] flex flex-col view-transition rounded-2xl">
         <div class="flex justify-between items-center p-5 flex-shrink-0">
             <h2 class="text-xl font-bold" data-translate-key="quizTitle"></h2>
             <button id="closeQuizBtn" class="text-3xl font-light text-gray-400 hover:text-black">&times;</button>
         </div>
-        <div id="quizContent" class="p-6 md:p-8 flex-grow overflow-y-auto sleek-scrollbar">
-            <!-- Quiz questions will be rendered here -->
-        </div>
+        <div id="quizContent" class="p-6 md:p-8 flex-grow overflow-y-auto sleek-scrollbar"></div>
         <div class="p-5 flex-shrink-0">
             <div class="w-full bg-gray-200 rounded-full h-2">
                 <div id="quizProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
@@ -206,15 +165,41 @@
     </div>
 </div>
 
+<!-- Gemini AI Lab Modal -->
+<div id="aiLabModal" class="modal hidden fixed inset-0 bg-black/30 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div id="aiLabPanel" class="modal-panel w-full max-w-4xl max-h-[90vh] flex flex-col view-transition rounded-2xl">
+        <div class="flex justify-between items-center p-5 border-b border-gray-200 flex-shrink-0">
+            <div class="flex items-center gap-3">
+                 <svg class="w-7 h-7 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                 <h2 class="text-xl font-bold" data-translate-key="aiLabTitle"></h2>
+            </div>
+            <button id="closeAILabBtn" class="text-3xl font-light text-gray-400 hover:text-black">&times;</button>
+        </div>
+        <div id="aiLabContent" class="p-6 md:p-8 flex-grow overflow-y-auto sleek-scrollbar">
+            <!-- AI Lab content will be rendered here -->
+        </div>
+    </div>
+</div>
+
 
 <script type="module">
-// --- STATE & CONFIGURATION ---
+// --- CONFIGURATION & STATE ---
+const API_KEY = "AIzaSyDxctVkghoMzVFNTLbIfHmHQ_szw-omYbQ";
+// FIXED: Changed model to the one specified by the user to resolve 403 errors.
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${API_KEY}`;
+
 const state = {
     currentLang: 'vi',
     currentView: 'home',
     selectedRecipeId: null,
     isMobileDetailActive: false,
-    activeAsideTab: 'recipes',
+    ai: {
+        isGenerating: false,
+        originalRecipe: null,
+        userPrompt: '',
+        expertPrompt: '',
+        generatedRecipe: null,
+    },
     quiz: {
         currentQuestionIndex: 0,
         answers: [],
@@ -224,13 +209,7 @@ const state = {
 const mainContentEl = document.getElementById('mainContent');
 
 // --- DATA ---
-const recipesData = [
-    { "id": "scl-001", "name": { "vi": "SCL-001: Mojave Sun", "en": "SCL-001: Mojave Sun" }, "description": { "en": "A nostalgic, sun-drenched style that bathes scenes in the warm glow of golden hour.", "vi": "Một phong cách hoài niệm, ngập tràn ánh nắng, bao phủ các khung cảnh trong ánh sáng ấm áp của giờ vàng." }, "type": "color", "contrast": "normal", "saturation": "normal", "tags": ["nostalgic", "sun-drenched", "warm", "travel", "lifestyle", "summer", "golden-hour"], "whiteBalance": "8300K, B3-M1.5", "settings": { "Black level": "-5", "Gamma": "Movie", "Black Gamma": "Wide +7", "Knee": "Manual 75% +4", "Color Mode": "S-Gamut3", "Saturation": "+22", "Color Phase": "+4" }, "colorDepth": { "R": "-2", "G": "0", "B": "+5", "C": "+5", "M": "0", "Y": "+4" }, "detailSettings": { "Level": "0" }, "personalityColor": "#FFD700", "demoImages": ["https://lh3.googleusercontent.com/pw/AP1GczPPT3oBJKObBMX8NEdTxe-PLC2BEd0eRGUMSUiYxocel93ljDNFyG58LJiiPhijnKyWkjJbkSim54sWvSLrRxeM22uF82BlckublQ4qsSic7gwhAVe-XX0jEzRuxDJG7j25PHU6tLUGIT0IRHjy_AvXuQ=w1658-h1105-s-no?authuser=0", "https://lh3.googleusercontent.com/pw/AP1GczPC_ounREkB_Q6oj6ZM7ckVGcKKZ_saJP5O63nURHPk09iTI8l4YwSqUzyxJm8ZG760nUJhm5JgmMWyk4uGlDDaaWwjJJPO4E9IAoF1pNfMHqx-2g3OcDS2COZ1w93K8j16X08W24leuMEhZvXx6L4uyw=w736-h1105-s-no?authuser=0", "https://lh3.googleusercontent.com/pw/AP1GczPwAttTxhJ89lhQ4Lbp9Klq73D30WWsG21oDGzsTZ9ig_5IYa3hLxdsQnMIb-8xJF-SOUMsNjaoGm-1RbfHrcRDn8lrLR7krn4ubwBkoe7fKqWes36h-8T05_EvDvJiHM04HZYdZzSkJ_4O2y7yhyXc3A=w1658-h1105-s-no?authuser=0"] },
-    { "id": "scl-003", "name": { "vi": "SCL-003: Caspian Blue", "en": "SCL-003: Caspian Blue" }, "description": { "en": "A cool-toned, cinematic profile with distinctive deep blues and rich, crushed blacks.", "vi": "Một cấu hình điện ảnh, tông lạnh với sắc xanh dương đặc trưng và vùng tối sâu, đậm." }, "type": "color", "contrast": "high", "saturation": "normal", "tags": ["cinematic", "cool-tone", "deep-blues", "moody", "atmospheric", "urban-night", "dramatic-portrait", "storytelling"], "whiteBalance": "8000K, B2-M2", "settings": { "Black level": "-15", "Gamma": "Cine2", "Black Gamma": "Middle +7", "Knee": "Manual 85% +4", "Color Mode": "S-Gamut3.Cine", "Saturation": "+20", "Color Phase": "+7" }, "colorDepth": { "R": "0", "G": "-1", "B": "+3", "C": "+4", "M": "+5", "Y": "+2" }, "detailSettings": { "Level": "0" }, "personalityColor": "#4682B4", "demoImages": ["https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+1", "https://placehold.co/600x800/4682B4/ffffff?text=Caspian+Blue+2", "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+3", "https://placehold.co/800x600/4682B4/ffffff?text=Caspian+Blue+4"] },
-    { "id": "scl-015", "name": { "vi": "SCL-015: Vintage Slide", "en": "SCL-015: Vintage Slide" }, "description": { "en": "A warm, slightly faded style with a subtle green-cyan tint in the shadows.", "vi": "Một phong cách ấm áp, hơi phai màu với một chút sắc xanh lá-lục trong vùng tối." }, "type": "color", "contrast": "normal", "saturation": "faded", "tags": ["warm", "faded", "green-tint", "old-family-slides", "nostalgic-portrait", "everyday-scenes"], "whiteBalance": "3600K, A7-M1", "settings": { "Black level": "-4", "Gamma": "Movie", "Black Gamma": "Middle -7", "Knee": "Manual 80% +4", "Color Mode": "Still", "Saturation": "+10", "Color Phase": "-1" }, "colorDepth": { "R": "+3", "G": "+5", "B": "-4", "C": "+2", "M": "+6", "Y": "+5" }, "detailSettings": { "Level": "0" }, "personalityColor": "#BC8F8F", "demoImages": ["https://placehold.co/800x600/BC8F8F/ffffff?text=Vintage+Slide+1", "https://placehold.co/800x600/BC8F8F/ffffff?text=Vintage+Slide+2", "https://placehold.co/600x800/BC8F8F/ffffff?text=Vintage+Slide+3"] },
-    { "id": "scl-041", "name": { "vi": "SCL-041: Obsidian Contrast", "en": "SCL-041: Obsidian Contrast" }, "description": { "en": "A dramatic, high-contrast monochrome style with inky blacks and crisp whites.", "vi": "Một phong cách đơn sắc kịch tính, tương phản cao với màu đen sâu như mực và màu trắng sắc nét." }, "type": "bw", "contrast": "high", "saturation": "normal", "tags": ["dramatic-monochrome", "high-contrast", "inky-blacks", "crisp-whites", "architectural-details", "powerful-street-photography", "impressive-clarity"], "whiteBalance": "AWB", "settings": { "Black level": "-15", "Gamma": "Still", "Black Gamma": "Wide -7", "Knee": "Manual 85% +5", "Color Mode": "Black & White", "Saturation": "+15", "Color Phase": "0" }, "colorDepth": { "R": "+2", "G": "-4", "B": "-1", "C": "+2", "M": "-1", "Y": "+2" }, "detailSettings": { "Level": "0" }, "personalityColor": "#333333", "demoImages": ["https://placehold.co/800x600/333333/ffffff?text=Obsidian+Contrast+1", "https://placehold.co/600x800/333333/ffffff?text=Obsidian+Contrast+2", "https://placehold.co/800x600/333333/ffffff?text=Obsidian+Contrast+3"] },
-    { "id": "scl-043", "name": { "vi": "SCL-043: Silver Gelatin", "en": "SCL-043: Silver Gelatin" }, "description": { "en": "A flat, soft-contrast profile with rich mid-tones and smooth transitions.", "vi": "Một cấu hình tương phản phẳng, mềm mại với các tông màu trung bình phong phú và sự chuyển tiếp mượt mà." }, "type": "bw", "contrast": "soft", "saturation": "normal", "tags": ["flat", "soft-contrast", "rich-midtones", "smooth-transitions", "classic-darkroom-print", "silver-gelatin-paper", "fine-art-portrait", "subtle-compositions"], "whiteBalance": "5500K, A3-G2", "settings": { "Black level": "+3", "Gamma": "Cine1", "Black Gamma": "Narrow +5", "Knee": "Manual 75% +3", "Color Mode": "Black & White", "Saturation": "+24", "Color Phase": "0" }, "colorDepth": { "R": "+3", "G": "+3", "B": "+3", "C": "+2", "M": "+3", "Y": "+2" }, "detailSettings": { "Level": "0" }, "personalityColor": "#AAAAAA", "demoImages": ["https://placehold.co/800x600/AAAAAA/ffffff?text=Silver+Gelatin+1", "https://placehold.co/800x600/AAAAAA/ffffff?text=Silver+Gelatin+2", "https://placehold.co/600x800/AAAAAA/ffffff?text=Silver+Gelatin+3"] }
-];
+import recipesData from './recipes.js';
 
 const quizQuestions = [
     {
@@ -272,7 +251,6 @@ const quizQuestions = [
 const translations = {
     headerTitle: {vi: "Alpha AI Color Lab", en: "Alpha AI Color Lab"},
     navRecipeFormulas: {vi:"Công thức màu", en:"Color Recipes"},
-    navFeaturedPhotos: {vi: "Ảnh nổi bật", en: "Featured Photos"},
     landingTitle: {vi:"Tìm kiếm phong cách của bạn", en:"Find Your Signature Style"},
     landingSubtitle: {vi:"Không chắc nên bắt đầu từ đâu? Hãy để chúng tôi giúp bạn tìm công thức màu hoàn hảo.", en:"Not sure where to start? Let us help you find the perfect color recipe."},
     startExploringBtn: {vi:"Khám phá tất cả", en:"Explore All Recipes"},
@@ -284,67 +262,51 @@ const translations = {
     retakeQuizBtn: {vi: "Làm lại trắc nghiệm", en: "Retake Quiz"},
     searchInputPlaceholder: {vi: "Tìm công thức...", en: "Search recipes..."},
     recipeDetailWelcomeTitle: {vi: "Thư viện màu Tương tác", en: "Interactive Color Library"},
-    recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan. Nhấp vào một điểm trên biểu đồ hoặc một công thức trong danh sách để xem chi tiết.", en: "Explore Picture Profile color recipes visually. Click a point on the chart or a recipe in the list to see details."},
+    recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan. Nhấp vào một công thức trong danh sách để xem chi tiết.", en: "Explore Picture Profile color recipes visually. Click a recipe in the list to see details."},
     whiteBalanceTitle: {vi: "Cân bằng trắng (WB)", en: "White Balance (WB)"},
     recipeSettingsTitle: {vi: "Cài đặt Chính", en: "Main Settings"},
     colorDepthTitle: {vi: "Độ sâu màu", en: "Color Depth"},
     detailTitle: {vi: "Chi tiết", en: "Detail"},
     sonyGuideBtn: {vi: "Xem tài liệu gốc từ Sony", en: "View Official Sony Guide"},
     backToListBtn: {vi: "← Quay lại danh sách", en: "← Back to list"},
-    // NEW TRANSLATIONS for CTA
     ctaTitle: {vi: "Chia sẻ tác phẩm của bạn!", en: "Share Your Creations!"},
     ctaText: {vi: "Yêu thích công thức này? Hãy chia sẻ ảnh của bạn lên group Facebook <b>Sony Alpha Vietnam | Official</b> với hashtag <b>#sonycolorlab</b> và {recipeHashtag} để có cơ hội được giới thiệu!", en: "Love this recipe? Share your photos on the <b>Sony Alpha Vietnam | Official</b> Facebook group with hashtags <b>#sonycolorlab</b> and {recipeHashtag} for a chance to be featured!"},
     ctaButton: {vi: "Tham gia Nhóm", en: "Join The Group"},
+    // AI Lab Translations
+    aiLabTitle: {vi: "Gemini AI Colorist", en: "Gemini AI Colorist"},
+    aiLabDescription: {vi: "Mô tả phong cách bạn muốn, Gemini sẽ tinh chỉnh công thức màu <b>{recipeName}</b> cho bạn.", en: "Describe the style you want, and Gemini will tweak the <b>{recipeName}</b> recipe for you."},
+    aiPromptPlaceholder: {vi: "VD: tông màu trong trẻo, hơi ngả xanh như phim của Wes Anderson...", en: "E.g., a clean, slightly teal look like a Wes Anderson film..."},
+    aiGenerateBtn: {vi: "Tinh chỉnh với AI", en: "Tweak with AI"},
+    aiConfirmPromptTitle: {vi: "Xác nhận yêu cầu", en: "Confirm Request"},
+    aiConfirmPromptText: {vi: "OK! Tôi sẽ tạo một phiên bản mới của <b>{recipeName}</b> với phong cách <i>\"{userPrompt}\"</i>. Tiếp tục nhé?", en: "Got it! I will generate a new version of <b>{recipeName}</b> with a style inspired by <i>\"{userPrompt}\"</i>. Shall we proceed?"},
+    aiConfirmBtn: {vi: "Đồng ý", en: "Confirm & Generate"},
+    aiCancelBtn: {vi: "Hủy", en: "Cancel"},
+    aiComparisonTitle: {vi: "Kết quả từ Gemini AI", en: "Result from Gemini AI"},
+    aiComparisonDescription: {vi: "Đây là phiên bản mới được tạo dựa trên yêu cầu của bạn. Các thông số thay đổi đã được làm nổi bật.", en: "Here is the new version based on your request. Changed parameters are highlighted."},
+    aiOriginalTitle: {vi: "Công thức gốc", en: "Original Recipe"},
+    aiNewTitle: {vi: "Công thức mới (AI)", en: "New Recipe (AI)"},
+    aiErrorTitle: {vi: "Đã có lỗi xảy ra", en: "An Error Occurred"},
+    aiErrorText: {vi: "Rất tiếc, không thể tạo công thức lúc này. Vui lòng kiểm tra lại API Key hoặc thử lại sau.", en: "Sorry, the recipe could not be generated at this time. Please check your API Key or try again later."},
+    tweakWithAI: {vi: "Tinh chỉnh với Gemini AI", en: "Tweak with Gemini AI"},
 };
 
-// UPDATED: Standardized and simplified explanations based on the provided document
 const parameterExplanations = {
-    'Black level': { 
-        vi: "Điều chỉnh điểm đen. Giá trị âm (-) làm vùng tối sâu hơn, tăng tương phản. Giá trị dương (+) nâng vùng tối, tạo hiệu ứng 'mờ' hoài cổ.", 
-        en: "Adjusts the black point. Negative (-) values deepen shadows for more contrast. Positive (+) values lift shadows for a 'faded' look." 
-    },
-    'Gamma': { 
-        vi: "Xác định đường cong tương phản tổng thể, là nền tảng cho 'look' của bạn. Cine & S-Cinetone cho cảm giác điện ảnh, trong khi S-Log tối đa hóa dải tần nhạy sáng để hậu kỳ.", 
-        en: "Defines the overall contrast curve, the foundation of your look. Cine & S-Cinetone provide a cinematic feel, while S-Log maximizes dynamic range for post-production." 
-    },
-    'Black Gamma': { 
-        vi: "Tinh chỉnh độ tương phản riêng trong vùng tối. 'Range' xác định vùng ảnh hưởng (Hẹp/Vừa/Rộng). 'Level' tăng hoặc giảm độ sáng của vùng đó.", 
-        en: "Fine-tunes contrast specifically in the shadow areas. 'Range' sets the affected area (Narrow/Middle/Wide). 'Level' brightens or darkens that area." 
-    },
-    'Knee': { 
-        vi: "Kiểm soát cách các vùng sáng (highlight) được nén lại để tránh bị 'cháy sáng'. Chế độ Tự động hoạt động tốt, trong khi Thủ công cho phép kiểm soát chính xác hơn.", 
-        en: "Controls how highlights are compressed to prevent 'clipping' (overexposure). Auto mode works well; Manual mode offers precise control." 
-    },
-    'Color Mode': { 
-        vi: "Xác định không gian màu và cách màu sắc được tái tạo. Nên chọn chế độ phù hợp với Gamma đã chọn (ví dụ: S-Cinetone, S-Gamut3.Cine).", 
-        en: "Determines the color space and how colors are rendered. Should be matched with the chosen Gamma (e.g., S-Cinetone, S-Gamut3.Cine)." 
-    },
-    'Saturation': { 
-        vi: "Điều chỉnh cường độ tổng thể của tất cả các màu. Tăng để có màu rực rỡ, giảm để có màu dịu hơn hoặc đơn sắc.", 
-        en: "Adjusts the overall intensity of all colors. Increase for vibrant colors, decrease for a more muted or monochrome look." 
-    },
-    'Color Phase': { 
-        vi: "Dịch chuyển nhẹ toàn bộ quang phổ màu về phía đỏ hoặc xanh lá. Hữu ích để tinh chỉnh tông màu tổng thể hoặc cân bằng màu giữa các máy ảnh.", 
-        en: "Slightly shifts the entire color spectrum towards red or green. Useful for subtle global tone adjustments or matching cameras." 
-    },
-    'Color Depth': { 
-        vi: "Công cụ mạnh nhất. Tăng/giảm độ sáng của từng kênh màu riêng lẻ (Đỏ, Lục, Lam, Cyan, Magenta, Vàng) để tinh chỉnh màu sắc một cách chính xác.", 
-        en: "The most powerful tool. Brightens or darkens individual color channels (R, G, B, C, M, Y) for precise color tuning." 
-    },
+    'Black level': { vi: "Điều chỉnh điểm đen. Giá trị âm (-) làm vùng tối sâu hơn, tăng tương phản. Giá trị dương (+) nâng vùng tối, tạo hiệu ứng 'mờ' hoài cổ.", en: "Adjusts the black point. Negative (-) values deepen shadows for more contrast. Positive (+) values lift shadows for a 'faded' look." },
+    'Gamma': { vi: "Xác định đường cong tương phản tổng thể, là nền tảng cho 'look' của bạn. Cine & S-Cinetone cho cảm giác điện ảnh, trong khi S-Log tối đa hóa dải tần nhạy sáng để hậu kỳ.", en: "Defines the overall contrast curve, the foundation of your look. Cine & S-Cinetone provide a cinematic feel, while S-Log maximizes dynamic range for post-production." },
+    'Black Gamma': { vi: "Tinh chỉnh độ tương phản riêng trong vùng tối. 'Range' xác định vùng ảnh hưởng (Hẹp/Vừa/Rộng). 'Level' tăng hoặc giảm độ sáng của vùng đó.", en: "Fine-tunes contrast specifically in the shadow areas. 'Range' sets the affected area (Narrow/Middle/Wide). 'Level' brightens or darkens that area." },
+    'Knee': { vi: "Kiểm soát cách các vùng sáng (highlight) được nén lại để tránh bị 'cháy sáng'. Chế độ Tự động hoạt động tốt, trong khi Thủ công cho phép kiểm soát chính xác hơn.", en: "Controls how highlights are compressed to prevent 'clipping' (overexposure). Auto mode works well; Manual mode offers precise control." },
+    'Color Mode': { vi: "Xác định không gian màu và cách màu sắc được tái tạo. Nên chọn chế độ phù hợp với Gamma đã chọn (ví dụ: S-Cinetone, S-Gamut3.Cine).", en: "Determines the color space and how colors are rendered. Should be matched with the chosen Gamma (e.g., S-Cinetone, S-Gamut3.Cine)." },
+    'Saturation': { vi: "Điều chỉnh cường độ tổng thể của tất cả các màu. Tăng để có màu rực rỡ, giảm để có màu dịu hơn hoặc đơn sắc.", en: "Adjusts the overall intensity of all colors. Increase for vibrant colors, decrease for a more muted or monochrome look." },
+    'Color Phase': { vi: "Dịch chuyển nhẹ toàn bộ quang phổ màu về phía đỏ hoặc xanh lá. Hữu ích để tinh chỉnh tông màu tổng thể hoặc cân bằng màu giữa các máy ảnh.", en: "Slightly shifts the entire color spectrum towards red or green. Useful for subtle global tone adjustments or matching cameras." },
+    'Color Depth': { vi: "Công cụ mạnh nhất. Tăng/giảm độ sáng của từng kênh màu riêng lẻ (Đỏ, Lục, Lam, Cyan, Magenta, Vàng) để tinh chỉnh màu sắc một cách chính xác.", en: "The most powerful tool. Brightens or darkens individual color channels (R, G, B, C, M, Y) for precise color tuning." },
     'R': { vi: "Điều chỉnh độ sáng (luminance) của kênh màu Đỏ. Tăng (+) để màu đỏ tối và đậm hơn (son môi, da). Giảm (-) để sáng và nhạt hơn.", en: "Adjusts the luminance of the Red channel. Increase (+) for darker, richer reds (lipstick, skin). Decrease (-) for lighter, paler reds." },
     'G': { vi: "Điều chỉnh độ sáng (luminance) của kênh màu Lục. Tăng (+) để màu xanh lá cây tối và đậm hơn (cây cỏ). Giảm (-) để sáng và nhạt hơn.", en: "Adjusts the luminance of the Green channel. Increase (+) for darker, richer greens (foliage). Decrease (-) for lighter, paler greens." },
     'B': { vi: "Điều chỉnh độ sáng (luminance) của kênh màu Lam. Tăng (+) để màu xanh dương tối và đậm hơn (quần áo, đường phố). Giảm (-) để sáng và nhạt hơn.", en: "Adjusts the luminance of the Blue channel. Increase (+) for darker, richer blues (clothing, streets). Decrease (-) for lighter, paler blues." },
     'C': { vi: "Điều chỉnh độ sáng (luminance) của kênh màu Lục lam. Tăng (+) để màu da trời tối và đậm hơn. Giảm (-) để sáng và nhạt hơn.", en: "Adjusts the luminance of the Cyan channel. Increase (+) for darker, richer cyan (sky). Decrease (-) for lighter, paler cyan." },
     'M': { vi: "Điều chỉnh độ sáng (luminance) của kênh màu Cánh sen. Tăng (+) để màu hồng/tím tối và đậm hơn (da người, son môi). Giảm (-) để sáng và nhạt hơn.", en: "Adjusts the luminance of the Magenta channel. Increase (+) for darker, richer magenta (skin tones, lipstick). Decrease (-) for lighter, paler magenta." },
     'Y': { vi: "Điều chỉnh độ sáng (luminance) của kênh màu Vàng. Tăng (+) để màu vàng tối và đậm hơn (da người Á Đông). Giảm (-) để sáng và nhạt hơn.", en: "Adjusts the luminance of the Yellow channel. Increase (+) for darker, richer yellows (Asian skin tones). Decrease (-) for lighter, paler yellows." },
-    'Detail': { 
-        vi: "Kiểm soát độ sắc nét của hình ảnh. Giảm mạnh (ví dụ: -7) để có 'look' mềm mại, giống phim. Tăng để có hình ảnh sắc nét, hiện đại.", 
-        en: "Controls image sharpening. Decrease significantly (e.g., -7) for a soft, filmic look. Increase for a crisp, modern image." 
-    },
-    'Level': {
-        vi: "Điều chỉnh mức độ sắc nét tổng thể. Máy ảnh Sony vốn đã rất nét. Giảm để ảnh mềm mại hơn (-7 để giả lập chất ảnh phim), hoặc tăng để nét hơn nữa.",
-        en: "Adjusts the overall sharpening level. Sony cameras are inherently sharp. Decrease for a softer look (-7 mimics film), or increase for even more sharpness."
-    }
+    'Detail': { vi: "Kiểm soát độ sắc nét của hình ảnh. Giảm mạnh (ví dụ: -7) để có 'look' mềm mại, giống phim. Tăng để có hình ảnh sắc nét, hiện đại.", en: "Controls image sharpening. Decrease significantly (e.g., -7) for a soft, filmic look. Increase for a crisp, modern image." },
+    'Level': { vi: "Điều chỉnh mức độ sắc nét tổng thể. Máy ảnh Sony vốn đã rất nét. Giảm để ảnh mềm mại hơn (-7 để giả lập chất ảnh phim), hoặc tăng để nét hơn nữa.", en: "Adjusts the overall sharpening level. Sony cameras are inherently sharp. Decrease for a softer look (-7 mimics film), or increase for even more sharpness."}
 };
 
 // --- UI & LOGIC FUNCTIONS ---
@@ -361,55 +323,28 @@ function applyTranslations() {
     });
 }
 
-// NEW/MODIFIED: Redesigned function to create the recipe details view with collage and CTA
 function createFullRecipeHTML(recipe) {
-    // Helper to create the photo collage
     const createCollageHTML = (images) => {
         if (!images || images.length === 0) return '';
         const imageElements = images.slice(0, 4).map((img, index) => {
-            // A simple layout: first image is wide if there are more than 2 images
             const spanClass = (images.length > 2 && index === 0) ? 'col-span-2' : 'col-span-1';
-            return `
-                <div class="${spanClass} rounded-lg overflow-hidden bg-gray-100 shadow-inner">
-                    <img src="${img}" 
-                         onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/475569?text=Image+Not+Found';" 
-                         alt="Recipe demo image for ${recipe.name[state.currentLang]}" 
-                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 ease-in-out">
-                </div>
-            `;
+            return `<div class="${spanClass} rounded-lg overflow-hidden bg-gray-100 shadow-inner"><img src="${img}" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/475569?text=Image+Not+Found';" alt="Recipe demo image" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 ease-in-out"></div>`;
         }).join('');
         return `<div class="grid grid-cols-2 gap-3 mb-8">${imageElements}</div>`;
     };
 
-    // Helper to create the CTA section
     const createCTAHTML = (recipe) => {
         const recipeHashtag = `#${recipe.id.replace(/-/g, '')}`;
-        // The translation text will have a placeholder {recipeHashtag}
         const ctaText = t('ctaText').replace('{recipeHashtag}', `<b class="font-semibold text-blue-900">${recipeHashtag}</b>`);
-
-        return `
-            <div class="mt-8 p-5 md:p-6 bg-blue-50 border border-blue-200/50 rounded-2xl text-center">
-                <h4 class="text-lg md:text-xl font-bold text-blue-800" data-translate-key="ctaTitle"></h4>
-                <p class="mt-2 text-blue-700/90 max-w-2xl mx-auto text-sm md:text-base">${ctaText}</p>
-                <a href="https://www.facebook.com/groups/sonyalphavietnamoffical" target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-5 py-2.5 px-6 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M12.225 10.162c.37.312.525.812.375 1.312l-.75 2.5a1 1 0 01-1.85.375l-1.375-3.562a1 1 0 01.375-1.125l2.5-2.062a1 1 0 011.375 1.562l-1.5 1.25 2.375 1.125zM10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
-                    <span data-translate-key="ctaButton"></span>
-                </a>
-            </div>
-        `;
+        return `<div class="mt-8 p-5 md:p-6 bg-blue-50 border border-blue-200/50 rounded-2xl text-center"><h4 class="text-lg md:text-xl font-bold text-blue-800" data-translate-key="ctaTitle"></h4><p class="mt-2 text-blue-700/90 max-w-2xl mx-auto text-sm md:text-base">${ctaText}</p><a href="https://www.facebook.com/groups/sonyalphavietnamoffical" target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-5 py-2.5 px-6 bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M12.225 10.162c.37.312.525.812.375 1.312l-.75 2.5a1 1 0 01-1.85.375l-1.375-3.562a1 1 0 01.375-1.125l2.5-2.062a1 1 0 011.375 1.562l-1.5 1.25 2.375 1.125zM10 18a8 8 0 100-16 8 8 0 000 16z"/></svg><span data-translate-key="ctaButton"></span></a></div>`;
     };
-
-    // Helper for the settings grid (existing logic, slightly refactored)
-    const createSettingsGrid = (settings) => {
+    
+    const createSettingsGrid = (settings, compareSettings = null) => {
         if (!settings) return '';
         return Object.entries(settings).map(([key, value]) => {
             const explanationKey = Object.keys(parameterExplanations).find(k => k.toLowerCase() === key.toLowerCase().trim());
-            return `<div class="flex flex-col p-4 bg-white/50 rounded-xl">
-                        <div class="flex items-center gap-1.5">
-                            <span class="parameter-title text-sm text-gray-500 font-medium" data-param-key="${explanationKey || ''}">${key}</span>
-                        </div>
-                        <span class="font-semibold text-xl text-gray-800 mt-1">${value}</span>
-                    </div>`;
+            const isChanged = compareSettings && settings[key] !== compareSettings[key];
+            return `<div class="flex flex-col p-4 bg-white/50 rounded-xl ${isChanged ? 'changed' : ''}"><div class="flex items-center gap-1.5"><span class="parameter-title text-sm text-gray-500 font-medium" data-param-key="${explanationKey || ''}">${key}</span></div><span class="font-semibold text-xl text-gray-800 mt-1">${value}</span></div>`;
         }).join('');
     };
 
@@ -420,23 +355,21 @@ function createFullRecipeHTML(recipe) {
         recipe.detailSettings ? { titleKey: 'detailTitle', content: `<div class="grid grid-cols-2 md:grid-cols-3 gap-3">${createSettingsGrid(recipe.detailSettings)}</div>` } : null
     ].filter(Boolean);
     
-    // Assemble the final HTML
     return `
         ${createCollageHTML(recipe.demoImages)}
-        ${createCTAHTML(recipe)}
-        <div class="space-y-8 mt-8">
-            ${sections.map(section => `
-                <div>
-                    <h4 class="text-xl font-bold mb-3 text-gray-700" data-translate-key="${section.titleKey}"></h4>
-                    <div class="p-4 bg-gray-500/5 rounded-2xl">${section.content}</div>
-                </div>
-            `).join('')}
-        </div>
-        <div class="mt-12 pt-8 border-t border-gray-200 text-center">
+        <div class="mt-8 pt-8 border-t border-gray-200 flex flex-col sm:flex-row gap-4 justify-center">
+            <button class="btn btn-primary py-3 px-6" id="tweakWithAIBtn" data-recipe-id="${recipe.id}">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                <span data-translate-key="tweakWithAI"></span>
+            </button>
             <a href="https://helpguide.sony.net/di/pp/v1/en/index.html" target="_blank" rel="noopener noreferrer" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 py-3 px-6">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 <span data-translate-key="sonyGuideBtn"></span>
             </a>
+        </div>
+        ${createCTAHTML(recipe)}
+        <div class="space-y-8 mt-8">
+            ${sections.map(section => `<div><h4 class="text-xl font-bold mb-3 text-gray-700" data-translate-key="${section.titleKey}"></h4><div class="p-4 bg-gray-500/5 rounded-2xl">${section.content}</div></div>`).join('')}
         </div>
     `;
 }
@@ -456,29 +389,13 @@ const viewTemplates = {
     recipeFormulas: () => `
                      <div id="recipeFormulasView" class="w-full h-full flex flex-col md:flex-row gap-6 absolute inset-0 view-transition">
                          <aside id="recipeListPanel" class="w-full md:w-1/3 lg:w-[30%] xl:w-1/4 glass-panel p-4 md:p-6 flex flex-col flex-shrink-0 md:flex">
-                             <div class="flex-shrink-0 border-b border-gray-200 mb-4">
-                                 <div class="flex space-x-4">
-                                     <button class="aside-tab py-3 px-1 font-semibold text-gray-500" data-tab="recipes" data-translate-key="asideRecipesTab">Recipes</button>
-                                     <button class="aside-tab py-3 px-1 font-semibold text-gray-500" data-tab="settings" data-translate-key="asideSettingsTab">Settings</button>
-                                 </div>
+                             <div class="relative mb-4 flex-shrink-0">
+                                 <input type="search" id="searchInput" class="w-full p-3 pl-4 pr-12 rounded-xl bg-gray-200/50 border-2 border-transparent focus:border-blue-500 focus:bg-white transition-all" data-translate-key="searchInputPlaceholder">
+                                 <button id="quizShortcutBtn" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 hover:text-blue-500" title="Find My Color Quiz">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                                 </button>
                              </div>
-                             <div class="flex-grow overflow-hidden relative">
-                                 <div id="asideSlider" class="flex h-full transition-transform duration-300">
-                                     <div id="recipesTabPanel" class="w-full flex-shrink-0 h-full flex flex-col">
-                                         <div class="relative mb-4 flex-shrink-0">
-                                             <input type="search" id="searchInput" class="w-full p-3 pl-4 pr-12 rounded-xl bg-gray-200/50 border-2 border-transparent focus:border-blue-500 focus:bg-white transition-all" data-translate-key="searchInputPlaceholder">
-                                             <button id="quizShortcutBtn" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 hover:text-blue-500" title="Find My Color Quiz">
-                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                                             </button>
-                                         </div>
-                                         <div id="recipeListContainer" class="space-y-2 flex-grow overflow-y-auto sleek-scrollbar pr-2 -mr-2"></div>
-                                     </div>
-                                     <div id="settingsTabPanel" class="w-full flex-shrink-0 h-full overflow-y-auto sleek-scrollbar pr-2">
-                                         <h3 class="font-semibold text-lg mb-3" data-translate-key="settingsLanguage">Language</h3>
-                                         <p class="text-sm text-gray-500 mb-4">Change the display language of the app.</p>
-                                     </div>
-                                 </div>
-                             </div>
+                             <div id="recipeListContainer" class="space-y-2 flex-grow overflow-y-auto sleek-scrollbar pr-2 -mr-2"></div>
                          </aside>
                          <main id="recipeMainPanel" class="w-full md:w-2/3 lg:w-[70%] xl:w-3/4 flex-col min-h-0 hidden md:flex">
                              <div class="glass-panel flex-grow overflow-y-auto p-6 lg:p-10 sleek-scrollbar">
@@ -493,10 +410,6 @@ const viewTemplates = {
                              <div class="glass-panel p-6 overflow-y-auto sleek-scrollbar"><div id="recipeContentMobile"></div></div>
                          </div>
                      </div>`,
-    featuredPhotos: () => `<div class="w-full h-full flex flex-col items-center justify-center text-center absolute inset-0 view-transition p-4">
-                             <h2 class="text-3xl font-bold">Coming Soon</h2>
-                             <p class="text-lg text-gray-600 mt-2">A gallery of featured photos from the community!</p>
-                           </div>`
 };
 
 // --- QUIZ LOGIC ---
@@ -507,9 +420,7 @@ function startQuiz() {
     renderQuizQuestion();
 }
 
-function closeQuiz() {
-    document.getElementById('quizModal').classList.add('hidden');
-}
+function closeQuiz() { document.getElementById('quizModal').classList.add('hidden'); }
 
 function renderQuizQuestion() {
     const quizContent = document.getElementById('quizContent');
@@ -517,28 +428,9 @@ function renderQuizQuestion() {
     const qIndex = state.quiz.currentQuestionIndex;
 
     const render = () => {
-        if (qIndex >= quizQuestions.length) {
-            calculateAndShowQuizResult();
-            return;
-        }
-
+        if (qIndex >= quizQuestions.length) { calculateAndShowQuizResult(); return; }
         const questionData = quizQuestions[qIndex];
-        quizContent.innerHTML = `
-            <div class="quiz-question-container">
-                <h3 class="text-2xl md:text-3xl font-semibold text-center mb-8">${questionData.question[state.currentLang]}</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    ${questionData.options.map(opt => `
-                        <button class="quiz-option w-full text-left p-4 rounded-2xl flex items-center gap-4" data-tags="${opt.tags.join(',')}">
-                            <svg class="w-8 h-8 text-gray-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="${opt.icon}" />
-                            </svg>
-                            <span class="font-semibold text-lg text-gray-800">${opt.text[state.currentLang]}</span>
-                        </button>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-        
+        quizContent.innerHTML = `<div class="quiz-question-container"><h3 class="text-2xl md:text-3xl font-semibold text-center mb-8">${questionData.question[state.currentLang]}</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${questionData.options.map(opt => `<button class="quiz-option w-full text-left p-4 rounded-2xl flex items-center gap-4" data-tags="${opt.tags.join(',')}"><svg class="w-8 h-8 text-gray-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="${opt.icon}" /></svg><span class="font-semibold text-lg text-gray-800">${opt.text[state.currentLang]}</span></button>`).join('')}</div></div>`;
         progressBar.style.width = `${((qIndex) / quizQuestions.length) * 100}%`;
     };
 
@@ -554,67 +446,212 @@ function renderQuizQuestion() {
 function handleQuizAnswer(e) {
     const selectedOption = e.target.closest('.quiz-option');
     if (!selectedOption) return;
-
     document.querySelectorAll('.quiz-option').forEach(btn => btn.classList.remove('selected'));
     selectedOption.classList.add('selected');
-
     const tags = selectedOption.dataset.tags.split(',');
     state.quiz.answers.push(...tags);
-    
-    setTimeout(() => {
-        state.quiz.currentQuestionIndex++;
-        renderQuizQuestion();
-    }, 300);
+    setTimeout(() => { state.quiz.currentQuestionIndex++; renderQuizQuestion(); }, 300);
 }
 
 function calculateAndShowQuizResult() {
     const scores = recipesData.map(recipe => {
         let score = 0;
         score += recipe.tags.reduce((acc, tag) => acc + (state.quiz.answers.includes(tag) ? 1 : 0), 0);
-        if (state.quiz.answers.includes('bw') && recipe.type === 'bw') {
-            score += 2; 
-        }
+        if (state.quiz.answers.includes('bw') && recipe.type === 'bw') { score += 2; }
         return { id: recipe.id, score: score };
     });
-
     scores.sort((a, b) => b.score - a.score);
     const bestMatch = recipesData.find(r => r.id === scores[0].id);
-    
     const quizContent = document.getElementById('quizContent');
-    const progressBar = document.getElementById('quizProgressBar');
-    progressBar.style.width = '100%';
+    document.getElementById('quizProgressBar').style.width = '100%';
+    quizContent.innerHTML = `<div class="text-center view-transition"><h3 class="text-2xl font-bold" data-translate-key="quizResultTitle"></h3><p class="mt-2 text-gray-600" data-translate-key="quizResultDescription"></p><div class="my-8 p-6 bg-gray-100 rounded-2xl border flex flex-col sm:flex-row items-center gap-6"><img src="${bestMatch.demoImages[0]}" class="w-full sm:w-48 h-32 rounded-lg object-cover shadow-lg" alt="Preview"><div class="text-left"><h4 class="text-xl font-bold">${bestMatch.name[state.currentLang]}</h4><p class="text-gray-600 mt-1">${bestMatch.description[state.currentLang]}</p></div></div><div class="flex flex-col sm:flex-row gap-4 justify-center"><button id="viewResultBtn" data-recipe-id="${bestMatch.id}" class="btn btn-primary py-3 px-8 text-base"><span data-translate-key="viewRecipeBtn"></span></button><button id="retakeQuizBtn" class="btn bg-gray-200 text-gray-800 py-3 px-8 text-base"><span data-translate-key="retakeQuizBtn"></span></button></div></div>`;
+    applyTranslations();
+}
 
-    quizContent.innerHTML = `
-        <div class="text-center view-transition">
-            <h3 class="text-2xl font-bold" data-translate-key="quizResultTitle"></h3>
-            <p class="mt-2 text-gray-600" data-translate-key="quizResultDescription"></p>
-            <div class="my-8 p-6 bg-gray-100 rounded-2xl border flex flex-col sm:flex-row items-center gap-6">
-                <img src="${bestMatch.demoImages[0]}" class="w-full sm:w-48 h-32 rounded-lg object-cover shadow-lg" alt="Preview for ${bestMatch.name[state.currentLang]}">
-                <div class="text-left">
-                    <h4 class="text-xl font-bold">${bestMatch.name[state.currentLang]}</h4>
-                    <p class="text-gray-600 mt-1">${bestMatch.description[state.currentLang]}</p>
-                </div>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                 <button id="viewResultBtn" data-recipe-id="${bestMatch.id}" class="btn btn-primary py-3 px-8 text-base">
-                     <span data-translate-key="viewRecipeBtn"></span>
-                 </button>
-                 <button id="retakeQuizBtn" class="btn bg-gray-200 text-gray-800 py-3 px-8 text-base">
-                     <span data-translate-key="retakeQuizBtn"></span>
-                 </button>
+// --- GEMINI AI LAB LOGIC ---
+function openAILab(recipeId) {
+    state.ai.originalRecipe = recipesData.find(r => r.id === recipeId);
+    if (!state.ai.originalRecipe) return;
+
+    state.ai.generatedRecipe = null;
+    state.ai.userPrompt = '';
+    
+    const aiLabModal = document.getElementById('aiLabModal');
+    aiLabModal.classList.remove('hidden');
+    renderAILab();
+}
+
+function closeAILab() {
+    document.getElementById('aiLabModal').classList.add('hidden');
+}
+
+function renderAILab() {
+    const contentEl = document.getElementById('aiLabContent');
+    if (!contentEl) return;
+
+    if (state.ai.isGenerating) {
+        contentEl.innerHTML = `<div class="flex flex-col items-center justify-center h-64"><div class="loader"></div><p class="mt-4 text-gray-600">Gemini is thinking...</p></div>`;
+        return;
+    }
+
+    if (state.ai.generatedRecipe) {
+        renderAIComparison(contentEl);
+        return;
+    }
+
+    if (state.ai.expertPrompt) {
+        renderAIConfirmation(contentEl);
+        return;
+    }
+    
+    renderAIPromptInput(contentEl);
+    applyTranslations();
+}
+
+function renderAIPromptInput(container) {
+    const recipeName = state.ai.originalRecipe.name[state.currentLang];
+    container.innerHTML = `
+        <p class="text-lg text-gray-600 text-center">${t('aiLabDescription').replace('{recipeName}', recipeName)}</p>
+        <textarea id="aiPromptInput" class="w-full mt-4 p-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all min-h-[100px]" placeholder="${t('aiPromptPlaceholder')}"></textarea>
+        <div class="mt-6 text-center">
+            <button id="generateAIBtn" class="btn btn-primary py-3 px-8 text-lg">
+                <span data-translate-key="aiGenerateBtn"></span>
+            </button>
+        </div>
+    `;
+}
+
+function renderAIConfirmation(container) {
+    const recipeName = state.ai.originalRecipe.name[state.currentLang];
+    const confirmText = t('aiConfirmPromptText')
+        .replace('{recipeName}', `<b>${recipeName}</b>`)
+        .replace('{userPrompt}', state.ai.userPrompt);
+
+    container.innerHTML = `
+        <div class="text-center p-4 bg-blue-50 rounded-lg">
+            <h3 class="text-xl font-bold" data-translate-key="aiConfirmPromptTitle"></h3>
+            <p class="mt-3 text-lg text-gray-700">${confirmText}</p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button id="cancelAIBtn" class="btn bg-gray-200 text-gray-800 py-2 px-6" data-translate-key="aiCancelBtn"></button>
+                <button id="confirmAIBtn" class="btn btn-primary py-2 px-6" data-translate-key="aiConfirmBtn"></button>
             </div>
         </div>
     `;
     applyTranslations();
 }
 
-// --- CORE APP LOGIC ---
+function renderAIComparison(container) {
+    const original = state.ai.originalRecipe;
+    const generated = state.ai.generatedRecipe;
 
+    const createComparisonGrid = (titleKey, originalSettings, generatedSettings) => {
+        const allKeys = Object.keys(originalSettings);
+        const gridItems = allKeys.map(key => {
+            const originalValue = originalSettings[key];
+            const generatedValue = generatedSettings[key];
+            const isChanged = originalValue !== generatedValue;
+            return `
+                <div class="flex flex-col p-3 rounded-lg ${isChanged ? 'bg-blue-100/50 border border-blue-200' : 'bg-gray-100/70'}">
+                    <span class="text-sm text-gray-500 font-medium">${key}</span>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span class="font-semibold text-lg ${isChanged ? 'text-blue-700' : 'text-gray-800'}">${generatedValue}</span>
+                        ${isChanged ? `<span class="text-xs text-gray-500 line-through">${originalValue}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        return `<div><h4 class="text-lg font-bold mb-3 text-gray-700" data-translate-key="${titleKey}"></h4><div class="grid grid-cols-2 md:grid-cols-3 gap-3">${gridItems}</div></div>`;
+    };
+
+    container.innerHTML = `
+        <div class="text-center">
+            <h3 class="text-2xl font-bold" data-translate-key="aiComparisonTitle"></h3>
+            <p class="mt-1 text-gray-600" data-translate-key="aiComparisonDescription"></p>
+        </div>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Original Recipe Column -->
+            <div class="border border-gray-200 rounded-xl p-4">
+                <h4 class="text-xl font-bold text-center" data-translate-key="aiOriginalTitle"></h4>
+                <p class="text-center text-gray-500">${original.name[state.currentLang]}</p>
+            </div>
+            <!-- New Recipe Column -->
+            <div class="border-2 border-blue-500 rounded-xl p-4 bg-white shadow-lg">
+                <h4 class="text-xl font-bold text-center text-blue-600" data-translate-key="aiNewTitle"></h4>
+                <p class="text-center text-gray-500">${generated.name[state.currentLang]}</p>
+            </div>
+        </div>
+        <div class="mt-6 space-y-6">
+            ${createComparisonGrid('recipeSettingsTitle', original.settings, generated.settings)}
+            ${original.colorDepth ? createComparisonGrid('colorDepthTitle', original.colorDepth, generated.colorDepth) : ''}
+        </div>
+    `;
+    applyTranslations();
+}
+
+function renderAIError(container) {
+    container.innerHTML = `
+        <div class="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
+            <h3 class="text-xl font-bold text-red-800" data-translate-key="aiErrorTitle"></h3>
+            <p class="mt-2 text-red-700" data-translate-key="aiErrorText"></p>
+        </div>
+    `;
+    applyTranslations();
+}
+
+
+async function handleAIGeneration() {
+    const userInput = document.getElementById('aiPromptInput').value.trim();
+    if (!userInput) return;
+    
+    state.ai.userPrompt = userInput;
+    state.ai.expertPrompt = `As a professional colorist specializing in Sony Picture Profiles, analyze the following JSON object which represents an existing color recipe. Your task is to generate a new, modified JSON object based on the user's request: "${userInput}". The new JSON must be a complete, valid recipe object. You must only respond with the raw JSON object, without any surrounding text, explanations, or markdown formatting. The generated recipe name and description must be in the same language as the user's prompt (${state.currentLang}). Original recipe: ${JSON.stringify(state.ai.originalRecipe)}`;
+    
+    renderAILab(); // This will render the confirmation screen
+}
+
+async function confirmAndCallAI() {
+    state.ai.isGenerating = true;
+    renderAILab(); // Show loader
+
+    try {
+        const payload = {
+            contents: [{ parts: [{ text: state.ai.expertPrompt }] }],
+        };
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        // Robust JSON parsing
+        let jsonText = result.candidates[0].content.parts[0].text;
+        jsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+        state.ai.generatedRecipe = JSON.parse(jsonText);
+
+    } catch (error) {
+        console.error("Gemini API call failed:", error);
+        renderAIError(document.getElementById('aiLabContent'));
+    } finally {
+        state.ai.isGenerating = false;
+        state.ai.expertPrompt = ''; // Reset for next time
+        if (state.ai.generatedRecipe) {
+            renderAILab(); // Render comparison
+        }
+    }
+}
+
+
+// --- CORE APP LOGIC ---
 function renderView(viewName, selectedId = null) {
     state.currentView = viewName;
-    if (selectedId) {
-        state.selectedRecipeId = selectedId;
-    }
+    if (selectedId) { state.selectedRecipeId = selectedId; }
     return new Promise(resolve => {
         const currentContent = mainContentEl.children[0];
         if (currentContent) {
@@ -641,36 +678,22 @@ function handleRecipeSelection(id) {
     renderLibraryDetails();
 }
 
-function updateAsideSlider() {
-    const slider = document.getElementById('asideSlider');
-    const tabs = document.querySelectorAll('.aside-tab');
-    if (!slider || !tabs) return;
-
-    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === state.activeAsideTab));
-    const newTransform = state.activeAsideTab === 'recipes' ? 'translateX(0%)' : 'translateX(-100%)';
-    slider.style.transform = newTransform;
-}
-
 function updateLangSlider() {
     const glider = document.getElementById('lang-glider');
     const langVI = document.getElementById('langVI');
     const langEN = document.getElementById('langEN');
     if (!glider || !langVI || !langEN) return;
-
     langVI.classList.toggle('text-blue-600', state.currentLang === 'vi');
     langVI.classList.toggle('text-gray-500', state.currentLang !== 'vi');
     langEN.classList.toggle('text-blue-600', state.currentLang === 'en');
     langEN.classList.toggle('text-gray-500', state.currentLang !== 'en');
-    
-    const newTransform = state.currentLang === 'vi' ? 'translateX(0%)' : 'translateX(100%)';
-    glider.style.transform = newTransform;
+    glider.style.transform = state.currentLang === 'vi' ? 'translateX(0%)' : 'translateX(100%)';
 }
 
 function attachViewEventListeners(viewName) {
     if (viewName === 'recipeFormulas') {
         renderLibraryList();  
         renderLibraryDetails();
-        updateAsideSlider();
         updateLangSlider();
     }
 }
@@ -678,26 +701,10 @@ function attachViewEventListeners(viewName) {
 function renderLibraryList() {
     const container = document.getElementById('recipeListContainer'); if (!container) return;
     const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
-    
-    const recipesToRender = recipesData.filter(recipe => {
-        const nameMatch = recipe.name[state.currentLang].toLowerCase().includes(searchTerm);
-        const descriptionMatch = recipe.description[state.currentLang].toLowerCase().includes(searchTerm);
-        return nameMatch || descriptionMatch;
-    });
-
+    const recipesToRender = recipesData.filter(r => r.name[state.currentLang].toLowerCase().includes(searchTerm) || r.description[state.currentLang].toLowerCase().includes(searchTerm));
     container.innerHTML = recipesToRender.map(recipe => {
         const isSelected = recipe.id === state.selectedRecipeId;
-        return `<div class="recipe-item p-3 rounded-xl transition-all duration-200 border-l-4 border-transparent flex items-start gap-4 ${isSelected ? 'selected' : ''}" data-recipe-id="${recipe.id}">
-                    <div class="flex-grow cursor-pointer">
-                        <div class="flex items-start gap-3">
-                            <div class="w-5 h-5 rounded-full flex-shrink-0 mt-1" style="background-color: ${recipe.personalityColor}" title="${recipe.name[state.currentLang]}"></div>
-                            <div class="flex-grow">
-                                <span class="font-semibold text-primary">${recipe.name[state.currentLang]}</span>
-                                <p class="text-sm text-neutral-600 mt-1 leading-snug">${recipe.description[state.currentLang]}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+        return `<div class="recipe-item p-3 rounded-xl transition-all duration-200 border-l-4 border-transparent flex items-start gap-4 ${isSelected ? 'selected' : ''}" data-recipe-id="${recipe.id}"><div class="flex-grow cursor-pointer"><div class="flex items-start gap-3"><div class="w-5 h-5 rounded-full flex-shrink-0 mt-1" style="background-color: ${recipe.personalityColor}" title="${recipe.name[state.currentLang]}"></div><div class="flex-grow"><span class="font-semibold text-primary">${recipe.name[state.currentLang]}</span><p class="text-sm text-neutral-600 mt-1 leading-snug">${recipe.description[state.currentLang]}</p></div></div></div></div>`;
     }).join('');
 }
 
@@ -716,10 +723,8 @@ function renderLibraryDetails() {
     }
 
     const recipe = recipesData.find(r => r.id === state.selectedRecipeId);
-    
     let recipeContentContainer = isMobile && state.isMobileDetailActive ? document.getElementById('recipeContentMobile') : document.getElementById('recipeContent');
     let chartsContainer = document.getElementById('chartsContainer');
-
     if (!recipeContentContainer) return;
 
     if (!recipe) {  
@@ -732,22 +737,12 @@ function renderLibraryDetails() {
     recipeContentContainer.classList.remove('hidden');
     if(!isMobile) recipeMainPanel?.classList.remove('hidden');
     
-    recipeContentContainer.innerHTML = `
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full flex-shrink-0" style="background-color: ${recipe.personalityColor}"></div>
-                <div>
-                    <h3 class="text-3xl md:text-4xl font-bold">${recipe.name[state.currentLang]}</h3>
-                    <p class="text-lg text-neutral-600 mt-1">"${recipe.description[state.currentLang]}"</p>
-                </div>
-            </div>
-            <div class="mt-8">${createFullRecipeHTML(recipe)}</div>
-        `;
+    recipeContentContainer.innerHTML = `<div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full flex-shrink-0" style="background-color: ${recipe.personalityColor}"></div><div><h3 class="text-3xl md:text-4xl font-bold">${recipe.name[state.currentLang]}</h3><p class="text-lg text-neutral-600 mt-1">"${recipe.description[state.currentLang]}"</p></div></div><div class="mt-8">${createFullRecipeHTML(recipe)}</div>`;
     applyTranslations();
 }
 
 function init() {
     const tooltipEl = document.getElementById('infoTooltip');
-
     document.body.addEventListener('mouseover', (e) => {
         const title = e.target.closest('.parameter-title');
         if (title) {
@@ -763,7 +758,6 @@ function init() {
             }
         }
     });
-
     document.body.addEventListener('mouseout', (e) => {
         if (e.target.closest('.parameter-title')) {
             tooltipEl.classList.remove('visible');
@@ -771,47 +765,62 @@ function init() {
         }
     });
 
+    // FIXED: Refactored the main click listener for better event handling.
     document.body.addEventListener('click', async (e) => {
-        const target = e.target.closest('[id], [data-view], [data-recipe-id], [data-tab], .lang-btn-slider');
-        if (!target) return;
-
-        const id = target.id;
-        const dataset = target.dataset;
-
-        const navBtnAction = async (view, recipeId = null) => {
-            document.getElementById('mobileNavMenu')?.classList.add('translate-x-full');
-            state.selectedRecipeId = recipeId; 
-            state.isMobileDetailActive = !!recipeId;
-            await renderView(view, recipeId);
-        };
+        const target = e.target;
+        const navBtn = target.closest('[data-view]');
+        const langBtn = target.closest('.lang-btn-slider');
+        const recipeItem = target.closest('.recipe-item');
         
-        if (id === 'startQuizBtn' || id === 'quizShortcutBtn') {
-            startQuiz();
+        // --- High-priority specific button clicks ---
+        if (target.closest('#homeBtn')) { await renderView('home'); return; }
+        if (target.closest('#hamburgerBtn')) { document.getElementById('mobileNavMenu').classList.remove('translate-x-full'); return; }
+        if (target.closest('#closeMobileNavBtn')) { document.getElementById('mobileNavMenu').classList.add('translate-x-full'); return; }
+        if (target.closest('#backToListBtn')) { state.isMobileDetailActive = false; renderLibraryDetails(); return; }
+        
+        // --- Modal specific clicks ---
+        if (target.closest('#quizModal')) {
+            if (target.closest('#closeQuizBtn')) { closeQuiz(); return; }
+            if (target.closest('#retakeQuizBtn')) { state.quiz.currentQuestionIndex = 0; state.quiz.answers = []; renderQuizQuestion(); return; }
+            if (target.closest('#viewResultBtn')) { 
+                const recipeId = target.closest('#viewResultBtn').dataset.recipeId;
+                closeQuiz(); 
+                await renderView('recipeFormulas', recipeId); 
+                return; 
+            }
+            if (target.closest('.quiz-option')) { handleQuizAnswer(e); return; }
         }
-        else if (id === 'closeQuizBtn') closeQuiz();
-        else if (id === 'retakeQuizBtn') renderQuizQuestion();
-        else if (id === 'viewResultBtn') {
-            closeQuiz();
-            await navBtnAction('recipeFormulas', dataset.recipeId);
+        
+        if (target.closest('#aiLabModal')) {
+            if (target.closest('#closeAILabBtn') || target.closest('#cancelAIBtn')) { state.ai.expertPrompt = ''; renderAILab(); return; }
+            if (target.closest('#generateAIBtn')) { handleAIGeneration(); return; }
+            if (target.closest('#confirmAIBtn')) { confirmAndCallAI(); return; }
         }
-        else if (target.closest('#quizContent')) handleQuizAnswer(e);
-        else if (id === 'homeBtn') await navBtnAction('home');
-        else if (dataset.view) await navBtnAction(dataset.view);
-        else if (target.classList.contains('lang-btn-slider')) {
-            state.currentLang = id === 'langEN' ? 'en' : 'vi';
+
+        // --- General UI clicks ---
+        if (target.closest('#startQuizBtn') || target.closest('#quizShortcutBtn')) { startQuiz(); return; }
+        if (target.closest('#tweakWithAIBtn')) { openAILab(target.closest('#tweakWithAIBtn').dataset.recipeId); return; }
+        
+        if (navBtn) {
+            await renderView(navBtn.dataset.view);
+            return;
+        }
+        
+        if (langBtn) {
+            state.currentLang = langBtn.id === 'langEN' ? 'en' : 'vi';
             updateLangSlider();
             applyTranslations();
-            renderLibraryList();
-            if (state.selectedRecipeId) renderLibraryDetails();
+            if (state.currentView === 'recipeFormulas') {
+                renderLibraryList();
+                if (state.selectedRecipeId) renderLibraryDetails();
+            }
+            return;
         }
-        else if (dataset.tab) {
-            state.activeAsideTab = dataset.tab;
-            updateAsideSlider();
+
+        if (recipeItem) {
+            handleRecipeSelection(recipeItem.dataset.recipeId);
+            return;
         }
-        else if (id === 'hamburgerBtn') document.getElementById('mobileNavMenu').classList.remove('translate-x-full');
-        else if (id === 'closeMobileNavBtn') document.getElementById('mobileNavMenu').classList.add('translate-x-full');
-        else if (dataset.recipeId) handleRecipeSelection(dataset.recipeId);
-        else if (id === 'backToListBtn') { state.isMobileDetailActive = false; renderLibraryDetails(); }
     });
     
     document.addEventListener('input', e => {
@@ -827,4 +836,3 @@ document.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
-
