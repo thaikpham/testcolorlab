@@ -632,7 +632,14 @@ function handleAIGeneration() {
     // Start API call in the background and store the promise
     const abortController = new AbortController();
     state.ai.abortController = abortController;
-    const payload = { contents: [{ parts: [{ text: state.ai.expertPrompt }] }] };
+    
+    // OPTIMIZATION: Use JSON mode for reliable, clean output.
+    const payload = {
+        contents: [{ parts: [{ text: state.ai.expertPrompt }] }],
+        generationConfig: {
+            responseMimeType: "application/json",
+        }
+    };
 
     state.ai.generationPromise = fetch(API_URL, {
         method: 'POST',
@@ -650,8 +657,8 @@ function handleAIGeneration() {
         if (!result.candidates?.[0]?.content?.parts?.[0]) {
             throw new Error("Invalid API response structure.");
         }
-        let jsonText = result.candidates[0].content.parts[0].text;
-        jsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+        // OPTIMIZATION: No more manual cleanup needed. The response is clean JSON.
+        const jsonText = result.candidates[0].content.parts[0].text;
         return JSON.parse(jsonText);
     });
 }
