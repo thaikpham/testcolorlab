@@ -665,7 +665,7 @@ const recipesData = [
         "colorDepth": { "R": "+5", "G": "+7", "B": "+2", "C": "+5", "M": "+5", "Y": "+5" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#FF4500",
-        "coords": { "x": 9, "y": 9 },
+        "coords": { "x": 9, "y": 10 },
         "demoImages": [
             "https://placehold.co/800x600/FF4500/ffffff?text=Phoenix+Fire+1",
             "https://placehold.co/800x600/FF4500/ffffff?text=Phoenix+Fire+2",
@@ -857,7 +857,7 @@ const recipesData = [
         "colorDepth": { "R": "+2", "G": "+7", "B": "+1", "C": "+2", "M": "+7", "Y": "+1" },
         "detailSettings": { "Level": "0" },
         "personalityColor": "#222222",
-        "coords": { "x": 9, "y": 9 },
+        "coords": { "x": 10, "y": 9 },
         "demoImages": [
             "https://placehold.co/800x600/222222/ffffff?text=Noir+Film+1",
             "https://placehold.co/800x600/222222/ffffff?text=Noir+Film+2",
