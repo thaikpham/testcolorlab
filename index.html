@@ -274,11 +274,11 @@
         animation: text-fade-in 1s ease-out 0.5s forwards;
     }
 
-    /* Color Map Chart Styles */
+    /* Sleek Color Map Chart Styles */
     #colorMapContainer {
         width: 100%;
         height: 100%;
-        min-height: 500px; /* Ensure it has a minimum height */
+        min-height: 500px;
         position: relative;
     }
     #colorMapContainer svg {
@@ -287,28 +287,32 @@
         left: 0;
         width: 100%;
         height: 100%;
+        overflow: visible; /* Allow glows to extend beyond svg edge */
     }
-    .color-map-node {
+    .color-map-node-group {
         cursor: pointer;
-        transition: all 0.2s ease-in-out;
-        stroke-width: 2px;
-        stroke: rgba(255, 255, 255, 0.8);
-        filter: url(#drop-shadow);
     }
-    .color-map-node:hover {
-        transform: scale(1.5);
+    .color-map-node-aura {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .color-map-node-core {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .color-map-node-group:hover .color-map-node-aura {
+        opacity: 0.5;
+        transform: scale(1.8);
+    }
+    .color-map-node-group:hover .color-map-node-core {
+        transform: scale(1.2);
+    }
+    .color-map-node-group.selected .color-map-node-core {
         stroke: white;
         stroke-width: 3px;
+        transform: scale(1.3);
     }
-    .color-map-node.selected {
-        stroke: white;
-        stroke-width: 4px;
-        animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-        0% { transform: scale(1.1); }
-        50% { transform: scale(1.3); }
-        100% { transform: scale(1.1); }
+    .color-map-node-group.selected .color-map-node-aura {
+        opacity: 0.6;
+        transform: scale(2);
     }
 
     .axis-label {
@@ -463,7 +467,6 @@ const state = {
     selectedRecipeId: null,
     isMobileDetailActive: false,
     chart: {
-        simulation: null,
         nodes: null,
     },
     ai: {
@@ -711,19 +714,18 @@ const viewTemplates = {
                                 </div>`,
 };
 
-// --- COLOR MAP CHART ---
+// --- SLEEK COLOR MAP CHART ---
 function renderColorMapChart(containerSelector, data) {
     const container = d3.select(containerSelector);
     if (container.empty() || !data || data.length === 0) {
         console.warn("Chart container not found or no data provided.");
         return;
     }
-    container.html(''); // Clear previous chart to prevent duplicates
+    container.html(''); // Clear previous chart
 
     const bounds = container.node().getBoundingClientRect();
     if (bounds.width === 0 || bounds.height === 0) {
-        console.warn("Chart container has zero dimensions. Cannot render chart.");
-        return;
+        return; // Wait for the container to have dimensions
     }
 
     const margin = { top: 40, right: 30, bottom: 50, left: 30 };
@@ -735,48 +737,21 @@ function renderColorMapChart(containerSelector, data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
     
-    // Add definitions for filters and gradients
+    // Add definitions for filters
     const defs = svg.append("defs");
-    
-    // Radial gradient for background
-    defs.append("radialGradient")
-        .attr("id", "bg-gradient")
-        .attr("cx", "50%").attr("cy", "50%").attr("r", "50%")
-        .selectAll("stop")
-        .data([
-            { offset: "0%", color: "#fdfdff" },
-            { offset: "100%", color: "#f0f2f5" }
-        ])
-        .enter().append("stop")
-        .attr("offset", d => d.offset)
-        .attr("stop-color", d => d.color);
-
-    // Drop shadow filter for nodes
     const filter = defs.append("filter")
-        .attr("id", "drop-shadow")
-        .attr("height", "130%");
+        .attr("id", "soft-glow")
+        .attr("x", "-50%").attr("y", "-50%")
+        .attr("width", "200%").attr("height", "200%");
     filter.append("feGaussianBlur")
-        .attr("in", "SourceAlpha")
-        .attr("stdDeviation", 3)
+        .attr("in", "SourceGraphic")
+        .attr("stdDeviation", "4")
         .attr("result", "blur");
-    filter.append("feOffset")
-        .attr("in", "blur")
-        .attr("dx", 2)
-        .attr("dy", 2)
-        .attr("result", "offsetBlur");
-    const feMerge = filter.append("feMerge");
-    feMerge.append("feMergeNode").attr("in", "offsetBlur");
-    feMerge.append("feMergeNode").attr("in", "SourceGraphic");
-
-    // Add background rect with gradient
-    svg.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("fill", "url(#bg-gradient)");
 
     // Define scales
-    const xScale = d3.scaleLinear().domain([-10.5, 10.5]).range([0, width]);
-    const yScale = d3.scaleLinear().domain([-10.5, 10.5]).range([height, 0]);
+    const xScale = d3.scaleLinear().domain([-11, 11]).range([0, width]);
+    const yScale = d3.scaleLinear().domain([-11, 11]).range([height, 0]);
+    const rScale = d3.scaleSqrt().domain([0, 10]).range([8, 14]); // Node size can vary if needed
 
     // Add background quadrant labels
     const quadrantLabels = [
@@ -794,39 +769,33 @@ function renderColorMapChart(containerSelector, data) {
         .attr("dy", "0.35em")
         .text(d => d.text[state.currentLang]);
 
-    // Add grid lines
+    // Add subtle grid lines
     svg.append("g").attr("class", "grid")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xScale).ticks(20).tickSize(-height).tickFormat(""))
-        .selectAll("line").attr("stroke", "#eaf0f6").attr("stroke-dasharray", "1,3");
+        .call(d3.axisBottom(xScale).ticks(10).tickSize(height).tickFormat(""))
+        .selectAll("line").attr("stroke", "#f1f5f9").attr("stroke-opacity", 0.7);
     svg.append("g").attr("class", "grid")
-        .call(d3.axisLeft(yScale).ticks(20).tickSize(-width).tickFormat(""))
-        .selectAll("line").attr("stroke", "#eaf0f6").attr("stroke-dasharray", "1,3");
-
-    // Add main axes
-    svg.append("line").attr("x1", 0).attr("x2", width).attr("y1", yScale(0)).attr("y2", yScale(0)).attr("stroke", "#cbd5e1").attr("stroke-width", 1);
-    svg.append("line").attr("x1", xScale(0)).attr("x2", xScale(0)).attr("y1", 0).attr("y2", height).attr("stroke", "#cbd5e1").attr("stroke-width", 1);
+        .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""))
+        .selectAll("line").attr("stroke", "#f1f5f9").attr("stroke-opacity", 0.7);
+    
+    // Remove the hard axis lines for a borderless feel
+    svg.selectAll(".domain").remove();
 
     // Add axis labels
-    svg.append("text").attr("class", "axis-label").attr("text-anchor", "start").attr("x", 5).attr("y", yScale(0) - 8).text(state.currentLang === 'vi' ? '← TÔNG LẠNH' : '← COOL TONE');
-    svg.append("text").attr("class", "axis-label").attr("text-anchor", "end").attr("x", width - 5).attr("y", yScale(0) - 8).text(state.currentLang === 'vi' ? 'TÔNG ẤM →' : 'WARM TONE →');
-    svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", -15).text(state.currentLang === 'vi' ? '↑ TƯƠNG PHẢN GẮT' : '↑ PUNCHY CONTRAST');
-    svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", height + 25).text(state.currentLang === 'vi' ? '↓ TƯƠNG PHẢN DỊU' : '↓ SOFT CONTRAST');
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "start").attr("x", 5).attr("y", yScale(0) - 8).text(state.currentLang === 'vi' ? '← Lạnh' : '← Cool');
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "end").attr("x", width - 5).attr("y", yScale(0) - 8).text(state.currentLang === 'vi' ? 'Ấm →' : 'Warm →');
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", -15).text(state.currentLang === 'vi' ? '↑ Tương phản Gắt' : '↑ Punchy Contrast');
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", height + 25).text(state.currentLang === 'vi' ? '↓ Tương phản Dịu' : '↓ Soft Contrast');
 
     // Tooltip
     const tooltip = d3.select("#chartTooltip");
     
-    // Create nodes data
-    const nodesData = data.filter(d => d.coords).map(d => ({...d})); // Create a copy
-
-    // Draw nodes
-    state.chart.nodes = svg.selectAll(".color-map-node")
-        .data(nodesData, d => d.id)
+    // Create node groups
+    state.chart.nodes = svg.selectAll(".color-map-node-group")
+        .data(data.filter(d => d.coords), d => d.id)
         .enter()
-        .append("circle")
-        .attr("class", "color-map-node")
-        .attr("r", 10)
-        .attr("fill", d => d.personalityColor)
+        .append("g")
+        .attr("class", "color-map-node-group")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`) // Start all nodes at the center
         .on("mouseover", function(event, d) {
             d3.select(this).raise();
             tooltip.html(`<b>${d.name[state.currentLang]}</b>`)
@@ -841,26 +810,33 @@ function renderColorMapChart(containerSelector, data) {
             handleRecipeSelection(d.id);
         });
 
-    // Force simulation
-    state.chart.simulation = d3.forceSimulation(nodesData)
-        .force("collide", d3.forceCollide().radius(12).strength(0.8))
-        .force("x", d3.forceX(d => xScale(d.coords.x)).strength(0.1))
-        .force("y", d3.forceY(d => yScale(d.coords.y)).strength(0.1))
-        .on("tick", () => {
-            state.chart.nodes
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-        });
+    // Append aura/glow circle
+    state.chart.nodes.append("circle")
+        .attr("class", "color-map-node-aura")
+        .attr("r", d => rScale(Math.abs(d.coords.x) + Math.abs(d.coords.y)))
+        .attr("fill", d => d.personalityColor)
+        .attr("filter", "url(#soft-glow)")
+        .attr("opacity", 0.3);
+
+    // Append core circle
+    state.chart.nodes.append("circle")
+        .attr("class", "color-map-node-core")
+        .attr("r", d => rScale(Math.abs(d.coords.x) + Math.abs(d.coords.y)))
+        .attr("fill", d => d.personalityColor);
+
+    // Entrance animation
+    state.chart.nodes.transition()
+        .duration(1200)
+        .delay((d, i) => i * 15)
+        .ease(d3.easeCubicOut)
+        .attr("transform", d => `translate(${xScale(d.coords.x)}, ${yScale(d.coords.y)})`);
+
+    updateChartSelection(); // Apply initial selection state
 }
 
 function updateChartSelection() {
     if (!state.chart.nodes) return;
-    state.chart.nodes.each(function(d) {
-        d3.select(this)
-            .classed("selected", d.id === state.selectedRecipeId)
-            .transition().duration(200)
-            .attr("r", d.id === state.selectedRecipeId ? 14 : 10);
-    });
+    state.chart.nodes.classed("selected", d => d.id === state.selectedRecipeId);
 }
 
 
@@ -1319,14 +1295,12 @@ function attachViewEventListeners(viewName) {
         renderLibraryList();  
         renderLibraryDetails();
         
-        // Use a small delay for the chart to ensure the container is ready
         const chartContainer = document.getElementById('colorMapContainer');
         if (chartContainer) {
-            // The ResizeObserver will handle the initial render and subsequent resizes
             const resizeObserver = new ResizeObserver(entries => {
-                // We only need to react to the first entry
-                if (entries && entries.length > 0) {
+                if (entries && entries.length > 0 && entries[0].contentRect.width > 0) {
                      renderColorMapChart('#colorMapContainer', recipesData);
+                     resizeObserver.unobserve(chartContainer); // Render once and stop observing
                 }
             });
             resizeObserver.observe(chartContainer);
@@ -1549,20 +1523,6 @@ function init() {
     document.addEventListener('input', e => {
         if(e.target.id === 'searchInput') renderLibraryList();
     });
-
-    // Stop observing when not needed (optional but good practice)
-    const observer = new MutationObserver((mutationsList) => {
-        for(const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                const recipeView = document.getElementById('recipeFormulasView');
-                if (!recipeView && state.chart.simulation) {
-                    state.chart.simulation.stop();
-                }
-            }
-        }
-    });
-    observer.observe(mainContentEl, { childList: true });
-
 
     renderView('home');
 }
