@@ -7,6 +7,7 @@
 <!-- Favicon đã được cập nhật. Đường dẫn bây giờ là tương đối. -->
 <link rel="icon" type="image/png" href="logo.png">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script> <!-- D3.js Library Added -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -81,13 +82,13 @@
         cursor: help;
         border-bottom: 1px dashed #ccc;
     }
-    #infoTooltip {
+    #infoTooltip, #chartTooltip {
         position: absolute; z-index: 1000; background-color: rgba(29, 29, 31, 0.9); color: white; padding: 0.75rem 1rem;
         border-radius: 12px; font-size: 0.875rem; line-height: 1.5; max-width: 300px; backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(10px);
         transition: opacity 0.2s ease, transform 0.2s ease; pointer-events: none;
     }
-    #infoTooltip.visible { opacity: 1; transform: translateY(0); }
+    #infoTooltip.visible, #chartTooltip.visible { opacity: 1; transform: translateY(0); }
 
     /* AI Lab Specific Styles */
     .comparison-grid .changed {
@@ -272,6 +273,38 @@
         opacity: 0;
         animation: text-fade-in 1s ease-out 0.5s forwards;
     }
+
+    /* Color Map Chart Styles */
+    #colorMapContainer {
+        width: 100%;
+        height: 100%;
+        min-height: 500px; /* Ensure it has a minimum height */
+    }
+    .color-map-node {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        stroke-width: 2px;
+        stroke: rgba(255, 255, 255, 0.8);
+    }
+    .color-map-node:hover {
+        transform: scale(1.5);
+        stroke: white;
+        stroke-width: 3px;
+    }
+    .axis-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        fill: #6e6e73;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .quadrant-label {
+        font-size: 1.5rem;
+        font-weight: 800;
+        fill: #e2e8f0;
+        text-anchor: middle;
+        pointer-events: none;
+    }
 </style>
 </head>
 <body>
@@ -324,6 +357,7 @@
 </div>
 
 <div id="infoTooltip" class="hidden"></div>
+<div id="chartTooltip" class="hidden"></div> <!-- Tooltip for Chart -->
 
 <div id="lightbox" class="hidden">
     <span id="lightboxClose">&times;</span>
@@ -483,7 +517,7 @@ const translations = {
     retakeQuizBtn: {vi: "Làm lại trắc nghiệm", en: "Retake Quiz"},
     searchInputPlaceholder: {vi: "Tìm công thức...", en: "Search recipes..."},
     recipeDetailWelcomeTitle: {vi: "Thư viện màu<br>Tương tác", en: "Interactive<br>Color Library"},
-    recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan.<br>Nhấp vào một công thức trong danh sách để xem chi tiết.", en: "Explore Picture Profile color recipes visually.<br>Click a recipe in the list to see details."},
+    recipeDetailWelcomeText: {vi: "Khám phá các công thức màu Picture Profile một cách trực quan.<br>Chọn một công thức trong danh sách hoặc trên biểu đồ để xem chi tiết.", en: "Explore Picture Profile color recipes visually.<br>Select a recipe from the list or the chart to see details."},
     whiteBalanceTitle: {vi: "Cân bằng trắng (WB)", en: "White Balance (WB)"},
     recipeSettingsTitle: {vi: "Cài đặt Chính", en: "Main Settings"},
     colorDepthTitle: {vi: "Độ sâu màu", en: "Color Depth"},
@@ -637,8 +671,9 @@ const viewTemplates = {
                                     </aside>
                                     <main id="recipeMainPanel" class="w-full md:w-2/3 lg:w-[70%] xl:w-3/4 flex-col min-h-0 hidden md:flex">
                                         <div class="glass-panel flex-grow overflow-y-auto p-6 lg:p-10 sleek-scrollbar">
-                                            <div id="chartsContainer" class="flex flex-col items-center justify-center h-full">
-                                                <div class="text-center mb-10"><h2 class="text-2xl md:text-3xl font-bold text-gray-700" data-translate-key="recipeDetailWelcomeTitle"></h2><p class="text-neutral-500 mt-2 max-w-xl mx-auto" data-translate-key="recipeDetailWelcomeText"></p></div>
+                                            <div id="welcomeAndChartContainer" class="flex flex-col items-center justify-center h-full">
+                                                <div id="welcomeText" class="text-center mb-10"><h2 class="text-2xl md:text-3xl font-bold text-gray-700" data-translate-key="recipeDetailWelcomeTitle"></h2><p class="text-neutral-500 mt-2 max-w-xl mx-auto" data-translate-key="recipeDetailWelcomeText"></p></div>
+                                                <div id="colorMapContainer"></div>
                                             </div>
                                             <div id="recipeContent" class="hidden"></div>
                                         </div>
@@ -649,6 +684,103 @@ const viewTemplates = {
                                     </div>
                                 </div>`,
 };
+
+// --- COLOR MAP CHART ---
+function renderColorMapChart(containerSelector, data) {
+    const container = d3.select(containerSelector);
+    if (container.empty() || !data || data.length === 0) {
+        console.log("Chart container not found or no data.");
+        return;
+    }
+    container.html(''); // Clear previous chart
+
+    const bounds = container.node().getBoundingClientRect();
+    const margin = { top: 40, right: 40, bottom: 40, left: 40 };
+    const width = bounds.width - margin.left - margin.right;
+    const height = Math.max(500, bounds.height) - margin.top - margin.bottom;
+
+    const svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Define scales
+    const xExtent = d3.extent(data, d => d.coords.x);
+    const yExtent = d3.extent(data, d => d.coords.y);
+    const xScale = d3.scaleLinear().domain([-10, 10]).range([0, width]);
+    const yScale = d3.scaleLinear().domain([-10, 10]).range([height, 0]);
+
+    // Add background quadrant labels
+    const quadrantLabels = [
+        { x: width * 0.25, y: height * 0.25, text: {vi: 'LẠNH & GẮT', en: 'COOL & PUNCHY'} },
+        { x: width * 0.75, y: height * 0.25, text: {vi: 'ẤM & RỰC RỠ', en: 'WARM & VIBRANT'} },
+        { x: width * 0.25, y: height * 0.75, text: {vi: 'LẠNH & DỊU', en: 'COOL & MUTED'} },
+        { x: width * 0.75, y: height * 0.75, text: {vi: 'ẤM & MỜ', en: 'WARM & FADED'} },
+    ];
+    svg.selectAll(".quadrant-label")
+        .data(quadrantLabels)
+        .enter().append("text")
+        .attr("class", "quadrant-label")
+        .attr("x", d => d.x)
+        .attr("y", d => d.y)
+        .attr("dy", "0.35em")
+        .text(d => d.text[state.currentLang]);
+
+    // Add grid lines
+    svg.append("g").attr("class", "grid")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat(""))
+        .selectAll("line").attr("stroke", "#e2e8f0").attr("stroke-dasharray", "2,2");
+    svg.append("g").attr("class", "grid")
+        .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""))
+        .selectAll("line").attr("stroke", "#e2e8f0").attr("stroke-dasharray", "2,2");
+
+    // Add main axes
+    svg.append("line").attr("x1", 0).attr("x2", width).attr("y1", yScale(0)).attr("y2", yScale(0)).attr("stroke", "#cbd5e1").attr("stroke-width", 1.5);
+    svg.append("line").attr("x1", xScale(0)).attr("x2", xScale(0)).attr("y1", 0).attr("y2", height).attr("stroke", "#cbd5e1").attr("stroke-width", 1.5);
+
+    // Add axis labels
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "start").attr("x", 5).attr("y", yScale(0) - 10).text(state.currentLang === 'vi' ? '← TÔNG LẠNH' : '← COOL TONE');
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "end").attr("x", width - 5).attr("y", yScale(0) - 10).text(state.currentLang === 'vi' ? 'TÔNG ẤM →' : 'WARM TONE →');
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", -15).text(state.currentLang === 'vi' ? '↑ TƯƠNG PHẢN GẮT' : '↑ PUNCHY CONTRAST');
+    svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", height + 25).text(state.currentLang === 'vi' ? '↓ TƯƠNG PHẢN DỊU' : '↓ SOFT CONTRAST');
+
+    // Tooltip
+    const tooltip = d3.select("#chartTooltip");
+
+    // Draw nodes
+    const nodes = svg.selectAll(".color-map-node")
+        .data(data.filter(d => d.coords))
+        .enter()
+        .append("circle")
+        .attr("class", "color-map-node")
+        .attr("cx", d => xScale(d.coords.x))
+        .attr("cy", d => yScale(d.coords.y))
+        .attr("fill", d => d.personalityColor)
+        .attr("r", 0) // Start with radius 0 for animation
+        .on("mouseover", function(event, d) {
+            d3.select(this).raise().transition().duration(150).attr("r", 14);
+            tooltip.html(`<b>${d.name[state.currentLang]}</b>`)
+                .style("left", (event.pageX + 15) + "px")
+                .style("top", (event.pageY - 15) + "px")
+                .classed("visible", true);
+        })
+        .on("mouseout", function() {
+            d3.select(this).transition().duration(150).attr("r", 9);
+            tooltip.classed("visible", false);
+        })
+        .on("click", (event, d) => {
+            handleRecipeSelection(d.id);
+        });
+
+    // Entrance animation
+    nodes.transition()
+        .duration(500)
+        .delay((d, i) => i * 15)
+        .attr("r", 9);
+}
+
 
 // --- QUIZ LOGIC ---
 function startQuiz() {
@@ -1105,6 +1237,7 @@ function attachViewEventListeners(viewName) {
     if (viewName === 'recipeFormulas') {
         renderLibraryList();  
         renderLibraryDetails();
+        renderColorMapChart('#colorMapContainer', recipesData); // Render the chart
         updateLangSlider();
     }
 }
@@ -1139,16 +1272,16 @@ function renderLibraryDetails() {
 
     const recipe = recipesData.find(r => r.id === state.selectedRecipeId);
     let recipeContentContainer = isMobile && state.isMobileDetailActive ? document.getElementById('recipeContentMobile') : document.getElementById('recipeContent');
-    let chartsContainer = document.getElementById('chartsContainer');
+    let welcomeAndChartContainer = document.getElementById('welcomeAndChartContainer');
     if (!recipeContentContainer) return;
 
     if (!recipe) {  
-        if (chartsContainer) chartsContainer.classList.remove('hidden');
+        if (welcomeAndChartContainer) welcomeAndChartContainer.classList.remove('hidden');
         recipeContentContainer.classList.add('hidden');
         if(!isMobile) recipeMainPanel?.classList.remove('hidden');
         return;  
     }
-    if (chartsContainer) chartsContainer.classList.add('hidden');
+    if (welcomeAndChartContainer) welcomeAndChartContainer.classList.add('hidden');
     recipeContentContainer.classList.remove('hidden');
     if(!isMobile) recipeMainPanel?.classList.remove('hidden');
     
@@ -1284,7 +1417,12 @@ function init() {
             applyTranslations();
             if (state.currentView === 'recipeFormulas') {
                 renderLibraryList();
-                if (state.selectedRecipeId) renderLibraryDetails();
+                if (state.selectedRecipeId) {
+                    renderLibraryDetails();
+                } else {
+                    // Re-render chart with new language
+                    renderColorMapChart('#colorMapContainer', recipesData);
+                }
             }
             return;
         }
@@ -1313,7 +1451,14 @@ function init() {
         if(e.target.id === 'searchInput') renderLibraryList();
     });
 
-    window.addEventListener('resize', () => { if(state.currentView === 'recipeFormulas') renderLibraryDetails(); });
+    window.addEventListener('resize', () => { 
+        if(state.currentView === 'recipeFormulas') {
+            renderLibraryDetails(); 
+            if (!state.selectedRecipeId) {
+                renderColorMapChart('#colorMapContainer', recipesData);
+            }
+        }
+    });
 
     renderView('home');
 }
