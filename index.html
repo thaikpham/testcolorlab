@@ -468,6 +468,7 @@ const state = {
     isMobileDetailActive: false,
     chart: {
         nodes: null,
+        simulation: null,
     },
     ai: {
         isGenerating: false,
@@ -552,6 +553,7 @@ const translations = {
     colorDepthTitle: {vi: "Độ sâu màu", en: "Color Depth"},
     detailTitle: {vi: "Chi tiết", en: "Detail"},
     sonyGuideBtn: {vi: "Xem tài liệu gốc từ Sony", en: "View Official Sony Guide"},
+    backToChartBtn: {vi: "← Quay lại Bản đồ màu", en: "← Back to Color Map"},
     backToListBtn: {vi: "← Quay lại danh sách", en: "← Back to list"},
     ctaTitle: {vi: "Chia sẻ tác phẩm của bạn!", en: "Share Your Creations!"},
     ctaText: {vi: "Yêu thích công thức này? Hãy chia sẻ ảnh của bạn lên group Facebook <b>Sony Alpha Vietnam | Official</b><br>với hashtag <b>#sonycolorlab</b> và {recipeHashtag} để có cơ hội được giới thiệu!", en: "Love this recipe? Share your photos on the <b>Sony Alpha Vietnam | Official</b> Facebook group<br>with hashtags <b>#sonycolorlab</b> and {recipeHashtag} for a chance to be featured!"},
@@ -751,7 +753,7 @@ function renderColorMapChart(containerSelector, data) {
     // Define scales
     const xScale = d3.scaleLinear().domain([-11, 11]).range([0, width]);
     const yScale = d3.scaleLinear().domain([-11, 11]).range([height, 0]);
-    const rScale = d3.scaleSqrt().domain([0, 10]).range([8, 14]); // Node size can vary if needed
+    const rScale = d3.scaleSqrt().domain([0, 10]).range([7, 12]); // Slightly smaller radii
 
     // Add background quadrant labels
     const quadrantLabels = [
@@ -777,7 +779,6 @@ function renderColorMapChart(containerSelector, data) {
         .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""))
         .selectAll("line").attr("stroke", "#f1f5f9").attr("stroke-opacity", 0.7);
     
-    // Remove the hard axis lines for a borderless feel
     svg.selectAll(".domain").remove();
 
     // Add axis labels
@@ -786,16 +787,17 @@ function renderColorMapChart(containerSelector, data) {
     svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", -15).text(state.currentLang === 'vi' ? '↑ Tương phản Gắt' : '↑ Punchy Contrast');
     svg.append("text").attr("class", "axis-label").attr("text-anchor", "middle").attr("x", xScale(0)).attr("y", height + 25).text(state.currentLang === 'vi' ? '↓ Tương phản Dịu' : '↓ Soft Contrast');
 
-    // Tooltip
     const tooltip = d3.select("#chartTooltip");
     
-    // Create node groups
+    // Create node data copies for simulation
+    const nodesData = data.filter(d => d.coords).map(d => ({...d}));
+
     state.chart.nodes = svg.selectAll(".color-map-node-group")
-        .data(data.filter(d => d.coords), d => d.id)
+        .data(nodesData, d => d.id)
         .enter()
         .append("g")
         .attr("class", "color-map-node-group")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`) // Start all nodes at the center
+        .attr("transform", d => `translate(${xScale(d.coords.x)}, ${yScale(d.coords.y)})`) // Initial position
         .on("mouseover", function(event, d) {
             d3.select(this).raise();
             tooltip.html(`<b>${d.name[state.currentLang]}</b>`)
@@ -810,7 +812,6 @@ function renderColorMapChart(containerSelector, data) {
             handleRecipeSelection(d.id);
         });
 
-    // Append aura/glow circle
     state.chart.nodes.append("circle")
         .attr("class", "color-map-node-aura")
         .attr("r", d => rScale(Math.abs(d.coords.x) + Math.abs(d.coords.y)))
@@ -818,25 +819,44 @@ function renderColorMapChart(containerSelector, data) {
         .attr("filter", "url(#soft-glow)")
         .attr("opacity", 0.3);
 
-    // Append core circle
     state.chart.nodes.append("circle")
         .attr("class", "color-map-node-core")
         .attr("r", d => rScale(Math.abs(d.coords.x) + Math.abs(d.coords.y)))
         .attr("fill", d => d.personalityColor);
 
-    // Entrance animation
-    state.chart.nodes.transition()
-        .duration(1200)
-        .delay((d, i) => i * 15)
-        .ease(d3.easeCubicOut)
-        .attr("transform", d => `translate(${xScale(d.coords.x)}, ${yScale(d.coords.y)})`);
+    // Gentle collision detection
+    state.chart.simulation = d3.forceSimulation(nodesData)
+        .force("collide", d3.forceCollide().radius(d => rScale(Math.abs(d.coords.x) + Math.abs(d.coords.y)) + 3).strength(0.8))
+        .force("x", d3.forceX(d => xScale(d.coords.x)).strength(0.1))
+        .force("y", d3.forceY(d => yScale(d.coords.y)).strength(0.1))
+        .stop();
 
-    updateChartSelection(); // Apply initial selection state
+    // Run simulation for a fixed number of iterations
+    for (let i = 0; i < 120; ++i) state.chart.simulation.tick();
+
+    // Animate nodes to their final, collision-free positions
+    state.chart.nodes
+        .transition()
+        .duration(1200)
+        .delay((d, i) => i * 10)
+        .ease(d3.easeCubicOut)
+        .attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+
+    updateChartSelection();
 }
 
 function updateChartSelection() {
     if (!state.chart.nodes) return;
     state.chart.nodes.classed("selected", d => d.id === state.selectedRecipeId);
+}
+
+function resetToChartView() {
+    state.selectedRecipeId = null;
+    state.isMobileDetailActive = false;
+    renderLibraryList();
+    renderLibraryDetails();
+    updateChartSelection();
 }
 
 
@@ -1354,6 +1374,9 @@ function renderLibraryDetails() {
     if(!isMobile) recipeMainPanel?.classList.remove('hidden');
     
     recipeContentContainer.innerHTML = `
+        <div class="mb-4">
+            <button id="backToChartBtn" class="btn bg-white/60 border border-gray-200/80 text-gray-700 hover:bg-white/90 py-2 px-4 text-sm" data-translate-key="backToChartBtn"></button>
+        </div>
         <div>
             <h3 class="text-3xl md:text-4xl font-bold">${recipe.name[state.currentLang]}</h3>
             <p class="text-lg text-neutral-600 mt-1">"${recipe.description[state.currentLang]}"</p>
@@ -1421,11 +1444,8 @@ function init() {
         if (target.closest('#homeBtn')) { await renderView('home'); return; }
         if (target.closest('#hamburgerBtn')) { document.getElementById('mobileNavMenu').classList.remove('translate-x-full'); return; }
         if (target.closest('#closeMobileNavBtn')) { document.getElementById('mobileNavMenu').classList.add('translate-x-full'); return; }
-        if (target.closest('#backToListBtn')) {
-            state.isMobileDetailActive = false; 
-            state.selectedRecipeId = null; // Deselect recipe
-            renderLibraryDetails(); 
-            updateChartSelection(); // Update chart to show no selection
+        if (target.closest('#backToListBtn') || target.closest('#backToChartBtn')) {
+            resetToChartView();
             return; 
         }
         
@@ -1478,7 +1498,12 @@ function init() {
         if (target.closest('#captionAIBtn')) { openCaptionLab(target.closest('#captionAIBtn').dataset.recipeId); return; }
         
         if (navBtn) {
-            await renderView(navBtn.dataset.view);
+            // If user is already on the recipe page and clicks the nav link, reset to chart view
+            if (navBtn.dataset.view === 'recipeFormulas' && state.currentView === 'recipeFormulas') {
+                resetToChartView();
+            } else {
+                await renderView(navBtn.dataset.view);
+            }
             if(target.closest('.nav-btn-mobile')) {
                  document.getElementById('mobileNavMenu').classList.add('translate-x-full');
             }
